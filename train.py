@@ -1,3 +1,4 @@
+import pdb
 import argparse
 import torch
 import wandb
@@ -36,7 +37,6 @@ import trainers.zsclip
 # import trainers.vpour
 # import trainers.wrap_wb
 
-import pdb
 
 def print_args(args, cfg):
     print("***************")
@@ -87,6 +87,10 @@ def reset_cfg(cfg, args):
         cfg.MODEL.HEAD.NAME = args.head
 
 
+    # added
+    if args.dataset:
+        cfg.DATASET.NAME = args.dataset
+        
 def extend_cfg(cfg):
     """
     Add new config variables.
@@ -172,7 +176,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", type=str, default="", help="path to dataset")
+    parser.add_argument("--root", type=str, default="fafdas", help="path to dataset")
     parser.add_argument("--output-dir", type=str, default="", help="output directory")
     parser.add_argument(
         "--resume",
@@ -201,7 +205,7 @@ if __name__ == "__main__":
         default="",
         help="path to config file for dataset setup",
     )
-    parser.add_argument("--trainer", type=str, default="", help="name of trainer")
+    parser.add_argument("--trainer", type=str, default="ZeroshotCLIP", help="name of trainer")
     parser.add_argument("--backbone", type=str, default="", help="name of CNN backbone")
     parser.add_argument("--head", type=str, default="", help="name of head")
     parser.add_argument("--eval-only", action="store_true", help="evaluation only")
@@ -228,10 +232,11 @@ if __name__ == "__main__":
     parser.add_argument('--use_wandb', default=True, action="store_true", help='whether to use wandb')
     parser.add_argument('--wb_name', type=str, default='test', help='')
     parser.add_argument('--report_name', type=str)
-    parser.add_argument('--use_kg', default=False)
     # ZS: zeroshot
     # random: random sampling
     # avg: text embeddings average
+    # nl_att: not learnable attention
     parser.add_argument('--mode', type=str, default='ZS', help='mode \in [0, 1, 2, 3, 4, 5]')
+    parser.add_argument('--dataset', default='ImageNet', type=str)
     args = parser.parse_args()
     main(args)

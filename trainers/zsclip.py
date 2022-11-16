@@ -1,6 +1,7 @@
 import os
 import pdb
 import torch
+import pickle
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.cuda.amp import GradScaler, autocast
@@ -48,7 +49,7 @@ class ZeroshotCLIP(TrainerX):
         print(f"Loading CLIP (backbone: {cfg.MODEL.BACKBONE.NAME})")
         clip_model = load_clip_to_cpu(cfg) 
         self.clip_model = clip_model.float().to("cuda")    
-
+        self.emb_root = '/mlainas/KGPrompt_data/imagenet'
         
         class LowDimer(nn.Module):
             def __init__(self):
@@ -70,14 +71,30 @@ class ZeroshotCLIP(TrainerX):
         else :
             low_dimer.half()
         '''
-        
-    
+        # added, 해당 seed, dataset, shot에 해당하는 embedding이 뽑혀있지 않다면 뽑고, 아니면 불러온다.
+        root = os.path.abspath(os.path.expanduser(cfg.DATASET.ROOT))
+        self.dataset_dir = os.path.join(root, cfg.DATASET.NAME.lower())
+        preprocessed = os.path.join(self.dataset_dir, "preprocessed.pkl")
+        preprocessed_emb = os.path.join(self.dataset_dir, "preprocessed_emb.pkl")
+        if os.path.exists(preprocessed_emb):
+            # 만약 seed, dataset, shot에 해당하는 임베딩 파일이 존재한다면
+            # 이걸 load하고
+            pass
+        else:
+            # 아니면 파일을 뽑아 pkl형태로 저장한다.
+            # 그런데 해당 seed, dataset, shot에 해당하는 raw_data의 피클 파일이 존재한다면
+            if os.path.exists(preprocessed):
+                print(f"Loading preprocessed few-shot data from {preprocessed}")
+                with open(preprocessed, "rb") as file:
+                    data = pickle.load(file)
+                    train = data["train"]
+                # pdb.set_trace()
         low_dimer.to(self.device)
         clip_model.to(self.device)
 
         self.img_lowdim_trf = low_dimer.img_lowdim_trf
         self.txt_lowdim_trf = low_dimer.txt_lowdim_trf
-        self.conceptnet_sentences = torch.load("conceptnet_features.pkl")
+        self.conceptnet_sentences = torch.load(f"{self.emb_root}/conceptnet_features.pkl")
         self.optim = build_optimizer(low_dimer, cfg.OPTIM )
         #import pdb; pdb.set_trace()
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
@@ -131,14 +148,14 @@ class ZeroshotCLIP(TrainerX):
     
     
     def model_inference(self, image_features):
-        
+        # 일단 이미지 피쳐는 뽑는 걸로 해보자.. 
+        image_features = self.clip_model.encode_image(image_features)
         logit_scale = self.clip_model.logit_scale.exp()    
 
         if self.mode == 'weight_sum':         
             
             #image_features = image_features / image_features.norm(dim=-1, keepdim=True)
             M = image_features@self.conceptnet_sentences.view(-1,512).T
-            # pdb.set_trace()
             M = M.view(-1,1000,838) #Nx1000x838
             M += self.mask_sequence.unsqueeze(0)                                  
             M = F.softmax(M, dim=-1) # Nx1000x838
@@ -179,8 +196,8 @@ class ZeroshotCLIP(TrainerX):
             M = x_low@txt_low.T                                             # Nx838000
             M = M.view(-1,1000,838)                                        # Nx1000x838
             M += self.mask_sequence.unsqueeze(0)
-            #M = F.gumbel_softmax(M,tau=1.0, dim=-1, hard=True)              # Nx1000x838
-            M = F.softmax(M, dim=-1)              # Nx1000x838
+            M = F.gumbel_softmax(M,tau=1.0, dim=-1, hard=True)              # Nx1000x838
+            #M = F.softmax(M, dim=-1)              # Nx1000x838
             M = torch.bmm(M.permute((1,0,2)),self.conceptnet_sentences) # Nx1000x512
             M = M.permute((1,2,0)) # Nx512x1000
             x = image_features/image_features.norm(dim=-1, keepdim=True)
