@@ -121,6 +121,8 @@ class ZeroshotCLIP(TrainerX):
             text_features = torch.stack(prompts).to(self.device)
             
         if self.mode == 'average':
+            print("##############################################")
+            pdb.set_trace()
             text_features = torch.stack([cf.mean(dim=0) for cf in self.conceptnet_sentences] )
 
         if self.mode == 'attention' or self.mode == 'weight_sum':
@@ -149,68 +151,51 @@ class ZeroshotCLIP(TrainerX):
     
     def model_inference(self, image_features):
         # 일단 이미지 피쳐는 뽑는 걸로 해보자.. 
-        image_features = self.clip_model.encode_image(image_features)
+        # image_features = self.clip_model.encode_image(image_features)
         logit_scale = self.clip_model.logit_scale.exp()    
-
+        image_features = image_features/image_features.norm(dim=-1, keepdim=True)
         if self.mode == 'weight_sum':         
-            
-            #image_features = image_features / image_features.norm(dim=-1, keepdim=True)
-            M = image_features@self.conceptnet_sentences.view(-1,512).T
+            text_features = self.conceptnet_sentences / self.conceptnet_sentences.norm(dim=-1, keepdim=True)
+            M = image_features @ self.conceptnet_sentences.view(-1,512).T
             M = M.view(-1,1000,838) #Nx1000x838
-            M += self.mask_sequence.unsqueeze(0)                                  
-            M = F.softmax(M, dim=-1) # Nx1000x838
+            M += self.mask_sequence.unsqueeze(0)
+            M = F.softmax(M, dim=-1)              # Nx1000x838
             M = torch.bmm(M.permute((1,0,2)),self.conceptnet_sentences) # Nx1000x512
             M = M.permute((1,2,0)) # Nx512x1000
-            x = image_features/image_features.norm(dim=-1, keepdim=True)
-            M = M / M.norm(dim=-1, keepdim=True)
-            sims = x@M
-            
-            #extract diagonal
-            ret = []
-            for i in range(x.shape[0]) : #for .. N
-                ret.append(sims[i,i,:]) #N_C
-            ret  = torch.stack(ret).to("cuda") #NxN_C
-            logits = ret
+            M = M / M.norm(dim=1, keepdim=True)
+            sims = torch.einsum('ij,ijk->ik', image_features, M)
 
-    
-            '''
-            logits = torch.zeros(image_features.shape[0], len(self.classnames))
-            for i, c in enumerate(self.classnames):
-                class_text_features = self.class_emb_dict[c] # N D
-                class_text_features = class_text_features.float() # N D
-                class_image_logit = image_features @ class_text_features.t() # B D X D N -> B 개의 이미지에 대해 한 개 클래스의 모든 문장의 유사도를 통해 얻은 logit
-                class_image_prob = F.softmax(class_image_logit, dim=1) # B N
-                class_image_text_feature = class_image_prob @ class_text_features # B N X N D -> B D
-                class_image_text_sim = torch.einsum('bd,bd->b', image_features, class_image_text_feature)
-                logits[:, i] = class_image_text_sim.t()
-            # text_features = torch.stack(text_features, 0)
-            # logits = logit_scale * image_features @ text_features.t()   
-            '''
+            logits = logit_scale*sims
+
+            return logits
 
         elif self.mode == 'attention' :
 
             # nn.linear에 각 prompt들을 다 forward시켜서, lower dimension embedding을 구해야함. 
-            # 근데 이거 offline으로 해두면, 학습이 되는게 아니라서 무조건 여기서 해야함.
+            # 근데 이거 offline으로 해두면, 학습이 되는게 아니라서 무조건 여기서 해야함.        
+            image_features = image_features/image_features.norm(dim=-1, keepdim=True)
+
             x_low = self.img_lowdim_trf(image_features)
             txt_low = self.txt_lowdim_trf(self.conceptnet_sentences.view(-1,512))  # 838000x128
+            #prompt_low = self.prompt_lowdim(self.conceptnet_sentences)
+
             M = x_low@txt_low.T                                             # Nx838000
             M = M.view(-1,1000,838)                                        # Nx1000x838
             M += self.mask_sequence.unsqueeze(0)
-            M = F.gumbel_softmax(M,tau=1.0, dim=-1, hard=True)              # Nx1000x838
-            #M = F.softmax(M, dim=-1)              # Nx1000x838
+           
+            #M = F.gumbel_softmax(M,tau=1.0, dim=-1, hard=True)              # Nx1000x838
+            M = F.softmax(M, dim=-1)              # Nx1000x838
+           
             M = torch.bmm(M.permute((1,0,2)),self.conceptnet_sentences) # Nx1000x512
+            #M = torch.bmm(M.permute((1,0,2)),prompt_low) # Nx1000x512
+            
             M = M.permute((1,2,0)) # Nx512x1000
-            x = image_features/image_features.norm(dim=-1, keepdim=True)
-            M = M / M.norm(dim=-1, keepdim=True)
-            sims = x@M
+            # x = image_features/image_features.norm(dim=-1, keepdim=True)
 
-            #extract diagonal
-            ret = []
-            for i in range(x.shape[0]) : #for .. N
-                ret.append(sims[i,i,:]) #N_C
-            ret  = torch.stack(ret).to("cuda") #NxN_C
+            M = M / M.norm(dim=1, keepdim=True)
+            sims = torch.einsum('ij,ijk->ik',image_features,M)
 
-            logits = logit_scale*ret
+            logits = logit_scale*sims
             
             return logits
         

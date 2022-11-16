@@ -1,3 +1,4 @@
+import os
 import pdb
 import time
 import numpy as np
@@ -11,7 +12,7 @@ import pandas as pd
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 
-from dassl.data import DataManager
+from dassl.data import DataManager, build_data_loader
 from dassl.optim import build_optimizer, build_lr_scheduler
 from dassl.utils import (
     MetricMeter, AverageMeter, tolist_if_not, count_num_param, load_checkpoint,
@@ -20,9 +21,21 @@ from dassl.utils import (
 )
 from dassl.modeling import build_head, build_backbone
 from dassl.evaluation import build_evaluator
-
-from data_load import CustomImageDataset
 from torch.utils.data import DataLoader
+from torch.utils.data import Dataset
+from torchvision.transforms import ToTensor
+
+class CustomImageDataset(Dataset):
+    def __init__(self, image_feat , label):
+        self.label= torch.Tensor(label)
+        self.img_feat = torch.Tensor(image_feat)
+        self.len = self.label.shape[0]
+
+    def __len__(self):
+        return self.len
+        
+    def __getitem__(self,idx):        
+        return self.img_feat[idx], self.label[idx]
 
 
 class SimpleNet(nn.Module):
@@ -387,6 +400,44 @@ class SimpleTrainer(TrainerBase):
 
         dm = DataManager(self.cfg)
 
+        # 만약 npy 파일이 없다면
+        dataset_name = self.cfg.DATASET.NAME.lower()
+        num_shot = self.cfg.DATASET.NUM_SHOTS
+        seed = self.cfg.SEED
+        emb_root = f'/mlainas/KGPrompt_data/{dataset_name}'
+
+
+        train_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_train.npy'
+        valid_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_valid.npy'
+        print(train_dir)
+        print(valid_dir)
+        if os.path.exists(train_dir):
+            data_train = np.load(train_dir)
+            image_feat_train = data_train[:, :-1]
+            label_train = data_train[:,-1:]
+
+        else:
+            # 해당 데이터셋의 shot, seed에 피쳐가 없다면
+            # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
+            pass
+
+        train_data = CustomImageDataset(image_feat_train, label_train)
+
+        if os.path.exists(valid_dir):
+            data_val = np.load(valid_dir)
+            image_feat_val = data_val[:, :-1]
+            label_valid = data_val[:,-1:]
+
+        else:
+            # 해당 데이터셋의 shot, seed에 피쳐가 없다면
+            # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
+            pass
+        valid_data = CustomImageDataset(image_feat_val, label_valid)
+
+        
+        self.train_dataloader = DataLoader(train_data, batch_size=64, shuffle=True)
+        self.valid_dataloader = DataLoader(valid_data, batch_size=100, shuffle=True)
+        
         self.train_loader_x = dm.train_loader_x
         self.train_loader_u = dm.train_loader_u  # optional, can be None
         self.val_loader = dm.val_loader  # optional, can be None
@@ -492,11 +543,11 @@ class SimpleTrainer(TrainerBase):
         if split is None:
             split = self.cfg.TEST.SPLIT
         # added
-        if split == "val" and self.val_loader is not None:
-            data_loader = self.val_loader #val_loader
+        if split == "val" and self.valid_dataloader is not None:
+            data_loader = self.valid_dataloader #val_loader
         else:
             split = "test"  # in case val_loader is None
-            data_loader = self.val_loader   #val_loader
+            data_loader = self.valid_dataloader   #val_loader
 
         print(f"Evaluate on the *{split}* set")
 
@@ -512,53 +563,13 @@ class SimpleTrainer(TrainerBase):
             self.write_scalar(tag, v, self.epoch)
 
         return list(results.values())[0]
-
-    def my_test(self, split=None, class_num=None, sent=None, raw_sent=None):
-        """A generic testing pipeline."""
-        self.set_model_mode("eval")
-        self.evaluator.reset()
-
-        if split is None:
-            split = self.cfg.TEST.SPLIT
-
-        if split == "val" and self.val_loader is not None:
-            data_loader = self.val_loader
-        else:
-            split = "test"  # in case val_loader is None
-            data_loader = self.val_loader
-
-        print(f"Evaluate on the *{split}* set")
-
-        original_text_feat = self.text_features[class_num]
-        test_text_feat = self.clip_model.encode_text(sent)
-        test_text_feat = test_text_feat / test_text_feat.norm(dim=-1, keepdim=True)
-        self.text_features[class_num] = test_text_feat
-        for batch_idx, batch in enumerate(tqdm(data_loader)):
-            input, label = self.parse_batch_test(batch)
-            output = self.model_inference(input)
-            self.evaluator.process(output, label)
-        self.text_features[class_num] = original_text_feat
-
-        if class_num is None:
-            results = self.evaluator.evaluate(class_num=class_num, sent=sent, raw_sent=raw_sent)
-        else:
-            results, correct, total = self.evaluator.evaluate(class_num=class_num, sent=sent, raw_sent=raw_sent)
-
-        for k, v in results.items():
-            tag = f"{split}/{k}"
-            self.write_scalar(tag, v, self.epoch)
-
-        if class_num is None:
-            return list(results.values())[0]
-        else:
-            return list(results.values())[0], correct, total
         
     def model_inference(self, input):
         return self.model(input)
 
     def parse_batch_test(self, batch):
-        input = batch['img']
-        label = batch['label']
+        input = batch[0]
+        label = batch[1]
         #input = batch["img"]
         #label = batch["label"]
 
@@ -728,10 +739,10 @@ class TrainerX(SimpleTrainer):
         losses = MetricMeter()
         batch_time = AverageMeter()
         data_time = AverageMeter()
-        self.num_batches = len(self.train_loader_x)
+        self.num_batches = len(self.train_dataloader) #원래 self.train_loader_x
 
         end = time.time()
-        for self.batch_idx, batch in enumerate(self.train_loader_x):
+        for self.batch_idx, batch in enumerate(self.train_dataloader):
             data_time.update(time.time() - end)
             loss_summary = self.forward_backward(batch)
             batch_time.update(time.time() - end)
@@ -766,12 +777,12 @@ class TrainerX(SimpleTrainer):
             end = time.time()
 
     def parse_batch_train(self, batch):
-        input = batch["img"]
-        label = batch["label"]
-        domain = batch["domain"]
+        input = batch[0]
+        label = batch[1]
+        # domain = batch["domain"]
 
         input = input.to(self.device)
         label = label.to(self.device)
-        domain = domain.to(self.device)
+        # domain = domain.to(self.device)
 
-        return input, label, domain
+        return input, label

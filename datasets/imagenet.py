@@ -54,7 +54,7 @@ class ImageNet(DatasetBase):
                 print(f"Saving preprocessed few-shot data to {preprocessed}")
                 with open(preprocessed, "wb") as file:
                     pickle.dump(data, file, protocol=pickle.HIGHEST_PROTOCOL)
-
+        self.train = train
         subsample = cfg.DATASET.SUBSAMPLE_CLASSES
         train, test = OxfordPets.subsample_classes(train, test, subsample=subsample)
 

@@ -53,6 +53,7 @@ def print_args(args, cfg):
 
 
 def reset_cfg(cfg, args):
+    # pdb.set_trace()
     if args.root:
         cfg.DATASET.ROOT = args.root
 
