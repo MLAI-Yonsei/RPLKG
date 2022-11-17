@@ -57,6 +57,7 @@ class ZeroshotCLIP(TrainerX):
 
                 self.img_lowdim_trf = nn.Linear(512,512)
                 self.txt_lowdim_trf = nn.Linear(512,512)
+                self.prompt_lowdim = nn.Linear(512,512)
 
             def forward(self,x):
                 return x #This is dummy forward.
@@ -89,11 +90,14 @@ class ZeroshotCLIP(TrainerX):
                     data = pickle.load(file)
                     train = data["train"]
                 # pdb.set_trace()
+
         low_dimer.to(self.device)
         clip_model.to(self.device)
 
         self.img_lowdim_trf = low_dimer.img_lowdim_trf
         self.txt_lowdim_trf = low_dimer.txt_lowdim_trf
+        self.prompt_lowdim = low_dimer.prompt_lowdim
+        
         self.conceptnet_sentences = torch.load(f"{self.emb_root}/conceptnet_features.pkl")
         self.optim = build_optimizer(low_dimer, cfg.OPTIM )
         #import pdb; pdb.set_trace()
@@ -116,16 +120,16 @@ class ZeroshotCLIP(TrainerX):
             with torch.no_grad():
                 text_features = clip_model.encode_text(prompts)
 
-        if self.mode == 'random':
+        elif self.mode == 'random':
             prompts = [c[random.randint(0,c.shape[0]-1)] for c in self.conceptnet_sentences]
             text_features = torch.stack(prompts).to(self.device)
             
-        if self.mode == 'average':
+        elif self.mode == 'average':
             print("##############################################")
             pdb.set_trace()
             text_features = torch.stack([cf.mean(dim=0) for cf in self.conceptnet_sentences] )
 
-        if self.mode == 'attention' or self.mode == 'weight_sum':
+        else:
             conceptnet_sentences = self.conceptnet_sentences
             original_length = []
             max_num = 0
@@ -148,59 +152,73 @@ class ZeroshotCLIP(TrainerX):
 
         self.text_features = text_features / text_features.norm(dim=-1, keepdim=True)
     
-    
+    def attention_parallel(self, image, text, mask, max_len:int, mode:str):
+        
+        if mode == 'weight_sum':
+            image_features =  image
+            text_features = text
+        else:
+            image_features =  self.img_lowdim_trf(image)
+            text_features = self.txt_lowdim_trf(text)
+            prompt_fc = self.prompt_lowdim(text)
+
+
+        M = image_features @ text_features.view(-1,512).T #830000x1000
+        M = M.view(-1,1000, max_len) #Nx1000x838
+        M += mask.unsqueeze(0)
+        
+        if mode == 'gumbel':
+            M = F.gumbel_softmax(M, tau=1.0, hard=True)
+        else:
+            M = F.softmax(M, dim=-1)  # Nx1000x838    
+
+        M = torch.bmm(M.permute((1,0,2)), text) # Nx1000x512
+        M = M.permute((1,2,0)) # Nx512x1000
+        M = M / M.norm(dim=1, keepdim=True)
+        sims = torch.einsum('ij,ijk->ik', image_features, M)
+        return sims
+
+
+
     def model_inference(self, image_features):
-        # 일단 이미지 피쳐는 뽑는 걸로 해보자.. 
-        # image_features = self.clip_model.encode_image(image_features)
-        logit_scale = self.clip_model.logit_scale.exp()    
-        image_features = image_features/image_features.norm(dim=-1, keepdim=True)
+        
+        logit_scale = self.clip_model.logit_scale.exp() 
+        image_features_norm = image_features / image_features.norm(dim=-1, keepdim=True)
+
         if self.mode == 'weight_sum':         
-            text_features = self.conceptnet_sentences / self.conceptnet_sentences.norm(dim=-1, keepdim=True)
-            M = image_features @ self.conceptnet_sentences.view(-1,512).T
-            M = M.view(-1,1000,838) #Nx1000x838
-            M += self.mask_sequence.unsqueeze(0)
-            M = F.softmax(M, dim=-1)              # Nx1000x838
-            M = torch.bmm(M.permute((1,0,2)),self.conceptnet_sentences) # Nx1000x512
-            M = M.permute((1,2,0)) # Nx512x1000
-            M = M / M.norm(dim=1, keepdim=True)
-            sims = torch.einsum('ij,ijk->ik', image_features, M)
-
+            mask = self.mask_sequence
+            max = self.max_num
+            m = self.mode   
+            text_features_norm = self.conceptnet_sentences / self.conceptnet_sentences.norm(dim=-1, keepdim=True) #normalize? or not
+            sims = self.attention_parallel(image_features_norm,  self.conceptnet_sentences, mask, max, m)
             logits = logit_scale*sims
-
             return logits
 
         elif self.mode == 'attention' :
-
+            
+            mask = self.mask_sequence
+            max = self.max_num
+            m = self.mode   
+            sims = self.attention_parallel(image_features_norm, self.conceptnet_sentences, mask, max, m )
+            logits = logit_scale*sims
+            
+            return logits
+        
+        elif self.mode == 'gumbel' :
             # nn.linear에 각 prompt들을 다 forward시켜서, lower dimension embedding을 구해야함. 
             # 근데 이거 offline으로 해두면, 학습이 되는게 아니라서 무조건 여기서 해야함.        
-            image_features = image_features/image_features.norm(dim=-1, keepdim=True)
+            mask = self.mask_sequence
+            max = self.max_num
+            m = self.mode   
+            text_features_norm = self.conceptnet_sentences / self.conceptnet_sentences.norm(dim=-1, keepdim=True) #normalize? or not
 
-            x_low = self.img_lowdim_trf(image_features)
-            txt_low = self.txt_lowdim_trf(self.conceptnet_sentences.view(-1,512))  # 838000x128
-            #prompt_low = self.prompt_lowdim(self.conceptnet_sentences)
-
-            M = x_low@txt_low.T                                             # Nx838000
-            M = M.view(-1,1000,838)                                        # Nx1000x838
-            M += self.mask_sequence.unsqueeze(0)
-           
-            #M = F.gumbel_softmax(M,tau=1.0, dim=-1, hard=True)              # Nx1000x838
-            M = F.softmax(M, dim=-1)              # Nx1000x838
-           
-            M = torch.bmm(M.permute((1,0,2)),self.conceptnet_sentences) # Nx1000x512
-            #M = torch.bmm(M.permute((1,0,2)),prompt_low) # Nx1000x512
-            
-            M = M.permute((1,2,0)) # Nx512x1000
-            # x = image_features/image_features.norm(dim=-1, keepdim=True)
-
-            M = M / M.norm(dim=1, keepdim=True)
-            sims = torch.einsum('ij,ijk->ik',image_features,M)
-
+            sims = self.attention_parallel(image_features_norm, self.conceptnet_sentences, mask, max, m )
             logits = logit_scale*sims
             
             return logits
         
         else:
-            logits = image_features @ self.text_features.T
+            logits = image_features_norm @ self.text_features.T
         # added
         
         logits = logit_scale * logits  
