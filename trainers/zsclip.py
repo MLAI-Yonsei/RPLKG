@@ -179,7 +179,7 @@ class ZeroshotCLIP(TrainerX):
         else:
             image_features =  self.img_lowdim_trf(image)
             text_features = self.txt_lowdim_trf(text)
-            prompt_fc = self.prompt_lowdim(text)
+            text = self.prompt_lowdim(text)
 
 
         M = image_features @ text_features.view(-1,512).T #830000x1000
@@ -191,7 +191,7 @@ class ZeroshotCLIP(TrainerX):
         else:
             M = F.softmax(M, dim=-1)  # Nx1000x838    
 
-        M = torch.bmm(M.permute((1,0,2)), prompt_fc) # Nx1000x512
+        M = torch.bmm(M.permute((1,0,2)), text) # Nx1000x512
         M = M.permute((1,2,0)) # Nx512x1000
         M = M / M.norm(dim=1, keepdim=True)
         sims = torch.einsum('ij,ijk->ik', image, M)
