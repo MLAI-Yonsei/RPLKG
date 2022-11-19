@@ -17,6 +17,7 @@ import pandas as pd
 import tqdm
 import random
 import wandb
+import pickle
 
 from dassl.utils import (
     MetricMeter, AverageMeter, tolist_if_not, count_num_param, load_checkpoint,
@@ -78,8 +79,10 @@ class ZeroshotCLIP(TrainerX):
         classnames = self.dm.dataset.classnames
         self.classnames = classnames
         print(f"Loading CLIP (backbone: {cfg.MODEL.BACKBONE.NAME})")
-        clip_model = load_clip_to_cpu(cfg) 
+        clip_model = load_clip_to_cpu(cfg)        
         self.clip_model = clip_model.float().to("cuda")    
+        self.emb_root = '/mlainas/KGPrompt_data/imagenet'
+       
 
         class LowDimer(nn.Module):
             def __init__(self):
@@ -113,8 +116,26 @@ class ZeroshotCLIP(TrainerX):
         else :
             low_dimer.half()
         '''
-        
-    
+               
+        # added, 해당 seed, dataset, shot에 해당하는 embedding이 뽑혀있지 않다면 뽑고, 아니면 불러온다.
+        root = os.path.abspath(os.path.expanduser(cfg.DATASET.ROOT))
+        self.dataset_dir = os.path.join(root, cfg.DATASET.NAME.lower())
+        preprocessed = os.path.join(self.dataset_dir, "preprocessed.pkl")
+        preprocessed_emb = os.path.join(self.dataset_dir, "preprocessed_emb.pkl")
+        if os.path.exists(preprocessed_emb):
+            # 만약 seed, dataset, shot에 해당하는 임베딩 파일이 존재한다면
+            # 이걸 load하고
+            pass       
+        else:
+        # 아니면 파일을 뽑아 pkl형태로 저장한다.
+        # 그런데 해당 seed, dataset, shot에 해당하는 raw_data의 피클 파일이 존재한다면
+            if os.path.exists(preprocessed):
+                print(f"Loading preprocessed few-shot data from {preprocessed}")
+                with open(preprocessed, "rb") as file:
+                    data = pickle.load(file)
+                    train = data["train"]
+                # pdb.set_trace()
+
         low_dimer.to(self.device)
         clip_model.to(self.device)
 
@@ -123,7 +144,7 @@ class ZeroshotCLIP(TrainerX):
         self.prompt_lowdim = low_dimer.prompt_dim
         self.img_lowdim_trf2 = low_dimer.img_lowdim_trf2
         
-        self.conceptnet_sentences = torch.load("conceptnet_features.pkl")
+        self.conceptnet_sentences = torch.load("/mlainas/yewon/KGPrompt_data/imagenet/conceptnet_features.pkl")
         self.optim = build_optimizer(low_dimer, cfg.OPTIM )
         #import pdb; pdb.set_trace()
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
