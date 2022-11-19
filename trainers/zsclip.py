@@ -144,7 +144,7 @@ class ZeroshotCLIP(TrainerX):
         self.prompt_lowdim = low_dimer.prompt_dim
         self.img_lowdim_trf2 = low_dimer.img_lowdim_trf2
         
-        self.conceptnet_sentences = torch.load("/mlainas/yewon/KGPrompt_data/imagenet/conceptnet_features.pkl")
+        self.conceptnet_sentences = torch.load(f"{self.emb_root}/conceptnet_features.pkl")
         self.optim = build_optimizer(low_dimer, cfg.OPTIM )
         #import pdb; pdb.set_trace()
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
