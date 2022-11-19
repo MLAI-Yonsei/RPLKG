@@ -1,54 +1,28 @@
 import os
-import pdb
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.cuda.amp import GradScaler, autocast
 import torch.optim as optim
-import numpy as np
-import tqdm
 from dassl.metrics import compute_accuracy
 from dassl.engine import TRAINER_REGISTRY, TrainerX
 from dassl.optim import build_optimizer, build_lr_scheduler
 import time
 from clip import clip
-from clip.model import convert_weights
-import pandas as pd
-import tqdm
 import random
 import wandb
 import pickle
 
 from dassl.utils import (
-    MetricMeter, AverageMeter, tolist_if_not, count_num_param, load_checkpoint,
-    save_checkpoint, mkdir_if_missing, resume_from_checkpoint,
-    load_pretrained_weights
-)
+    MetricMeter, AverageMeter, mkdir_if_missing)
+    
 import pdb
 import time
-import numpy as np
 import os.path as osp
 import datetime
-from collections import OrderedDict
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import pandas as pd
 from tqdm import tqdm
-from torch.utils.tensorboard import SummaryWriter
-
-from dassl.data import DataManager
 from dassl.optim import build_optimizer, build_lr_scheduler
-from dassl.utils import (
-    MetricMeter, AverageMeter, tolist_if_not, count_num_param, load_checkpoint,
-    save_checkpoint, mkdir_if_missing, resume_from_checkpoint,
-    load_pretrained_weights
-)
-from dassl.modeling import build_head, build_backbone
-from dassl.evaluation import build_evaluator
 
-from data_load import CustomImageDataset
-from torch.utils.data import DataLoader
 from .coop import load_clip_to_cpu
 from .imagenet_templates import IMAGENET_TEMPLATES, IMAGENET_TEMPLATES_SELECT
 
@@ -229,26 +203,7 @@ class ZeroshotCLIP(TrainerX):
         logit_scale = self.clip_model.logit_scale.exp() 
         image_features_norm = image_features / image_features.norm(dim=-1, keepdim=True)
 
-        if self.mode == 'weight_sum':         
-            mask = self.mask_sequence
-            max = self.max_num
-            m = self.mode   
-            text_features_norm = self.conceptnet_sentences / self.conceptnet_sentences.norm(dim=-1, keepdim=True) #normalize? or not
-            sims = self.attention_parallel(image_features_norm,  self.conceptnet_sentences, mask, max, m)
-            logits = logit_scale*sims
-            return logits
-
-        elif self.mode == 'attention' :
-            
-            mask = self.mask_sequence
-            max = self.max_num
-            m = self.mode   
-            sims = self.attention_parallel(image_features_norm, self.conceptnet_sentences, mask, max, m )
-            logits = logit_scale*sims
-            
-            return logits
-        
-        elif self.mode == 'gumbel' :
+        if self.mode == 'gumbel' or self.mode == 'attention' or  self.mode == 'weight_sum' :
             # nn.linear에 각 prompt들을 다 forward시켜서, lower dimension embedding을 구해야함. 
             # 근데 이거 offline으로 해두면, 학습이 되는게 아니라서 무조건 여기서 해야함.        
             mask = self.mask_sequence
@@ -257,17 +212,13 @@ class ZeroshotCLIP(TrainerX):
             text_features_norm = self.conceptnet_sentences / self.conceptnet_sentences.norm(dim=-1, keepdim=True) #normalize? or not
 
             sims = self.attention_parallel(image_features_norm, self.conceptnet_sentences, mask, max, m )
-            logits = logit_scale*sims
-            
-            return logits
-
+            logits = logit_scale*sims 
+            return logits       
         
         else:
             logits = image_features_norm @ self.text_features.T
-        # added
         
         logits = logit_scale * logits  
-
         return logits
     
     def before_train(self):
