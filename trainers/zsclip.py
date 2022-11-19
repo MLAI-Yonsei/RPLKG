@@ -299,11 +299,11 @@ class ZeroshotCLIP(TrainerX):
         if split is None:
             split = self.cfg.TEST.SPLIT
         # added
-        if split == "val" and self.val_dataloader is not None:#val_loader
-            data_loader = self.val_dataloader #val_loader
+        if split == "val" and self.valid_dataloader is not None:#val_loader
+            data_loader = self.valid_dataloader #val_loader
         else:
             split = "test"  # in case val_loader is None
-            data_loader = self.val_dataloader   #val_loader
+            data_loader = self.valid_dataloader   #val_loader
 
         print(f"Evaluate on the *{split}* set")
 
