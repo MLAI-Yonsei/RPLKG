@@ -12,6 +12,7 @@ from clip import clip
 import random
 import wandb
 import pickle
+import math
 
 from dassl.utils import (
     MetricMeter, AverageMeter, mkdir_if_missing)
@@ -56,23 +57,20 @@ class ZeroshotCLIP(TrainerX):
         clip_model = load_clip_to_cpu(cfg)        
         self.clip_model = clip_model.float().to("cuda")    
         self.emb_root = '/mlainas/KGPrompt_data/imagenet'
-       
 
         class LowDimer(nn.Module):
             def __init__(self):
                 super().__init__()
+                self.dropout = cfg.TRAINER.MY_MODEL.DROPOUT
 
                 #self.img_lowdim_trf = nn.Linear(512,512)
-                self.img_lowdim_trf = nn.Sequential( nn.Dropout(0.4) , nn.Linear(512,512) )
+                self.img_lowdim_trf = nn.Sequential( nn.Dropout(self.dropout) , nn.Linear(512,512) )
 
                 #self.txt_lowdim_trf = nn.Linear(512,512)
-                self.txt_lowdim_trf = nn.Sequential( nn.Dropout(0.4) , nn.Linear(512,512) )
+                self.txt_lowdim_trf = nn.Sequential( nn.Dropout(self.dropout) , nn.Linear(512,512) )
 
                 #self.prompt_dim = nn.Linear(512,512)
-                self.prompt_dim = nn.Sequential( nn.Dropout(0.4) , nn.Linear(512,512) )
-
-                self.img_lowdim_trf2 = nn.Linear(512,512)
-                self.img_lowdim_trf2 = nn.Linear(512,512)
+                self.prompt_dim = nn.Sequential( nn.Dropout(self.dropout) , nn.Linear(512,512) )
 
 
             def forward(self,x):
@@ -116,11 +114,9 @@ class ZeroshotCLIP(TrainerX):
         self.img_lowdim_trf = low_dimer.img_lowdim_trf
         self.txt_lowdim_trf = low_dimer.txt_lowdim_trf
         self.prompt_lowdim = low_dimer.prompt_dim
-        self.img_lowdim_trf2 = low_dimer.img_lowdim_trf2
         
         self.conceptnet_sentences = torch.load(f"{self.emb_root}/conceptnet_features.pkl")
         self.optim = build_optimizer(low_dimer, cfg.OPTIM )
-        #import pdb; pdb.set_trace()
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
         self.scaler = GradScaler() if cfg.TRAINER.COOP.PREC == "amp" else None
  
@@ -187,7 +183,7 @@ class ZeroshotCLIP(TrainerX):
         M += mask.unsqueeze(0)
         
         if mode == 'gumbel':
-            M = F.gumbel_softmax(M, tau=1.0, hard=True)
+            M = F.gumbel_softmax(M, tau=self.temp, hard=True)
         else:
             M = F.softmax(M, dim=-1)  # Nx1000x838    
 
@@ -249,6 +245,17 @@ class ZeroshotCLIP(TrainerX):
         end = time.time()
         for self.batch_idx, batch in enumerate(self.train_dataloader): #edited self.train_loader_x
             data_time.update(time.time() - end)
+            
+            t = self.epoch
+            annealing_epoch =  self.cfg.TRAINER.MY_MODEL.ANNEAL_EPOCH 
+            max_temp = self.cfg.TRAINER.MY_MODEL.max_temp 
+            min_temp = self.cfg.TRAINER.MY_MODEL.min_temp 
+
+            a = max_temp
+            b = math.log(min_temp/max_temp)/annealing_epoch
+
+            self.temp = a* math.exp(b*t)
+
             loss_summary = self.forward_backward(batch)
             batch_time.update(time.time() - end)
             losses.update(loss_summary)

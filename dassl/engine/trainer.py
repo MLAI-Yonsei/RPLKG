@@ -409,6 +409,7 @@ class SimpleTrainer(TrainerBase):
 
         train_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_train.npy'
         valid_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_valid.npy'
+        
         print(train_dir)
         print(valid_dir)
         if os.path.exists(train_dir):

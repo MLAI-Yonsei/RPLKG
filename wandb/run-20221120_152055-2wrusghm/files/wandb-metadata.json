@@ -1,0 +1,41 @@
+{
+    "os": "Linux-5.4.0-122-generic-x86_64-with-glibc2.17",
+    "python": "3.8.12",
+    "heartbeatAt": "2022-11-20T15:20:56.343876",
+    "startedAt": "2022-11-20T15:20:55.532313",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "gpu_count": 8,
+    "cpu_count": 128,
+    "cuda": null,
+    "args": [
+        "--root",
+        "/data/yewon/DATA",
+        "--seed",
+        "1",
+        "--trainer",
+        "ZeroshotCLIP",
+        "--dataset-config-file",
+        "configs/datasets/imagenet.yaml",
+        "--config-file",
+        "configs/trainers/CoOp/vit_b16.yaml",
+        "--output-dir",
+        "output/zs_gumbel_im_test_1/2022-11-20_15-20/imagenet/shots_16/ZeroshotCLIP/vit_b16/seed",
+        "--mode",
+        "attention",
+        "--dropout",
+        "0.1"
+    ],
+    "state": "running",
+    "program": "train.py",
+    "codePath": "train.py",
+    "git": {
+        "remote": "https://github.com/teang1995/KGPrompt.git",
+        "commit": "0a6803ab2a5f2322f955a71647d48d359982059d"
+    },
+    "email": null,
+    "root": "/mlainas/yewon/CoOp/CoOp/KGPrompt",
+    "host": "super",
+    "username": "yeyewon",
+    "executable": "/home/yeyewon/anaconda3/envs/torch/bin/python"
+}

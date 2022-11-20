@@ -1,0 +1,41 @@
+Loading trainer: ZeroshotCLIP
+Loading dataset: ImageNet
+Loading preprocessed few-shot data from /data/yewon/DATA/imagenet/split_fewshot/shot_16-seed_1.pkl
+Building transform_train
++ random resized crop (size=(224, 224), scale=(0.08, 1.0))
++ random flip
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+Building transform_test
++ resize the smaller edge to 224
++ 224x224 center crop
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+---------  --------
+Dataset    ImageNet
+# classes  1,000
+# train_x  16,000
+# val      50,000
+# test     50,000
+---------  --------
+/mlainas/KGPrompt_data/imagenet/shot_16_seed_1_train.npy
+/mlainas/KGPrompt_data/imagenet/shot_16_seed_1_valid.npy
+Loading CLIP (backbone: ViT-B/16)
+Loading preprocessed few-shot data from /data/yewon/DATA/imagenet/preprocessed.pkl
+Loading evaluator: Classification
+No checkpoint found, train from scratch
+Initialize tensorboard (log_dir=output/zs_gumbel_im_test_1/2022-11-20_19-20/imagenet/shots_16/ZeroshotCLIP/vit_b16/seed/tensorboard)
+Traceback (most recent call last):
+  File "train.py", line 274, in <module>
+    args = parser.parse_args()
+  File "train.py", line 198, in main
+    if not args.no_train:
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/dassl/engine/trainer.py", line 479, in train
+    super().train(self.start_epoch, self.max_epoch)
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/dassl/engine/trainer.py", line 269, in train
+    self.run_epoch()
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/trainers/zsclip.py", line 252, in run_epoch
+    min_temp = self.cfg.TRAINER.MY_MODEL.min_temp = 0.01
+  File "/home/yeyewon/.local/lib/python3.8/site-packages/yacs/config.py", line 145, in __setattr__
+    raise AttributeError(
+AttributeError: Attempted to set min_temp to 0.01, but CfgNode is immutable

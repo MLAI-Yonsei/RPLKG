@@ -1,0 +1,342 @@
+***************
+** Arguments **
+***************
+backbone: 
+config_file: configs/trainers/CoOp/vit_b16.yaml
+dataset: ImageNet
+dataset_config_file: configs/datasets/imagenet.yaml
+eval_only: False
+head: 
+load_epoch: None
+mode: attention
+model_dir: 
+no_train: False
+opts: ['DATASET.NUM_SHOTS', '16']
+output_dir: output/zs_gumbel_im_test_1/2022-11-19_19-02/imagenet/shots_16/ZeroshotCLIP/vit_b16/seed
+report_name: ZSCLIP_dataset_imagenet
+resume: 
+root: /data/yewon/DATA
+seed: 1
+source_domains: None
+target_domains: None
+trainer: ZeroshotCLIP
+transforms: None
+use_wandb: True
+wb_name: test
+************
+** Config **
+************
+DATALOADER:
+  K_TRANSFORMS: 1
+  NUM_WORKERS: 8
+  RETURN_IMG0: False
+  TEST:
+    BATCH_SIZE: 100
+    SAMPLER: SequentialSampler
+  TRAIN_U:
+    BATCH_SIZE: 32
+    N_DOMAIN: 0
+    N_INS: 16
+    SAME_AS_X: True
+    SAMPLER: RandomSampler
+  TRAIN_X:
+    BATCH_SIZE: 32
+    N_DOMAIN: 0
+    N_INS: 16
+    SAMPLER: RandomSampler
+DATASET:
+  ALL_AS_UNLABELED: False
+  CIFAR_C_LEVEL: 1
+  CIFAR_C_TYPE: 
+  NAME: ImageNet
+  NUM_LABELED: -1
+  NUM_SHOTS: 16
+  ROOT: /data/yewon/DATA
+  SOURCE_DOMAINS: ()
+  STL10_FOLD: -1
+  SUBSAMPLE_CLASSES: all
+  TARGET_DOMAINS: ()
+  VAL_PERCENT: 0.1
+EMBEDDING_ROOT: /disk/teang1995/emb_root
+INPUT:
+  COLORJITTER_B: 0.4
+  COLORJITTER_C: 0.4
+  COLORJITTER_H: 0.1
+  COLORJITTER_S: 0.4
+  CROP_PADDING: 4
+  CUTOUT_LEN: 16
+  CUTOUT_N: 1
+  GB_K: 21
+  GB_P: 0.5
+  GN_MEAN: 0.0
+  GN_STD: 0.15
+  INTERPOLATION: bicubic
+  NO_TRANSFORM: False
+  PIXEL_MEAN: [0.48145466, 0.4578275, 0.40821073]
+  PIXEL_STD: [0.26862954, 0.26130258, 0.27577711]
+  RANDAUGMENT_M: 10
+  RANDAUGMENT_N: 2
+  RGS_P: 0.2
+  RRCROP_SCALE: (0.08, 1.0)
+  SIZE: (224, 224)
+  TRANSFORMS: ('random_resized_crop', 'random_flip', 'normalize')
+MODE: attention
+MODEL:
+  BACKBONE:
+    NAME: ViT-B/16
+    PRETRAINED: True
+  HEAD:
+    ACTIVATION: relu
+    BN: True
+    DROPOUT: 0.0
+    HIDDEN_LAYERS: ()
+    NAME: 
+  INIT_WEIGHTS: 
+OPTIM:
+  ADAM_BETA1: 0.9
+  ADAM_BETA2: 0.999
+  BASE_LR_MULT: 0.1
+  GAMMA: 0.1
+  LR: 0.01
+  LR_SCHEDULER: cosine
+  MAX_EPOCH: 100
+  MOMENTUM: 0.9
+  NAME: sgd
+  NEW_LAYERS: ()
+  RMSPROP_ALPHA: 0.99
+  SGD_DAMPNING: 0
+  SGD_NESTEROV: False
+  STAGED_LR: False
+  STEPSIZE: (-1,)
+  WARMUP_CONS_LR: 1e-05
+  WARMUP_EPOCH: 1
+  WARMUP_MIN_LR: 1e-05
+  WARMUP_RECOUNT: True
+  WARMUP_TYPE: constant
+  WEIGHT_DECAY: 0.001
+OUTPUT_DIR: output/zs_gumbel_im_test_1/2022-11-19_19-02/imagenet/shots_16/ZeroshotCLIP/vit_b16/seed
+RESUME: 
+SEED: 1
+TEST:
+  COMPUTE_CMAT: False
+  EVALUATOR: Classification
+  FINAL_MODEL: last_step
+  NO_TEST: False
+  PER_CLASS_RESULT: True
+  SPLIT: test
+TRAIN:
+  CHECKPOINT_FREQ: 0
+  COUNT_ITER: train_x
+  PRINT_FREQ: 5
+TRAINER:
+  CDAC:
+    CLASS_LR_MULTI: 10
+    P_THRESH: 0.95
+    RAMPUP_COEF: 30
+    RAMPUP_ITRS: 1000
+    STRONG_TRANSFORMS: ()
+    TOPK_MATCH: 5
+  COCOOP:
+    CTX_INIT: 
+    N_CTX: 16
+    PREC: fp16
+  COOP:
+    CLASS_TOKEN_POSITION: end
+    CSC: False
+    CTX_INIT: a photo of a {}.
+    N_CTX: 16
+    PREC: fp16
+  CROSSGRAD:
+    ALPHA_D: 0.5
+    ALPHA_F: 0.5
+    EPS_D: 1.0
+    EPS_F: 1.0
+  DAEL:
+    CONF_THRE: 0.95
+    STRONG_TRANSFORMS: ()
+    WEIGHT_U: 0.5
+  DAELDG:
+    CONF_THRE: 0.95
+    STRONG_TRANSFORMS: ()
+    WEIGHT_U: 0.5
+  DDAIG:
+    ALPHA: 0.5
+    CLAMP: False
+    CLAMP_MAX: 1.0
+    CLAMP_MIN: -1.0
+    G_ARCH: 
+    LMDA: 0.3
+    WARMUP: 0
+  DOMAINMIX:
+    ALPHA: 1.0
+    BETA: 1.0
+    TYPE: crossdomain
+  ENTMIN:
+    LMDA: 0.001
+  FIXMATCH:
+    CONF_THRE: 0.95
+    STRONG_TRANSFORMS: ()
+    WEIGHT_U: 1.0
+  M3SDA:
+    LMDA: 0.5
+    N_STEP_F: 4
+  MCD:
+    N_STEP_F: 4
+  MEANTEACHER:
+    EMA_ALPHA: 0.999
+    RAMPUP: 5
+    WEIGHT_U: 1.0
+  MIXMATCH:
+    MIXUP_BETA: 0.75
+    RAMPUP: 20000
+    TEMP: 2.0
+    WEIGHT_U: 100.0
+  MME:
+    LMDA: 0.1
+  NAME: ZeroshotCLIP
+  SE:
+    CONF_THRE: 0.95
+    EMA_ALPHA: 0.999
+    RAMPUP: 300
+USE_CUDA: True
+VERBOSE: True
+VERSION: 1
+Collecting env info ...
+** System info **
+PyTorch version: 1.13.0
+Is debug build: False
+CUDA used to build PyTorch: 11.7
+ROCM used to build PyTorch: N/A
+
+OS: Ubuntu 20.04.1 LTS (x86_64)
+GCC version: (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
+Clang version: Could not collect
+CMake version: Could not collect
+Libc version: glibc-2.31
+
+Python version: 3.8.0 (default, Nov  6 2019, 21:49:08)  [GCC 7.3.0] (64-bit runtime)
+Python platform: Linux-5.4.0-81-generic-x86_64-with-glibc2.10
+Is CUDA available: True
+CUDA runtime version: 11.7.99
+CUDA_MODULE_LOADING set to: LAZY
+GPU models and configuration: 
+GPU 0: NVIDIA RTX A6000
+GPU 1: NVIDIA RTX A6000
+GPU 2: NVIDIA RTX A6000
+GPU 3: NVIDIA RTX A6000
+GPU 4: NVIDIA RTX A6000
+GPU 5: NVIDIA RTX A6000
+GPU 6: NVIDIA RTX A6000
+GPU 7: NVIDIA RTX A6000
+
+Nvidia driver version: 515.57
+cuDNN version: Probably one of the following:
+/usr/local/cuda-11.2/targets/x86_64-linux/lib/libcudnn.so.8.1.0
+/usr/local/cuda-11.2/targets/x86_64-linux/lib/libcudnn_adv_infer.so.8.1.0
+/usr/local/cuda-11.2/targets/x86_64-linux/lib/libcudnn_adv_train.so.8.1.0
+/usr/local/cuda-11.2/targets/x86_64-linux/lib/libcudnn_cnn_infer.so.8.1.0
+/usr/local/cuda-11.2/targets/x86_64-linux/lib/libcudnn_cnn_train.so.8.1.0
+/usr/local/cuda-11.2/targets/x86_64-linux/lib/libcudnn_ops_infer.so.8.1.0
+/usr/local/cuda-11.2/targets/x86_64-linux/lib/libcudnn_ops_train.so.8.1.0
+HIP runtime version: N/A
+MIOpen runtime version: N/A
+Is XNNPACK available: True
+
+Versions of relevant libraries:
+[pip3] numpy==1.23.3
+[pip3] torch==1.13.0
+[pip3] torchaudio==0.13.0
+[pip3] torchvision==0.14.0
+[conda] blas                      1.0                         mkl  
+[conda] cudatoolkit               11.3.1               h2bc3f7f_2  
+[conda] ffmpeg                    4.3                  hf484d3e_0    pytorch
+[conda] mkl                       2021.4.0           h06a4308_640  
+[conda] mkl-service               2.4.0            py38h7f8727e_0  
+[conda] mkl_fft                   1.3.1            py38hd3c417c_0  
+[conda] mkl_random                1.2.2            py38h51133e4_0  
+[conda] numpy                     1.23.3           py38h14f4228_1  
+[conda] numpy-base                1.23.3           py38h31eccc5_1  
+[conda] pytorch                   1.13.0          py3.8_cuda11.7_cudnn8.5.0_0    pytorch
+[conda] pytorch-cuda              11.7                 h67b0de4_0    pytorch
+[conda] pytorch-mutex             1.0                        cuda    pytorch
+[conda] torchaudio                0.13.0               py38_cu117    pytorch
+[conda] torchvision               0.14.0               py38_cu117    pytorch
+        Pillow (9.2.0)
+
+Loading trainer: ZeroshotCLIP
+Loading dataset: ImageNet
+Loading preprocessed few-shot data from /data/yewon/DATA/imagenet/split_fewshot/shot_16-seed_1.pkl
+Building transform_train
++ random resized crop (size=(224, 224), scale=(0.08, 1.0))
++ random flip
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+Building transform_test
++ resize the smaller edge to 224
++ 224x224 center crop
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+---------  --------
+Dataset    ImageNet
+# classes  1,000
+# train_x  16,000
+# val      50,000
+# test     50,000
+---------  --------
+/mlainas/KGPrompt_data/imagenet/shot_16_seed_1_train.npy
+/mlainas/KGPrompt_data/imagenet/shot_16_seed_1_valid.npy
+Loading CLIP (backbone: ViT-B/16)
+Loading preprocessed few-shot data from /data/yewon/DATA/imagenet/preprocessed.pkl
+Loading evaluator: Classification
+No checkpoint found, train from scratch
+Initialize tensorboard (log_dir=output/zs_gumbel_im_test_1/2022-11-19_19-02/imagenet/shots_16/ZeroshotCLIP/vit_b16/seed/tensorboard)
+epoch [1/100] batch [5/250] time 0.145 (0.345) data 0.001 (0.002) loss 10.9217 (11.4820) acc 0.0000 (0.3125) lr 1.0000e-05 eta 2:23:43
+epoch [1/100] batch [10/250] time 0.146 (0.245) data 0.001 (0.001) loss 11.1205 (11.7303) acc 1.5625 (0.4688) lr 1.0000e-05 eta 1:42:14
+epoch [1/100] batch [15/250] time 0.145 (0.212) data 0.001 (0.001) loss 10.3667 (11.5801) acc 0.0000 (0.3125) lr 1.0000e-05 eta 1:28:19
+epoch [1/100] batch [20/250] time 0.147 (0.195) data 0.001 (0.001) loss 10.6428 (11.4627) acc 0.0000 (0.2344) lr 1.0000e-05 eta 1:21:22
+epoch [1/100] batch [25/250] time 0.144 (0.185) data 0.001 (0.001) loss 10.4092 (11.3188) acc 0.0000 (0.2500) lr 1.0000e-05 eta 1:17:09
+epoch [1/100] batch [30/250] time 0.145 (0.179) data 0.001 (0.001) loss 10.9199 (11.2470) acc 0.0000 (0.2083) lr 1.0000e-05 eta 1:14:22
+epoch [1/100] batch [35/250] time 0.146 (0.174) data 0.001 (0.001) loss 10.7898 (11.1830) acc 0.0000 (0.1786) lr 1.0000e-05 eta 1:12:22
+epoch [1/100] batch [40/250] time 0.146 (0.170) data 0.001 (0.001) loss 10.5609 (11.1099) acc 0.0000 (0.1953) lr 1.0000e-05 eta 1:10:53
+epoch [1/100] batch [45/250] time 0.146 (0.168) data 0.001 (0.001) loss 9.8401 (11.0286) acc 0.0000 (0.1736) lr 1.0000e-05 eta 1:09:44
+epoch [1/100] batch [50/250] time 0.147 (0.166) data 0.001 (0.001) loss 10.2950 (10.9486) acc 0.0000 (0.1562) lr 1.0000e-05 eta 1:08:50
+epoch [1/100] batch [55/250] time 0.145 (0.164) data 0.001 (0.001) loss 10.4144 (10.8924) acc 0.0000 (0.1420) lr 1.0000e-05 eta 1:08:04
+epoch [1/100] batch [60/250] time 0.147 (0.162) data 0.001 (0.001) loss 9.8350 (10.8217) acc 0.0000 (0.1302) lr 1.0000e-05 eta 1:07:27
+epoch [1/100] batch [65/250] time 0.145 (0.161) data 0.001 (0.001) loss 10.5321 (10.7901) acc 0.0000 (0.1202) lr 1.0000e-05 eta 1:06:55
+epoch [1/100] batch [70/250] time 0.145 (0.160) data 0.001 (0.001) loss 9.3907 (10.7447) acc 0.0000 (0.1339) lr 1.0000e-05 eta 1:06:28
+epoch [1/100] batch [75/250] time 0.147 (0.159) data 0.001 (0.001) loss 10.0724 (10.7167) acc 0.0000 (0.1458) lr 1.0000e-05 eta 1:06:04
+epoch [1/100] batch [80/250] time 0.147 (0.158) data 0.001 (0.001) loss 10.6356 (10.6907) acc 0.0000 (0.1367) lr 1.0000e-05 eta 1:05:43
+epoch [1/100] batch [85/250] time 0.146 (0.158) data 0.001 (0.001) loss 10.1819 (10.6717) acc 0.0000 (0.1838) lr 1.0000e-05 eta 1:05:25
+epoch [1/100] batch [90/250] time 0.147 (0.157) data 0.001 (0.001) loss 9.7198 (10.6322) acc 0.0000 (0.2257) lr 1.0000e-05 eta 1:05:09
+epoch [1/100] batch [95/250] time 0.147 (0.156) data 0.001 (0.001) loss 9.9603 (10.5878) acc 0.0000 (0.2138) lr 1.0000e-05 eta 1:04:54
+epoch [1/100] batch [100/250] time 0.145 (0.156) data 0.001 (0.001) loss 9.3024 (10.5347) acc 1.5625 (0.2500) lr 1.0000e-05 eta 1:04:40
+epoch [1/100] batch [105/250] time 0.146 (0.155) data 0.001 (0.001) loss 9.5275 (10.4943) acc 0.0000 (0.2381) lr 1.0000e-05 eta 1:04:26
+epoch [1/100] batch [110/250] time 0.146 (0.155) data 0.001 (0.001) loss 9.8687 (10.4678) acc 0.0000 (0.2273) lr 1.0000e-05 eta 1:04:15
+epoch [1/100] batch [115/250] time 0.147 (0.155) data 0.001 (0.001) loss 9.7339 (10.4462) acc 0.0000 (0.2310) lr 1.0000e-05 eta 1:04:05
+epoch [1/100] batch [120/250] time 0.145 (0.154) data 0.001 (0.001) loss 10.4900 (10.4320) acc 0.0000 (0.2344) lr 1.0000e-05 eta 1:03:56
+epoch [1/100] batch [125/250] time 0.146 (0.154) data 0.001 (0.001) loss 9.6491 (10.3958) acc 0.0000 (0.2375) lr 1.0000e-05 eta 1:03:47
+epoch [1/100] batch [130/250] time 0.145 (0.154) data 0.001 (0.001) loss 9.3059 (10.3670) acc 3.1250 (0.2524) lr 1.0000e-05 eta 1:03:38
+epoch [1/100] batch [135/250] time 0.146 (0.153) data 0.001 (0.001) loss 9.3626 (10.3379) acc 1.5625 (0.2662) lr 1.0000e-05 eta 1:03:30
+epoch [1/100] batch [140/250] time 0.147 (0.153) data 0.001 (0.001) loss 9.6424 (10.3088) acc 0.0000 (0.2567) lr 1.0000e-05 eta 1:03:23
+epoch [1/100] batch [145/250] time 0.145 (0.153) data 0.001 (0.001) loss 9.3419 (10.2761) acc 1.5625 (0.2694) lr 1.0000e-05 eta 1:03:16
+epoch [1/100] batch [150/250] time 0.146 (0.153) data 0.001 (0.001) loss 9.7525 (10.2571) acc 0.0000 (0.2604) lr 1.0000e-05 eta 1:03:10
+epoch [1/100] batch [155/250] time 0.148 (0.152) data 0.001 (0.001) loss 9.8172 (10.2264) acc 0.0000 (0.2621) lr 1.0000e-05 eta 1:03:05
+epoch [1/100] batch [160/250] time 0.146 (0.152) data 0.001 (0.001) loss 9.7046 (10.1970) acc 0.0000 (0.2539) lr 1.0000e-05 eta 1:02:59
+epoch [1/100] batch [165/250] time 0.146 (0.152) data 0.001 (0.001) loss 10.4624 (10.1815) acc 0.0000 (0.2462) lr 1.0000e-05 eta 1:02:54
+epoch [1/100] batch [170/250] time 0.145 (0.152) data 0.001 (0.001) loss 10.0401 (10.1572) acc 0.0000 (0.2482) lr 1.0000e-05 eta 1:02:49
+epoch [1/100] batch [175/250] time 0.146 (0.152) data 0.001 (0.001) loss 9.9960 (10.1376) acc 0.0000 (0.2411) lr 1.0000e-05 eta 1:02:44
+epoch [1/100] batch [180/250] time 0.146 (0.152) data 0.001 (0.001) loss 8.9576 (10.1156) acc 0.0000 (0.2517) lr 1.0000e-05 eta 1:02:40
+epoch [1/100] batch [185/250] time 0.148 (0.151) data 0.001 (0.001) loss 9.1259 (10.0893) acc 0.0000 (0.2449) lr 1.0000e-05 eta 1:02:36
+epoch [1/100] batch [190/250] time 0.145 (0.151) data 0.001 (0.001) loss 9.4358 (10.0723) acc 0.0000 (0.2385) lr 1.0000e-05 eta 1:02:32
+epoch [1/100] batch [195/250] time 0.147 (0.151) data 0.001 (0.001) loss 9.6038 (10.0498) acc 0.0000 (0.2404) lr 1.0000e-05 eta 1:02:28
+epoch [1/100] batch [200/250] time 0.147 (0.151) data 0.001 (0.001) loss 9.1958 (10.0283) acc 0.0000 (0.2422) lr 1.0000e-05 eta 1:02:25
+epoch [1/100] batch [205/250] time 0.148 (0.151) data 0.001 (0.001) loss 9.0623 (10.0091) acc 0.0000 (0.2363) lr 1.0000e-05 eta 1:02:22
+epoch [1/100] batch [210/250] time 0.148 (0.151) data 0.001 (0.001) loss 9.3800 (9.9881) acc 0.0000 (0.2381) lr 1.0000e-05 eta 1:02:19
+epoch [1/100] batch [215/250] time 0.147 (0.151) data 0.001 (0.001) loss 8.8214 (9.9666) acc 0.0000 (0.2398) lr 1.0000e-05 eta 1:02:16
+epoch [1/100] batch [220/250] time 0.145 (0.151) data 0.001 (0.001) loss 9.2546 (9.9535) acc 1.5625 (0.2557) lr 1.0000e-05 eta 1:02:13
+epoch [1/100] batch [225/250] time 0.147 (0.151) data 0.001 (0.001) loss 9.1887 (9.9359) acc 0.0000 (0.2500) lr 1.0000e-05 eta 1:02:10
+epoch [1/100] batch [230/250] time 0.147 (0.150) data 0.001 (0.001) loss 9.3836 (9.9195) acc 0.0000 (0.2446) lr 1.0000e-05 eta 1:02:07
+epoch [1/100] batch [235/250] time 0.147 (0.150) data 0.001 (0.001) loss 9.3892 (9.9012) acc 0.0000 (0.2394) lr 1.0000e-05 eta 1:02:04
+epoch [1/100] batch [240/250] time 0.146 (0.150) data 0.001 (0.001) loss 9.4110 (9.8846) acc 0.0000 (0.2344) lr 1.0000e-05 eta 1:02:01
+epoch [1/100] batch [245/250] time 0.148 (0.150) data 0.001 (0.001) loss 8.6305 (9.8649) acc 0.0000 (0.2296) lr 1.0000e-05 eta 1:01:59
+epoch [1/100] batch [250/250] time 0.147 (0.150) data 0.001 (0.001) loss 8.6331 (9.8443) acc 0.0000 (0.2375) lr 1.0000e-02 eta 1:01:56
