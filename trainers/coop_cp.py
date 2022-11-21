@@ -88,6 +88,7 @@ class PromptLearner(nn.Module):
                 class_prompts.append(sent)
             prompts += class_prompts       
         prompts = torch.cat([clip.tokenize(p) for p in prompts])    
+        import pdb; pdb.set_trace()
         
         text_features = self.clip_model.encode_text(prompts)
         text_features  = self.fc1(text_features)

@@ -1,0 +1,296 @@
+{
+    "os": "Linux-5.4.0-81-generic-x86_64-with-glibc2.10",
+    "python": "3.8.0",
+    "heartbeatAt": "2022-11-20T19:22:23.953277",
+    "startedAt": "2022-11-20T19:22:23.065020",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--root",
+        "/data/yewon/DATA",
+        "--seed",
+        "1",
+        "--trainer",
+        "ZeroshotCLIP",
+        "--dataset-config-file",
+        "configs/datasets/imagenet.yaml",
+        "--config-file",
+        "configs/trainers/CoOp/vit_b16.yaml",
+        "--output-dir",
+        "output/zs_gumbel_im_test_1/2022-11-20_19-22/imagenet/shots_16/ZeroshotCLIP/vit_b16/seed",
+        "--mode",
+        "attention",
+        "--dropout",
+        "0.1",
+        "--wd",
+        "0.02",
+        "--report_name",
+        "ZSCLIP_dataset_imagenet",
+        "DATASET.NUM_SHOTS",
+        "16"
+    ],
+    "state": "running",
+    "program": "train.py",
+    "codePath": "train.py",
+    "git": {
+        "remote": "https://github.com/teang1995/KGPrompt.git",
+        "commit": "0a6803ab2a5f2322f955a71647d48d359982059d"
+    },
+    "email": "yeyewon12@gmail.com",
+    "root": "/mlainas/yewon/CoOp/CoOp/KGPrompt",
+    "host": "gpusystem",
+    "username": "yeyewon",
+    "executable": "/mlainas/anaconda3/envs/torch/bin/python",
+    "cpu_count": 20,
+    "cpu_count_logical": 40,
+    "cpu_freq": {
+        "current": 1278.8146000000002,
+        "min": 1000.0,
+        "max": 3200.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1000.052,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.005,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2794.796,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.284,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1022.683,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.504,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.282,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.229,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.248,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.823,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.435,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.397,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1001.362,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.72,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.34,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.872,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.547,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.762,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2500.784,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2503.727,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1001.009,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.683,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2784.556,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1001.039,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1087.325,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.401,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.673,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.592,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1001.156,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.615,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.611,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.333,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.173,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.722,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.844,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.773,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1000.638,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1001.098,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2910.215,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2911.851,
+            "min": 1000.0,
+            "max": 3200.0
+        }
+    ],
+    "disk": {
+        "total": 457.44693756103516,
+        "used": 357.8896598815918
+    },
+    "gpu": "NVIDIA RTX A6000",
+    "gpu_count": 8,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA RTX A6000",
+            "memory_total": 51527024640
+        },
+        {
+            "name": "NVIDIA RTX A6000",
+            "memory_total": 51527024640
+        },
+        {
+            "name": "NVIDIA RTX A6000",
+            "memory_total": 51527024640
+        },
+        {
+            "name": "NVIDIA RTX A6000",
+            "memory_total": 51527024640
+        },
+        {
+            "name": "NVIDIA RTX A6000",
+            "memory_total": 51527024640
+        },
+        {
+            "name": "NVIDIA RTX A6000",
+            "memory_total": 51527024640
+        },
+        {
+            "name": "NVIDIA RTX A6000",
+            "memory_total": 51527024640
+        },
+        {
+            "name": "NVIDIA RTX A6000",
+            "memory_total": 51527024640
+        }
+    ],
+    "memory": {
+        "total": 502.54938888549805
+    }
+}

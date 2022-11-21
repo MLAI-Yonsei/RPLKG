@@ -1,0 +1,43 @@
+Loading trainer: ZeroshotCLIP
+Loading dataset: ImageNet
+Loading preprocessed few-shot data from /data/yewon/DATA/imagenet/split_fewshot/shot_16-seed_1.pkl
+Building transform_train
++ random resized crop (size=(224, 224), scale=(0.08, 1.0))
++ random flip
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+Building transform_test
++ resize the smaller edge to 224
++ 224x224 center crop
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+---------  --------
+Dataset    ImageNet
+# classes  1,000
+# train_x  16,000
+# val      50,000
+# test     50,000
+---------  --------
+/mlainas/KGPrompt_data/imagenet/shot_16_seed_1_train.npy
+/mlainas/KGPrompt_data/imagenet/shot_16_seed_1_valid.npy
+Loading CLIP (backbone: ViT-B/16)
+Loading preprocessed few-shot data from /data/yewon/DATA/imagenet/preprocessed.pkl
+> /mlainas/yewon/CoOp/CoOp/KGPrompt/trainers/zsclip.py(122)build_model()
+->
+(Pdb)
+Traceback (most recent call last):
+  File "train.py", line 274, in <module>
+    main(args)
+  File "train.py", line 190, in main
+    trainer = build_trainer(cfg)
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/dassl/engine/build.py", line 11, in build_trainer
+    return TRAINER_REGISTRY.get(cfg.TRAINER.NAME)(cfg)
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/dassl/engine/trainer.py", line 345, in __init__
+    self.build_model(self.df)
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/trainers/zsclip.py", line 122, in build_model
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/trainers/zsclip.py", line 122, in build_model
+  File "/mlainas/anaconda3/envs/torch/lib/python3.8/bdb.py", line 88, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/mlainas/anaconda3/envs/torch/lib/python3.8/bdb.py", line 113, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit

@@ -1,0 +1,71 @@
+Loading trainer: ZeroshotCLIP
+Loading dataset: ImageNet
+Loading preprocessed few-shot data from /data/yewon/DATA/imagenet/split_fewshot/shot_16-seed_1.pkl
+Building transform_train
++ random resized crop (size=(224, 224), scale=(0.08, 1.0))
++ random flip
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+Building transform_test
++ resize the smaller edge to 224
++ 224x224 center crop
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+---------  --------
+Dataset    ImageNet
+# classes  1,000
+# train_x  16,000
+# val      50,000
+# test     50,000
+---------  --------
+/mlainas/KGPrompt_data/imagenet/shot_16_seed_1_train.npy
+/mlainas/KGPrompt_data/imagenet/shot_16_seed_1_valid.npy
+Loading CLIP (backbone: ViT-B/16)
+Loading preprocessed few-shot data from /data/yewon/DATA/imagenet/preprocessed.pkl
+Loading evaluator: Classification
+No checkpoint found, train from scratch
+Initialize tensorboard (log_dir=output/zs_gumbel_im_test_1/2022-11-20_19-12/imagenet/shots_16/ZeroshotCLIP/vit_b16/seed/tensorboard)
+epoch [1/100] batch [5/250] time 0.146 (0.344) data 0.001 (0.001) loss 11.2102 (11.2212) acc 0.0000 (0.0000) lr 1.0000e-05 eta 2:23:23
+epoch [1/100] batch [10/250] time 0.144 (0.244) data 0.001 (0.001) loss 10.7705 (11.1340) acc 0.0000 (0.1562) lr 1.0000e-05 eta 1:41:50
+epoch [1/100] batch [15/250] time 0.145 (0.211) data 0.001 (0.001) loss 10.6901 (11.0545) acc 0.0000 (0.1042) lr 1.0000e-05 eta 1:28:00
+epoch [1/100] batch [20/250] time 0.146 (0.195) data 0.001 (0.001) loss 9.8707 (10.9133) acc 0.0000 (0.0781) lr 1.0000e-05 eta 1:21:07
+epoch [1/100] batch [25/250] time 0.146 (0.185) data 0.001 (0.001) loss 10.1380 (10.7875) acc 0.0000 (0.0625) lr 1.0000e-05 eta 1:17:00
+epoch [1/100] batch [30/250] time 0.145 (0.178) data 0.001 (0.001) loss 9.6425 (10.6410) acc 0.0000 (0.0521) lr 1.0000e-05 eta 1:14:16
+epoch [1/100] batch [35/250] time 0.146 (0.174) data 0.001 (0.001) loss 9.7387 (10.5362) acc 1.5625 (0.0893) lr 1.0000e-05 eta 1:12:17
+epoch [1/100] batch [40/250] time 0.145 (0.170) data 0.001 (0.001) loss 9.8109 (10.4481) acc 0.0000 (0.0781) lr 1.0000e-05 eta 1:10:46
+epoch [1/100] batch [45/250] time 0.144 (0.167) data 0.001 (0.001) loss 10.0085 (10.3681) acc 0.0000 (0.0694) lr 1.0000e-05 eta 1:09:33
+epoch [1/100] batch [50/250] time 0.144 (0.165) data 0.001 (0.001) loss 9.4742 (10.2933) acc 0.0000 (0.0625) lr 1.0000e-05 eta 1:08:36
+epoch [1/100] batch [55/250] time 0.145 (0.163) data 0.001 (0.001) loss 9.7572 (10.2288) acc 1.5625 (0.0852) lr 1.0000e-05 eta 1:07:50
+epoch [1/100] batch [60/250] time 0.145 (0.162) data 0.001 (0.001) loss 9.3724 (10.1489) acc 0.0000 (0.0781) lr 1.0000e-05 eta 1:07:11
+epoch [1/100] batch [65/250] time 0.144 (0.160) data 0.001 (0.001) loss 8.8078 (10.0898) acc 0.0000 (0.0962) lr 1.0000e-05 eta 1:06:38
+epoch [1/100] batch [70/250] time 0.145 (0.159) data 0.001 (0.001) loss 9.6574 (10.0464) acc 0.0000 (0.0893) lr 1.0000e-05 eta 1:06:11
+epoch [1/100] batch [75/250] time 0.145 (0.158) data 0.001 (0.001) loss 9.2160 (10.0043) acc 0.0000 (0.1042) lr 1.0000e-05 eta 1:05:46
+epoch [1/100] batch [80/250] time 0.144 (0.157) data 0.001 (0.001) loss 9.2073 (9.9654) acc 0.0000 (0.1172) lr 1.0000e-05 eta 1:05:24
+epoch [1/100] batch [85/250] time 0.146 (0.157) data 0.001 (0.001) loss 9.8132 (9.9391) acc 0.0000 (0.1287) lr 1.0000e-05 eta 1:05:06
+epoch [1/100] batch [90/250] time 0.145 (0.156) data 0.001 (0.001) loss 9.1365 (9.9037) acc 0.0000 (0.1562) lr 1.0000e-05 eta 1:04:50
+epoch [1/100] batch [95/250] time 0.146 (0.156) data 0.001 (0.001) loss 8.8260 (9.8527) acc 0.0000 (0.1480) lr 1.0000e-05 eta 1:04:35
+epoch [1/100] batch [100/250] time 0.145 (0.155) data 0.001 (0.001) loss 8.7843 (9.7964) acc 0.0000 (0.1406) lr 1.0000e-05 eta 1:04:21
+epoch [1/100] batch [105/250] time 0.146 (0.155) data 0.000 (0.001) loss 8.8203 (9.7636) acc 0.0000 (0.1339) lr 1.0000e-05 eta 1:04:09
+epoch [1/100] batch [110/250] time 0.145 (0.154) data 0.001 (0.001) loss 8.7306 (9.7256) acc 0.0000 (0.1278) lr 1.0000e-05 eta 1:03:58
+epoch [1/100] batch [115/250] time 0.146 (0.154) data 0.001 (0.001) loss 9.6034 (9.6940) acc 0.0000 (0.1223) lr 1.0000e-05 eta 1:03:48
+epoch [1/100] batch [120/250] time 0.145 (0.153) data 0.001 (0.001) loss 8.9590 (9.6673) acc 0.0000 (0.1432) lr 1.0000e-05 eta 1:03:38
+Traceback (most recent call last):
+  File "train.py", line 274, in <module>
+    main(args)
+  File "train.py", line 198, in main
+    trainer.train()
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/dassl/engine/trainer.py", line 479, in train
+    super().train(self.start_epoch, self.max_epoch)
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/dassl/engine/trainer.py", line 269, in train
+    self.run_epoch()
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/trainers/zsclip.py", line 259, in run_epoch
+    loss_summary = self.forward_backward(batch)
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/trainers/zsclip.py", line 360, in forward_backward
+    self.model_backward_and_update(loss) #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/dassl/engine/trainer.py", line 321, in model_backward_and_update
+    self.model_backward(loss)
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/dassl/engine/trainer.py", line 310, in model_backward
+    self.detect_anomaly(loss)
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/dassl/engine/trainer.py", line 241, in detect_anomaly
+    if not torch.isfinite(loss).all():
+KeyboardInterrupt

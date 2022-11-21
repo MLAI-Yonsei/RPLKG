@@ -1,0 +1,12 @@
+
+Loading trainer: ZeroshotCLIP
+Traceback (most recent call last):
+  File "train.py", line 256, in <module>
+    main(args)
+  File "train.py", line 177, in main
+    trainer = build_trainer(cfg)
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/dassl/engine/build.py", line 11, in build_trainer
+    return TRAINER_REGISTRY.get(cfg.TRAINER.NAME)(cfg)
+  File "/mlainas/yewon/CoOp/CoOp/KGPrompt/dassl/engine/trainer.py", line 340, in __init__
+    self.max_epoch = cfg.OPTIM.MAX_EPOCH
+AttributeError: 'float' object has no attribute 'MAX_EPOCH'

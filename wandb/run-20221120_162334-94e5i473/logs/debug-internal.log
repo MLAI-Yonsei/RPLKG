@@ -1,0 +1,177 @@
+2022-11-20 16:23:34,615 INFO    StreamThr :1230698 [internal.py:wandb_internal():88] W&B internal server running at pid: 1230698, started at: 2022-11-20 16:23:34.613785
+2022-11-20 16:23:34,617 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: status
+2022-11-20 16:23:34,620 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: status
+2022-11-20 16:23:34,623 DEBUG   SenderThread:1230698 [sender.py:send():303] send: header
+2022-11-20 16:23:34,623 INFO    WriterThread:1230698 [datastore.py:open_for_write():75] open: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/run-94e5i473.wandb
+2022-11-20 16:23:34,661 DEBUG   SenderThread:1230698 [sender.py:send():303] send: run
+2022-11-20 16:23:35,296 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: check_version
+2022-11-20 16:23:35,305 INFO    SenderThread:1230698 [dir_watcher.py:__init__():216] watching files in: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files
+2022-11-20 16:23:35,305 INFO    SenderThread:1230698 [sender.py:_start_run_threads():928] run started: 94e5i473 with start time 1668961414.607584
+2022-11-20 16:23:35,305 DEBUG   SenderThread:1230698 [sender.py:send():303] send: summary
+2022-11-20 16:23:35,349 INFO    SenderThread:1230698 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-11-20 16:23:35,351 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: check_version
+2022-11-20 16:23:35,434 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: run_start
+2022-11-20 16:23:35,447 DEBUG   HandlerThread:1230698 [system_info.py:__init__():31] System info init
+2022-11-20 16:23:35,447 DEBUG   HandlerThread:1230698 [system_info.py:__init__():46] System info init done
+2022-11-20 16:23:35,447 INFO    HandlerThread:1230698 [system_monitor.py:start():150] Starting system monitor
+2022-11-20 16:23:35,447 INFO    SystemMonitor:1230698 [system_monitor.py:_start():116] Starting system asset monitoring threads
+2022-11-20 16:23:35,448 INFO    HandlerThread:1230698 [system_monitor.py:probe():168] Collecting system info
+2022-11-20 16:23:35,448 INFO    SystemMonitor:1230698 [interfaces.py:start():168] Started cpu
+2022-11-20 16:23:35,450 INFO    SystemMonitor:1230698 [interfaces.py:start():168] Started disk
+2022-11-20 16:23:35,453 INFO    SystemMonitor:1230698 [interfaces.py:start():168] Started gpu
+2022-11-20 16:23:35,454 INFO    SystemMonitor:1230698 [interfaces.py:start():168] Started memory
+2022-11-20 16:23:35,455 INFO    SystemMonitor:1230698 [interfaces.py:start():168] Started network
+2022-11-20 16:23:35,503 DEBUG   HandlerThread:1230698 [system_info.py:probe():195] Probing system
+2022-11-20 16:23:35,547 DEBUG   HandlerThread:1230698 [system_info.py:_probe_git():180] Probing git
+2022-11-20 16:23:35,618 DEBUG   HandlerThread:1230698 [system_info.py:_probe_git():188] Probing git done
+2022-11-20 16:23:35,618 DEBUG   HandlerThread:1230698 [system_info.py:probe():241] Probing system done
+2022-11-20 16:23:35,618 DEBUG   HandlerThread:1230698 [system_monitor.py:probe():177] {'os': 'Linux-5.4.0-81-generic-x86_64-with-glibc2.10', 'python': '3.8.0', 'heartbeatAt': '2022-11-20T16:23:35.503857', 'startedAt': '2022-11-20T16:23:34.588064', 'docker': None, 'cuda': None, 'args': ('--root', '/data/yewon/DATA', '--seed', '1', '--trainer', 'ZeroshotCLIP', '--dataset-config-file', 'configs/datasets/imagenet.yaml', '--config-file', 'configs/trainers/CoOp/vit_b16.yaml', '--output-dir', 'output/zs_gumbel_im_test_1/2022-11-20_16-23/imagenet/shots_16/ZeroshotCLIP/vit_b16/seed', '--mode', 'attention', '--dropout', '0.1'), 'state': 'running', 'program': 'train.py', 'codePath': 'train.py', 'git': {'remote': 'https://github.com/teang1995/KGPrompt.git', 'commit': '0a6803ab2a5f2322f955a71647d48d359982059d'}, 'email': 'yeyewon12@gmail.com', 'root': '/mlainas/yewon/CoOp/CoOp/KGPrompt', 'host': 'gpusystem', 'username': 'yeyewon', 'executable': '/mlainas/anaconda3/envs/torch/bin/python', 'cpu_count': 20, 'cpu_count_logical': 40, 'cpu_freq': {'current': 2193.9388750000007, 'min': 1000.0, 'max': 3200.0}, 'cpu_freq_per_core': [{'current': 2521.175, 'min': 1000.0, 'max': 3200.0}, {'current': 1065.478, 'min': 1000.0, 'max': 3200.0}, {'current': 2873.612, 'min': 1000.0, 'max': 3200.0}, {'current': 2900.0, 'min': 1000.0, 'max': 3200.0}, {'current': 2702.851, 'min': 1000.0, 'max': 3200.0}, {'current': 1232.76, 'min': 1000.0, 'max': 3200.0}, {'current': 1791.935, 'min': 1000.0, 'max': 3200.0}, {'current': 2505.321, 'min': 1000.0, 'max': 3200.0}, {'current': 2500.531, 'min': 1000.0, 'max': 3200.0}, {'current': 1064.85, 'min': 1000.0, 'max': 3200.0}, {'current': 2900.0, 'min': 1000.0, 'max': 3200.0}, {'current': 2877.944, 'min': 1000.0, 'max': 3200.0}, {'current': 2343.541, 'min': 1000.0, 'max': 3200.0}, {'current': 1046.174, 'min': 1000.0, 'max': 3200.0}, {'current': 1046.185, 'min': 1000.0, 'max': 3200.0}, {'current': 2899.585, 'min': 1000.0, 'max': 3200.0}, {'current': 1022.911, 'min': 1000.0, 'max': 3200.0}, {'current': 2530.143, 'min': 1000.0, 'max': 3200.0}, {'current': 2502.605, 'min': 1000.0, 'max': 3200.0}, {'current': 2499.998, 'min': 1000.0, 'max': 3200.0}, {'current': 2500.004, 'min': 1000.0, 'max': 3200.0}, {'current': 1062.787, 'min': 1000.0, 'max': 3200.0}, {'current': 2856.945, 'min': 1000.0, 'max': 3200.0}, {'current': 2900.0, 'min': 1000.0, 'max': 3200.0}, {'current': 2845.208, 'min': 1000.0, 'max': 3200.0}, {'current': 1248.237, 'min': 1000.0, 'max': 3200.0}, {'current': 1779.166, 'min': 1000.0, 'max': 3200.0}, {'current': 2523.957, 'min': 1000.0, 'max': 3200.0}, {'current': 2524.013, 'min': 1000.0, 'max': 3200.0}, {'current': 1063.647, 'min': 1000.0, 'max': 3200.0}, {'current': 2899.999, 'min': 1000.0, 'max': 3200.0}, {'current': 2854.382, 'min': 1000.0, 'max': 3200.0}, {'current': 1947.488, 'min': 1000.0, 'max': 3200.0}, {'current': 1046.232, 'min': 1000.0, 'max': 3200.0}, {'current': 1138.818, 'min': 1000.0, 'max': 3200.0}, {'current': 2888.372, 'min': 1000.0, 'max': 3200.0}, {'current': 1068.589, 'min': 1000.0, 'max': 3200.0}, {'current': 2497.578, 'min': 1000.0, 'max': 3200.0}, {'current': 2533.512, 'min': 1000.0, 'max': 3200.0}, {'current': 2533.745, 'min': 1000.0, 'max': 3200.0}], 'disk': {'total': 457.44693756103516, 'used': 432.3017044067383}, 'gpu': 'NVIDIA RTX A6000', 'gpu_count': 8, 'gpu_devices': [{'name': 'NVIDIA RTX A6000', 'memory_total': 51527024640}, {'name': 'NVIDIA RTX A6000', 'memory_total': 51527024640}, {'name': 'NVIDIA RTX A6000', 'memory_total': 51527024640}, {'name': 'NVIDIA RTX A6000', 'memory_total': 51527024640}, {'name': 'NVIDIA RTX A6000', 'memory_total': 51527024640}, {'name': 'NVIDIA RTX A6000', 'memory_total': 51527024640}, {'name': 'NVIDIA RTX A6000', 'memory_total': 51527024640}, {'name': 'NVIDIA RTX A6000', 'memory_total': 51527024640}], 'memory': {'total': 502.54938888549805}}
+2022-11-20 16:23:35,619 INFO    HandlerThread:1230698 [system_monitor.py:probe():178] Finished collecting system info
+2022-11-20 16:23:35,619 INFO    HandlerThread:1230698 [system_monitor.py:probe():181] Publishing system info
+2022-11-20 16:23:35,619 DEBUG   HandlerThread:1230698 [system_info.py:_save_pip():51] Saving list of pip packages installed into the current environment
+2022-11-20 16:23:35,640 DEBUG   HandlerThread:1230698 [system_info.py:_save_pip():67] Saving pip packages done
+2022-11-20 16:23:35,640 DEBUG   HandlerThread:1230698 [system_info.py:_save_conda():74] Saving list of conda packages installed into the current environment
+2022-11-20 16:23:36,311 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_created():275] file/dir created: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/requirements.txt
+2022-11-20 16:23:36,311 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_created():275] file/dir created: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/wandb-summary.json
+2022-11-20 16:23:36,312 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_created():275] file/dir created: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/conda-environment.yaml
+2022-11-20 16:23:38,948 DEBUG   HandlerThread:1230698 [system_info.py:_save_conda():86] Saving conda packages done
+2022-11-20 16:23:38,967 INFO    HandlerThread:1230698 [system_monitor.py:probe():183] Finished publishing system info
+2022-11-20 16:23:39,006 DEBUG   SenderThread:1230698 [sender.py:send():303] send: files
+2022-11-20 16:23:39,007 INFO    SenderThread:1230698 [sender.py:_save_file():1171] saving file wandb-metadata.json with policy now
+2022-11-20 16:23:39,015 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: stop_status
+2022-11-20 16:23:39,015 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: stop_status
+2022-11-20 16:23:39,248 DEBUG   SenderThread:1230698 [sender.py:send():303] send: telemetry
+2022-11-20 16:23:39,249 DEBUG   SenderThread:1230698 [sender.py:send():303] send: config
+2022-11-20 16:23:39,250 DEBUG   SenderThread:1230698 [sender.py:send():303] send: telemetry
+2022-11-20 16:23:39,250 DEBUG   SenderThread:1230698 [sender.py:send():303] send: run
+2022-11-20 16:23:39,348 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_modified():292] file/dir modified: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/config.yaml
+2022-11-20 16:23:39,349 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_modified():292] file/dir modified: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/conda-environment.yaml
+2022-11-20 16:23:39,349 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_created():275] file/dir created: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/wandb-metadata.json
+2022-11-20 16:23:39,614 INFO    SenderThread:1230698 [sender.py:send_run():812] updated run: 94e5i473
+2022-11-20 16:23:39,793 INFO    Thread-16 :1230698 [upload_job.py:push():143] Uploaded file /tmp/tmpw8zbop3gwandb/12hiovud-wandb-metadata.json
+2022-11-20 16:23:40,343 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_created():275] file/dir created: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/output.log
+2022-11-20 16:23:42,372 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_modified():292] file/dir modified: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/output.log
+2022-11-20 16:23:43,363 DEBUG   SenderThread:1230698 [sender.py:send():303] send: exit
+2022-11-20 16:23:43,364 INFO    SenderThread:1230698 [sender.py:send_exit():442] handling exit code: 1
+2022-11-20 16:23:43,365 INFO    SenderThread:1230698 [sender.py:send_exit():444] handling runtime: 7
+2022-11-20 16:23:43,401 INFO    SenderThread:1230698 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-11-20 16:23:43,402 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_modified():292] file/dir modified: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/wandb-summary.json
+2022-11-20 16:23:43,402 INFO    SenderThread:1230698 [sender.py:send_exit():450] send defer
+2022-11-20 16:23:43,403 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:43,403 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 0
+2022-11-20 16:23:43,404 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:43,404 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 0
+2022-11-20 16:23:43,404 INFO    SenderThread:1230698 [sender.py:transition_state():463] send defer: 1
+2022-11-20 16:23:43,404 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:43,404 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 1
+2022-11-20 16:23:43,404 INFO    HandlerThread:1230698 [system_monitor.py:finish():160] Stopping system monitor
+2022-11-20 16:23:43,405 DEBUG   SystemMonitor:1230698 [system_monitor.py:_start():130] Starting system metrics aggregation loop
+2022-11-20 16:23:43,406 DEBUG   SystemMonitor:1230698 [system_monitor.py:_start():137] Finished system metrics aggregation loop
+2022-11-20 16:23:43,406 DEBUG   SystemMonitor:1230698 [system_monitor.py:_start():141] Publishing last batch of metrics
+2022-11-20 16:23:43,410 INFO    HandlerThread:1230698 [interfaces.py:finish():173] Joined cpu
+2022-11-20 16:23:43,410 INFO    HandlerThread:1230698 [interfaces.py:finish():173] Joined disk
+2022-11-20 16:23:44,290 INFO    HandlerThread:1230698 [interfaces.py:finish():173] Joined gpu
+2022-11-20 16:23:44,290 INFO    HandlerThread:1230698 [interfaces.py:finish():173] Joined memory
+2022-11-20 16:23:44,290 INFO    HandlerThread:1230698 [interfaces.py:finish():173] Joined network
+2022-11-20 16:23:44,291 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:44,292 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 1
+2022-11-20 16:23:44,292 INFO    SenderThread:1230698 [sender.py:transition_state():463] send defer: 2
+2022-11-20 16:23:44,292 DEBUG   SenderThread:1230698 [sender.py:send():303] send: stats
+2022-11-20 16:23:44,294 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:44,294 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 2
+2022-11-20 16:23:44,294 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:44,294 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 2
+2022-11-20 16:23:44,294 INFO    SenderThread:1230698 [sender.py:transition_state():463] send defer: 3
+2022-11-20 16:23:44,295 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:44,295 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 3
+2022-11-20 16:23:44,295 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:44,295 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 3
+2022-11-20 16:23:44,295 INFO    SenderThread:1230698 [sender.py:transition_state():463] send defer: 4
+2022-11-20 16:23:44,296 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:44,296 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 4
+2022-11-20 16:23:44,296 DEBUG   SenderThread:1230698 [sender.py:send():303] send: summary
+2022-11-20 16:23:44,326 INFO    SenderThread:1230698 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-11-20 16:23:44,327 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:44,327 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 4
+2022-11-20 16:23:44,327 INFO    SenderThread:1230698 [sender.py:transition_state():463] send defer: 5
+2022-11-20 16:23:44,327 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:44,328 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 5
+2022-11-20 16:23:44,328 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:44,328 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 5
+2022-11-20 16:23:44,358 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: poll_exit
+2022-11-20 16:23:44,462 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_modified():292] file/dir modified: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/output.log
+2022-11-20 16:23:44,462 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_modified():292] file/dir modified: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/wandb-summary.json
+2022-11-20 16:23:44,658 INFO    SenderThread:1230698 [sender.py:transition_state():463] send defer: 6
+2022-11-20 16:23:44,659 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: poll_exit
+2022-11-20 16:23:44,660 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:44,661 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 6
+2022-11-20 16:23:44,661 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:44,661 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 6
+2022-11-20 16:23:45,359 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: poll_exit
+2022-11-20 16:23:45,516 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_modified():292] file/dir modified: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/output.log
+2022-11-20 16:23:45,517 INFO    Thread-13 :1230698 [dir_watcher.py:_on_file_modified():292] file/dir modified: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/config.yaml
+2022-11-20 16:23:47,406 INFO    SenderThread:1230698 [sender.py:transition_state():463] send defer: 7
+2022-11-20 16:23:47,406 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: poll_exit
+2022-11-20 16:23:47,407 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:47,408 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 7
+2022-11-20 16:23:47,408 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:47,408 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 7
+2022-11-20 16:23:47,409 INFO    SenderThread:1230698 [dir_watcher.py:finish():362] shutting down directory watcher
+2022-11-20 16:23:47,520 INFO    SenderThread:1230698 [dir_watcher.py:_on_file_modified():292] file/dir modified: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/output.log
+2022-11-20 16:23:47,521 INFO    SenderThread:1230698 [dir_watcher.py:finish():392] scan: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files
+2022-11-20 16:23:47,521 INFO    SenderThread:1230698 [dir_watcher.py:finish():406] scan save: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/config.yaml config.yaml
+2022-11-20 16:23:47,521 INFO    SenderThread:1230698 [dir_watcher.py:finish():406] scan save: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/wandb-summary.json wandb-summary.json
+2022-11-20 16:23:47,522 INFO    SenderThread:1230698 [dir_watcher.py:finish():406] scan save: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/requirements.txt requirements.txt
+2022-11-20 16:23:47,534 INFO    SenderThread:1230698 [dir_watcher.py:finish():406] scan save: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/conda-environment.yaml conda-environment.yaml
+2022-11-20 16:23:47,539 INFO    SenderThread:1230698 [dir_watcher.py:finish():406] scan save: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/wandb-metadata.json wandb-metadata.json
+2022-11-20 16:23:47,540 INFO    SenderThread:1230698 [dir_watcher.py:finish():406] scan save: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/output.log output.log
+2022-11-20 16:23:47,548 INFO    SenderThread:1230698 [sender.py:transition_state():463] send defer: 8
+2022-11-20 16:23:47,554 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:47,559 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 8
+2022-11-20 16:23:47,560 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:47,560 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 8
+2022-11-20 16:23:47,560 INFO    SenderThread:1230698 [file_pusher.py:finish():168] shutting down file pusher
+2022-11-20 16:23:48,257 INFO    Thread-19 :1230698 [upload_job.py:push():143] Uploaded file /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/requirements.txt
+2022-11-20 16:23:48,290 INFO    Thread-18 :1230698 [upload_job.py:push():143] Uploaded file /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/wandb-summary.json
+2022-11-20 16:23:48,299 INFO    Thread-21 :1230698 [upload_job.py:push():143] Uploaded file /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/output.log
+2022-11-20 16:23:48,312 INFO    Thread-17 :1230698 [upload_job.py:push():143] Uploaded file /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/config.yaml
+2022-11-20 16:23:48,329 INFO    Thread-20 :1230698 [upload_job.py:push():143] Uploaded file /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/files/conda-environment.yaml
+2022-11-20 16:23:48,530 INFO    Thread-12 :1230698 [sender.py:transition_state():463] send defer: 9
+2022-11-20 16:23:48,531 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:48,531 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 9
+2022-11-20 16:23:48,531 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:48,532 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 9
+2022-11-20 16:23:48,532 INFO    SenderThread:1230698 [file_pusher.py:join():173] waiting for file pusher
+2022-11-20 16:23:48,532 INFO    SenderThread:1230698 [sender.py:transition_state():463] send defer: 10
+2022-11-20 16:23:48,532 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:48,533 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 10
+2022-11-20 16:23:48,533 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:48,533 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 10
+2022-11-20 16:23:48,737 INFO    SenderThread:1230698 [sender.py:transition_state():463] send defer: 11
+2022-11-20 16:23:48,738 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:48,738 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 11
+2022-11-20 16:23:48,739 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:48,739 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 11
+2022-11-20 16:23:48,739 INFO    SenderThread:1230698 [sender.py:transition_state():463] send defer: 12
+2022-11-20 16:23:48,740 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: defer
+2022-11-20 16:23:48,740 DEBUG   SenderThread:1230698 [sender.py:send():303] send: final
+2022-11-20 16:23:48,740 INFO    HandlerThread:1230698 [handler.py:handle_request_defer():162] handle defer: 12
+2022-11-20 16:23:48,741 DEBUG   SenderThread:1230698 [sender.py:send():303] send: footer
+2022-11-20 16:23:48,741 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: defer
+2022-11-20 16:23:48,741 INFO    SenderThread:1230698 [sender.py:send_request_defer():459] handle sender defer: 12
+2022-11-20 16:23:48,742 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: poll_exit
+2022-11-20 16:23:48,743 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: poll_exit
+2022-11-20 16:23:48,743 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: server_info
+2022-11-20 16:23:48,744 DEBUG   SenderThread:1230698 [sender.py:send_request():317] send_request: server_info
+2022-11-20 16:23:48,750 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: get_summary
+2022-11-20 16:23:48,751 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: sampled_history
+2022-11-20 16:23:49,192 INFO    MainThread:1230698 [wandb_run.py:_footer_history_summary_info():3377] rendering history
+2022-11-20 16:23:49,192 INFO    MainThread:1230698 [wandb_run.py:_footer_history_summary_info():3409] rendering summary
+2022-11-20 16:23:49,192 INFO    MainThread:1230698 [wandb_run.py:_footer_sync_info():3333] logging synced files
+2022-11-20 16:23:49,193 DEBUG   HandlerThread:1230698 [handler.py:handle_request():139] handle_request: shutdown
+2022-11-20 16:23:49,193 INFO    HandlerThread:1230698 [handler.py:finish():814] shutting down handler
+2022-11-20 16:23:49,741 INFO    WriterThread:1230698 [datastore.py:close():279] close: /mlainas/yewon/CoOp/CoOp/KGPrompt/wandb/run-20221120_162334-94e5i473/run-94e5i473.wandb
+2022-11-20 16:23:50,191 INFO    SenderThread:1230698 [sender.py:finish():1331] shutting down sender
+2022-11-20 16:23:50,191 INFO    SenderThread:1230698 [file_pusher.py:finish():168] shutting down file pusher
+2022-11-20 16:23:50,191 INFO    SenderThread:1230698 [file_pusher.py:join():173] waiting for file pusher
+2022-11-20 16:23:50,196 INFO    MainThread:1230698 [internal.py:handle_exit():78] Internal process exited

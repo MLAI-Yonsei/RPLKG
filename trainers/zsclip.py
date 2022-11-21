@@ -1,22 +1,28 @@
 import os
-import pdb
 import torch
-import pickle
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.cuda.amp import GradScaler, autocast
 import torch.optim as optim
-import numpy as np
-import tqdm
 from dassl.metrics import compute_accuracy
 from dassl.engine import TRAINER_REGISTRY, TrainerX
 from dassl.optim import build_optimizer, build_lr_scheduler
 import time
 from clip import clip
-from clip.model import convert_weights
-import pandas as pd
-import tqdm
 import random
+import wandb
+import pickle
+import math
+
+from dassl.utils import (
+    MetricMeter, AverageMeter, mkdir_if_missing)
+    
+import pdb
+import time
+import os.path as osp
+import datetime
+from tqdm import tqdm
+from dassl.optim import build_optimizer, build_lr_scheduler
 
 from .coop import load_clip_to_cpu
 from .imagenet_templates import IMAGENET_TEMPLATES, IMAGENET_TEMPLATES_SELECT
@@ -40,6 +46,7 @@ CUSTOM_TEMPLATES = {
 }
 
 
+
 @TRAINER_REGISTRY.register()
 class ZeroshotCLIP(TrainerX):
     def build_model(self, df):
@@ -47,22 +54,34 @@ class ZeroshotCLIP(TrainerX):
         classnames = self.dm.dataset.classnames
         self.classnames = classnames
         print(f"Loading CLIP (backbone: {cfg.MODEL.BACKBONE.NAME})")
-        clip_model = load_clip_to_cpu(cfg) 
+        clip_model = load_clip_to_cpu(cfg)        
         self.clip_model = clip_model.float().to("cuda")    
         self.emb_root = '/mlainas/KGPrompt_data/imagenet'
-        
+        self.logit_scale = cfg.TRAINER.MY_MODEL.SCALE
+        self.dropout = cfg.TRAINER.MY_MODEL.DROPOUT
+        self.wd = cfg.OPTIM.WEIGHT_DECAY
+        self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}'
         class LowDimer(nn.Module):
             def __init__(self):
                 super().__init__()
+                self.dropout = cfg.TRAINER.MY_MODEL.DROPOUT
 
-                self.img_lowdim_trf = nn.Linear(512,512)
-                self.txt_lowdim_trf = nn.Linear(512,512)
-                self.prompt_lowdim = nn.Linear(512,512)
+                #self.img_lowdim_trf = nn.Linear(512,512)
+                self.img_lowdim_trf = nn.Sequential( nn.Dropout(self.dropout) , nn.Linear(512,512) )
+
+                #self.txt_lowdim_trf = nn.Linear(512,512)
+                self.txt_lowdim_trf = nn.Sequential( nn.Dropout(self.dropout) , nn.Linear(512,512) )
+
+                #self.prompt_dim = nn.Linear(512,512)
+                self.prompt_dim = nn.Sequential( nn.Dropout(self.dropout) , nn.Linear(512,512) )
+
 
             def forward(self,x):
+        
                 return x #This is dummy forward.
 
         low_dimer = LowDimer()
+
 
         '''
         if cfg.TRAINER.COOP.PREC == "fp32" or cfg.TRAINER.COOP.PREC == "amp":
@@ -72,6 +91,7 @@ class ZeroshotCLIP(TrainerX):
         else :
             low_dimer.half()
         '''
+               
         # added, 해당 seed, dataset, shot에 해당하는 embedding이 뽑혀있지 않다면 뽑고, 아니면 불러온다.
         root = os.path.abspath(os.path.expanduser(cfg.DATASET.ROOT))
         self.dataset_dir = os.path.join(root, cfg.DATASET.NAME.lower())
@@ -80,10 +100,10 @@ class ZeroshotCLIP(TrainerX):
         if os.path.exists(preprocessed_emb):
             # 만약 seed, dataset, shot에 해당하는 임베딩 파일이 존재한다면
             # 이걸 load하고
-            pass
+            pass       
         else:
-            # 아니면 파일을 뽑아 pkl형태로 저장한다.
-            # 그런데 해당 seed, dataset, shot에 해당하는 raw_data의 피클 파일이 존재한다면
+        # 아니면 파일을 뽑아 pkl형태로 저장한다.
+        # 그런데 해당 seed, dataset, shot에 해당하는 raw_data의 피클 파일이 존재한다면
             if os.path.exists(preprocessed):
                 print(f"Loading preprocessed few-shot data from {preprocessed}")
                 with open(preprocessed, "rb") as file:
@@ -96,11 +116,10 @@ class ZeroshotCLIP(TrainerX):
 
         self.img_lowdim_trf = low_dimer.img_lowdim_trf
         self.txt_lowdim_trf = low_dimer.txt_lowdim_trf
-        self.prompt_lowdim = low_dimer.prompt_lowdim
+        self.prompt_lowdim = low_dimer.prompt_dim
         
         self.conceptnet_sentences = torch.load(f"{self.emb_root}/conceptnet_features.pkl")
         self.optim = build_optimizer(low_dimer, cfg.OPTIM )
-        #import pdb; pdb.set_trace()
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
         self.scaler = GradScaler() if cfg.TRAINER.COOP.PREC == "amp" else None
  
@@ -111,7 +130,6 @@ class ZeroshotCLIP(TrainerX):
         # added
         self.df = df
         self.mode = cfg.MODE
-
         if self.mode == 'ZS':
             prompts = [temp.format(c.replace("_", " ")) for c in classnames]
             print(f"Prompts: {prompts}")
@@ -125,12 +143,11 @@ class ZeroshotCLIP(TrainerX):
             text_features = torch.stack(prompts).to(self.device)
             
         elif self.mode == 'average':
-            print("##############################################")
-            pdb.set_trace()
             text_features = torch.stack([cf.mean(dim=0) for cf in self.conceptnet_sentences] )
 
         else:
             conceptnet_sentences = self.conceptnet_sentences
+            self.or_sent  = conceptnet_sentences
             original_length = []
             max_num = 0
             for cs in conceptnet_sentences :
@@ -152,6 +169,7 @@ class ZeroshotCLIP(TrainerX):
 
         self.text_features = text_features / text_features.norm(dim=-1, keepdim=True)
     
+    
     def attention_parallel(self, image, text, mask, max_len:int, mode:str):
         
         if mode == 'weight_sum':
@@ -160,7 +178,7 @@ class ZeroshotCLIP(TrainerX):
         else:
             image_features =  self.img_lowdim_trf(image)
             text_features = self.txt_lowdim_trf(text)
-            prompt_fc = self.prompt_lowdim(text)
+            text = self.prompt_lowdim(text)
 
 
         M = image_features @ text_features.view(-1,512).T #830000x1000
@@ -168,43 +186,27 @@ class ZeroshotCLIP(TrainerX):
         M += mask.unsqueeze(0)
         
         if mode == 'gumbel':
-            M = F.gumbel_softmax(M, tau=1.0, hard=True)
+            M = F.gumbel_softmax(M, tau=self.temp, hard=True)
         else:
             M = F.softmax(M, dim=-1)  # Nx1000x838    
 
         M = torch.bmm(M.permute((1,0,2)), text) # Nx1000x512
         M = M.permute((1,2,0)) # Nx512x1000
         M = M / M.norm(dim=1, keepdim=True)
-        sims = torch.einsum('ij,ijk->ik', image_features, M)
+        sims = torch.einsum('ij,ijk->ik', image, M)
         return sims
 
 
-
     def model_inference(self, image_features):
-        
-        logit_scale = self.clip_model.logit_scale.exp() 
+        if self.logit_scale == 0:
+            logit_scale = self.clip_model.logit_scale.exp()
+        else:
+            logit_scale = self.logit_scale
+
+
         image_features_norm = image_features / image_features.norm(dim=-1, keepdim=True)
 
-        if self.mode == 'weight_sum':         
-            mask = self.mask_sequence
-            max = self.max_num
-            m = self.mode   
-            text_features_norm = self.conceptnet_sentences / self.conceptnet_sentences.norm(dim=-1, keepdim=True) #normalize? or not
-            sims = self.attention_parallel(image_features_norm,  self.conceptnet_sentences, mask, max, m)
-            logits = logit_scale*sims
-            return logits
-
-        elif self.mode == 'attention' :
-            
-            mask = self.mask_sequence
-            max = self.max_num
-            m = self.mode   
-            sims = self.attention_parallel(image_features_norm, self.conceptnet_sentences, mask, max, m )
-            logits = logit_scale*sims
-            
-            return logits
-        
-        elif self.mode == 'gumbel' :
+        if self.mode == 'gumbel' or self.mode == 'attention' or  self.mode == 'weight_sum' :
             # nn.linear에 각 prompt들을 다 forward시켜서, lower dimension embedding을 구해야함. 
             # 근데 이거 offline으로 해두면, 학습이 되는게 아니라서 무조건 여기서 해야함.        
             mask = self.mask_sequence
@@ -213,18 +215,142 @@ class ZeroshotCLIP(TrainerX):
             text_features_norm = self.conceptnet_sentences / self.conceptnet_sentences.norm(dim=-1, keepdim=True) #normalize? or not
 
             sims = self.attention_parallel(image_features_norm, self.conceptnet_sentences, mask, max, m )
-            logits = logit_scale*sims
-            
-            return logits
+            logits = logit_scale*sims 
+            return logits       
         
         else:
             logits = image_features_norm @ self.text_features.T
-        # added
         
         logits = logit_scale * logits  
-
         return logits
     
+    def before_train(self):
+        directory = self.cfg.OUTPUT_DIR
+        if self.cfg.RESUME:
+            directory = self.cfg.RESUME
+        self.start_epoch = self.resume_model_if_exist(directory)
+
+        # Initialize summary writer
+        writer_dir = osp.join(self.output_dir, "tensorboard")
+        mkdir_if_missing(writer_dir)
+        self.init_writer(writer_dir)
+
+        # Remember the starting time (for computing the elapsed time)
+        self.time_start = time.time()
+        wandb.init(project="KGPrompt-221121",
+        name = self.name,
+        entity = 'ingdoo')
+
+
+
+    def run_epoch(self):
+        self.set_model_mode("train")
+        losses = MetricMeter()
+        batch_time = AverageMeter()
+        data_time = AverageMeter()
+        #edited
+        self.num_batches = len(self.train_dataloader) #원래 self.train_loader_x
+
+        end = time.time()
+        for self.batch_idx, batch in enumerate(self.train_dataloader): #edited self.train_loader_x
+            data_time.update(time.time() - end)
+            
+            t = self.epoch
+            annealing_epoch =  self.cfg.TRAINER.MY_MODEL.ANNEAL_EPOCH 
+            max_temp = self.cfg.TRAINER.MY_MODEL.max_temp 
+            min_temp = self.cfg.TRAINER.MY_MODEL.min_temp 
+
+            a = max_temp
+            b = math.log(min_temp/max_temp)/annealing_epoch
+
+            self.temp = a* math.exp(b*t)
+
+            loss_summary = self.forward_backward(batch)
+            batch_time.update(time.time() - end)
+            losses.update(loss_summary)
+
+            meet_freq = (self.batch_idx + 1) % self.cfg.TRAIN.PRINT_FREQ == 0
+            only_few_batches = self.num_batches < self.cfg.TRAIN.PRINT_FREQ
+            if meet_freq or only_few_batches:
+                nb_remain = 0
+                nb_remain += self.num_batches - self.batch_idx - 1
+                nb_remain += (
+                    self.max_epoch - self.epoch - 1
+                ) * self.num_batches
+                eta_seconds = batch_time.avg * nb_remain
+                eta = str(datetime.timedelta(seconds=int(eta_seconds)))
+
+                info = []
+                info += [f"epoch [{self.epoch + 1}/{self.max_epoch}]"]
+                info += [f"batch [{self.batch_idx + 1}/{self.num_batches}]"]
+                info += [f"time {batch_time.val:.3f} ({batch_time.avg:.3f})"]
+                info += [f"data {data_time.val:.3f} ({data_time.avg:.3f})"]
+                info += [f"{losses}"]
+                info += [f"lr {self.get_current_lr():.4e}"]
+                info += [f"eta {eta}"]
+                print(" ".join(info))
+
+            n_iter = self.epoch * self.num_batches + self.batch_idx
+            for name, meter in losses.meters.items():
+                self.write_scalar("train/" + name, meter.avg, n_iter)
+            self.write_scalar("train/lr", self.get_current_lr(), n_iter)
+
+
+            end = time.time()
+
+        wandb.log({
+            "train_loss " : losses.meters["loss"].avg,
+            "train_acc" : losses.meters["acc"].avg
+            }, step=self.epoch)
+
+
+    @torch.no_grad()
+    def test(self, split=None):
+        """A generic testing pipeline."""
+        losses = AverageMeter()
+        acces = AverageMeter()
+        self.set_model_mode("eval")
+        self.evaluator.reset()
+
+        if split is None:
+            split = self.cfg.TEST.SPLIT
+        # added
+        if split == "val" and self.valid_dataloader is not None:#val_loader
+            data_loader = self.valid_dataloader #val_loader
+        else:
+            split = "test"  # in case val_loader is None
+            data_loader = self.valid_dataloader   #val_loader
+
+        print(f"Evaluate on the *{split}* set")
+
+        for batch_idx, batch in enumerate(tqdm(data_loader)):
+            input, label = self.parse_batch_test(batch)
+            label = label.type(torch.int64)
+            output = self.model_inference(input)
+            self.evaluator.process(output, torch.squeeze(label))
+            #added
+            loss = F.cross_entropy(output, torch.squeeze(label))
+
+            losses.update(loss.item(), input.shape[0])
+            acc = compute_accuracy(output, label)[0].item()
+            acces.update(acc, input.shape[0])
+
+        loss = losses.avg
+        acc = acces.avg
+
+        wandb.log({
+            "test_loss" : loss,
+            "test_acc" : acc
+            }, step=self.epoch)
+
+        results = self.evaluator.evaluate()
+
+        for k, v in results.items():
+            tag = f"{split}/{k}"
+            self.write_scalar(tag, v, self.epoch)
+
+        return list(results.values())[0]
+
     def forward_backward(self, batch):
         image, label = self.parse_batch_train(batch)
         label = label.type(torch.int64)
@@ -249,6 +375,31 @@ class ZeroshotCLIP(TrainerX):
             self.update_lr()
 
         return loss_summary
+
+    def after_epoch(self):
+        last_epoch = (self.epoch + 1) == self.max_epoch
+        do_test = not self.cfg.TEST.NO_TEST
+        meet_checkpoint_freq = (
+            (self.epoch + 1) % self.cfg.TRAIN.CHECKPOINT_FREQ == 0
+            if self.cfg.TRAIN.CHECKPOINT_FREQ > 0 else False
+        )
+
+        if do_test and self.cfg.TEST.FINAL_MODEL == "best_val":
+            curr_result = self.test(split="val")
+            is_best = curr_result > self.best_result
+            if is_best:
+                self.best_result = curr_result
+                self.save_model(
+                    self.epoch,
+                    self.output_dir,
+                    val_result=curr_result,
+                    model_name="model-best.pth.tar"
+                )
+
+        if meet_checkpoint_freq or last_epoch:
+            self.save_model(self.epoch, self.output_dir)
+
+        self.test()
 
     def parse_batch_train(self, batch):
         input = batch[0]
