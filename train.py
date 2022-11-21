@@ -106,6 +106,9 @@ def reset_cfg(cfg, args):
     
     if args.min_temp:
         cfg.TRAINER.MY_MODEL.min_temp = args.min_temp
+    
+    if args.logit_scale:
+        cfg.TRAINER.MY_MODEL.SCALE = args.logit_scale
 
     
     
@@ -144,6 +147,7 @@ def extend_cfg(cfg):
     cfg.TRAINER.MY_MODEL.ANNEAL_EPOCH = 100
     cfg.TRAINER.MY_MODEL.max_temp = 2.0
     cfg.TRAINER.MY_MODEL.min_temp = 0.01
+    cfg.TRAINER.MY_MODEL.SCALE = 0
 
 
 def setup_cfg(args):
@@ -254,7 +258,7 @@ if __name__ == "__main__":
     )
 
     # added
-    parser.add_argument('--use_wandb', default=True, action="store_true", help='whether to use wandb')
+    parser.add_argument('--use_wandb', default=False, action="store_true", help='whether to use wandb')
     parser.add_argument('--wb_name', type=str, default='test', help='')
     parser.add_argument('--report_name', type=str)
     # ZS: zeroshot
@@ -263,13 +267,12 @@ if __name__ == "__main__":
     # nl_att: not learnable attention
     parser.add_argument('--mode', type=str, default='ZS', help='mode \in [0, 1, 2, 3, 4, 5]')
     parser.add_argument('--dataset', default='ImageNet', type=str)
-    parser.add_argument('--dropout', default='0.0', type=float)
-    parser.add_argument('--wd', default='0.0', type=float)
+    parser.add_argument('--dropout', default='0', type=float)
+    parser.add_argument('--wd', default='0', type=float)
     parser.add_argument('--anneal_epoch', default='100', type=float)
-    parser.add_argument('--max_temp', default='2.0', type=float)
-    parser.add_argument('--min_temp', default='0.01', type=float)
-
-
+    parser.add_argument('--max_temp', default='2', type=float)
+    parser.add_argument('--min_temp', default='0.1', type=float)
+    parser.add_argument('--logit_scale', default='0', type=float)
 
     args = parser.parse_args()
     main(args)

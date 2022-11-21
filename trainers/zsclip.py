@@ -57,7 +57,10 @@ class ZeroshotCLIP(TrainerX):
         clip_model = load_clip_to_cpu(cfg)        
         self.clip_model = clip_model.float().to("cuda")    
         self.emb_root = '/mlainas/KGPrompt_data/imagenet'
-
+        self.logit_scale = cfg.TRAINER.MY_MODEL.SCALE
+        self.dropout = cfg.TRAINER.MY_MODEL.DROPOUT
+        self.wd = cfg.OPTIM.WEIGHT_DECAY
+        self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}'
         class LowDimer(nn.Module):
             def __init__(self):
                 super().__init__()
@@ -195,8 +198,12 @@ class ZeroshotCLIP(TrainerX):
 
 
     def model_inference(self, image_features):
-        
-        logit_scale = self.clip_model.logit_scale.exp() 
+        if self.logit_scale == 0:
+            logit_scale = self.clip_model.logit_scale.exp()
+        else:
+            logit_scale = self.logit_scale
+
+
         image_features_norm = image_features / image_features.norm(dim=-1, keepdim=True)
 
         if self.mode == 'gumbel' or self.mode == 'attention' or  self.mode == 'weight_sum' :
@@ -230,7 +237,9 @@ class ZeroshotCLIP(TrainerX):
 
         # Remember the starting time (for computing the elapsed time)
         self.time_start = time.time()
-        wandb.init(project="KGPrompt-221118")
+        wandb.init(project="KGPrompt-221121",
+        name = self.name,
+        entity = 'ingdoo')
 
 
 
