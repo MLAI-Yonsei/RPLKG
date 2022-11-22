@@ -2,11 +2,11 @@
 
 # custom config
 
-for dropout in 0.1 
+for dropout in 0.4 
 do
-    for wd in 1e-2 5e-3 1e-3 0.1 0
+    for scale in 0 2 10 100 10000
     do
-        for scale in 0 2 10 100 10000
+        for wd in 1e-3 5e-3 0.1 0
         do
             DATA=/DATA1/yewon/coop
             TRAINER=ZeroshotCLIP
@@ -19,7 +19,7 @@ do
             DIR=$path
             echo $path
 
-            python train.py  --root ${DATA}  --seed 1 --trainer ${TRAINER} --dataset-config-file configs/datasets/${DATASET}.yaml --config-file configs/trainers/CoOp/${CFG}.yaml --output-dir ${DIR} --mode "attention" --dropout ${dropout} --wd ${wd} --logit_scale ${scale} --report_name ZSCLIP_dataset_${DATASET} DATASET.NUM_SHOTS ${SHOTS} 
+            python train.py  --root ${DATA}  --seed 1 --trainer ${TRAINER} --dataset-config-file configs/datasets/${DATASET}.yaml --config-file configs/trainers/CoOp/${CFG}.yaml --output-dir ${DIR} --mode "gumbel" --dropout ${dropout} --wd ${wd} --logit_scale ${scale} --report_name ZSCLIP_dataset_${DATASET} DATASET.NUM_SHOTS ${SHOTS}
         
         done
     done

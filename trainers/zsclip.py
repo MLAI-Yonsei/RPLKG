@@ -60,7 +60,8 @@ class ZeroshotCLIP(TrainerX):
         self.logit_scale = cfg.TRAINER.MY_MODEL.SCALE
         self.dropout = cfg.TRAINER.MY_MODEL.DROPOUT
         self.wd = cfg.OPTIM.WEIGHT_DECAY
-        self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}'
+        self.mode = cfg.MODE
+        self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}_{cfg.MODE}'
         class LowDimer(nn.Module):
             def __init__(self):
                 super().__init__()
