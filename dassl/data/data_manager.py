@@ -148,6 +148,9 @@ class DataManager:
         self.val_loader = val_loader
         self.test_loader = test_loader
 
+        # added
+        self.tfm_train = tfm_train
+        self.tfm_test = tfm_test
         if cfg.VERBOSE:
             self.show_dataset_summary(cfg)
 

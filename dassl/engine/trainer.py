@@ -364,81 +364,7 @@ class SimpleTrainer(TrainerBase):
         A re-implementation of this method must create the
         same attributes (self.dm is optional).
         """
-        # dm = DataManager(self.cfg)
-        
-        # # 코드 제출 시 지워야 함
-        # train_dir = '/mlainas/yewon/KGPrompt_data/imagenet_features_fewshot_train.npy'
-        # data_train = np.load(train_dir)
-        # image_feat_train = data_train[:, :-1]
-        # label_train = data_train[:,-1:]
-
-        # # 코드 제출 시 지워야 함
-        # val_dir = '/mlainas/yewon/CoOp2/imagenet_features_fewshot_val.npy'
-        # data_val = np.load(val_dir)
-        # image_feat_val = data_val[:, :-1]
-        # label_val = data_val[:,-1:]
-
-
-
-        # #added
-        # train_data = CustomImageDataset(image_feat_train, label_train)
-        # self.train_dataloader = DataLoader(train_data, batch_size=64, shuffle=True)
-
-        # val_data = CustomImageDataset(image_feat_val, label_val)
-        # self.val_loader = DataLoader(val_data, batch_size=100, shuffle=True)
-        
-        
-        # self.train_loader_x = dm.train_loader_x
-        # self.train_loader_u = dm.train_loader_u  # optional, can be None
-        # self.val_loader = dm.val_loader  # optional, can be None
-        # self.test_loader = dm.test_loader
-
-        # self.num_classes = dm.num_classes
-        # self.num_source_domains = dm.num_source_domains
-        # self.lab2cname = dm.lab2cname  # dict {label: classname}
-        # self.dm = dm
-
         dm = DataManager(self.cfg)
-
-        # 만약 npy 파일이 없다면
-        dataset_name = self.cfg.DATASET.NAME.lower()
-        num_shot = self.cfg.DATASET.NUM_SHOTS
-        seed = self.cfg.SEED
-        emb_root = f'/mlainas/KGPrompt_data/{dataset_name}'
-
-
-        train_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_train.npy'
-        valid_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_valid.npy'
-
-        print(train_dir)
-        print(valid_dir)
-        if os.path.exists(train_dir):
-            data_train = np.load(train_dir)
-            image_feat_train = data_train[:, :-1]
-            label_train = data_train[:,-1:]
-
-        else:
-            # 해당 데이터셋의 shot, seed에 피쳐가 없다면
-            # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
-            pass
-
-        train_data = CustomImageDataset(image_feat_train, label_train)
-
-        if os.path.exists(valid_dir):
-            data_val = np.load(valid_dir)
-            image_feat_val = data_val[:, :-1]
-            label_valid = data_val[:,-1:]
-
-        else:
-            # 해당 데이터셋의 shot, seed에 피쳐가 없다면
-            # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
-            pass
-        valid_data = CustomImageDataset(image_feat_val, label_valid)
-
-        
-        self.train_dataloader = DataLoader(train_data, batch_size=64, shuffle=True)
-        self.valid_dataloader = DataLoader(valid_data, batch_size=100, shuffle=True)
-        
         self.train_loader_x = dm.train_loader_x
         self.train_loader_u = dm.train_loader_u  # optional, can be None
         self.val_loader = dm.val_loader  # optional, can be None
@@ -446,8 +372,7 @@ class SimpleTrainer(TrainerBase):
 
         self.num_classes = dm.num_classes
         self.num_source_domains = dm.num_source_domains
-        self.lab2cname = dm.lab2cname  # dict {label: classname}
-
+        self.lab2cname = dm.lab2cname  # dict {label: classname}        
         self.dm = dm
         
     def build_model(self, df):
