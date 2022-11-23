@@ -6,7 +6,7 @@ for dropout in 0.4
 do
     for scale in 0 2 10 100 10000
     do
-        for wd in 1e-3 5e-3 0.1 0
+        for wd in 3e-3
         do
             DATA=/DATA1/yewon/coop
             TRAINER=ZeroshotCLIP

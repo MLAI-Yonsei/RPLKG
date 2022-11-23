@@ -45,6 +45,25 @@ CUSTOM_TEMPLATES = {
     "ImageNetR": "a photo of a {}.",
 }
 
+
+#for clip weight 
+
+def clip_classifier(prompt):
+    with torch.no_grad():
+        clip_weights = []
+
+        for cp in prompt:
+            # Tokenize the prompts
+            class_embeddings = cp
+            class_embeddings /= class_embeddings.norm(dim=-1, keepdim=True)
+            class_embedding = class_embeddings.mean(dim=0)
+            class_embedding /= class_embedding.norm()
+            clip_weights.append(class_embedding)
+
+        clip_weights = torch.stack(clip_weights, dim=1).cuda()
+    return clip_weights
+
+
 @TRAINER_REGISTRY.register()
 class ZeroshotCLIP(TrainerX):
     def build_model(self, df):
@@ -100,9 +119,12 @@ class ZeroshotCLIP(TrainerX):
 
         self.img_lowdim_trf = low_dimer.img_lowdim_trf
         self.txt_lowdim_trf = low_dimer.txt_lowdim_trf
-        self.prompt_lowdim = low_dimer.prompt_dim
-        
+        self.prompt_lowdim = low_dimer.prompt_dim 
         self.conceptnet_sentences = torch.load(f"{self.emb_root}/conceptnet_features.pkl")
+        
+        #for clip weight 
+        self.conceptnet_prompt = torch.load(f"{self.emb_root}/conceptnet_features.pkl")
+        
         self.optim = build_optimizer(low_dimer, cfg.OPTIM )
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
         self.scaler = GradScaler() if cfg.TRAINER.COOP.PREC == "amp" else None
@@ -153,7 +175,6 @@ class ZeroshotCLIP(TrainerX):
 
         self.text_features = text_features / text_features.norm(dim=-1, keepdim=True)
     
-    
     def attention_parallel(self, image, text, mask, max_len:int, mode:str):
         
         if mode == 'weight_sum':
@@ -164,6 +185,9 @@ class ZeroshotCLIP(TrainerX):
             text_features = self.txt_lowdim_trf(text)
             text = self.prompt_lowdim(text)
 
+
+        clip_weights = clip_classifier(self.conceptnet_prompt)
+        img_w = image @ clip_weights
 
         M = image_features @ text_features.view(-1,512).T #830000x1000
         M = M.view(-1,1000, max_len) #Nx1000x838
@@ -177,7 +201,8 @@ class ZeroshotCLIP(TrainerX):
         M = torch.bmm(M.permute((1,0,2)), text) # Nx1000x512
         M = M.permute((1,2,0)) # Nx512x1000
         M = M / M.norm(dim=1, keepdim=True)
-        sims = torch.einsum('ij,ijk->ik', image, M)
+        sims = torch.einsum('ij,ijk->ik', image, M) + img_w
+
         return sims
 
 
@@ -244,7 +269,6 @@ class ZeroshotCLIP(TrainerX):
 
             a = max_temp
             b = math.log(min_temp/max_temp)/annealing_epoch
-
             self.temp = a* math.exp(b*t)
 
             loss_summary = self.forward_backward(batch)
