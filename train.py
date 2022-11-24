@@ -109,8 +109,10 @@ def reset_cfg(cfg, args):
     
     if args.logit_scale:
         cfg.TRAINER.MY_MODEL.SCALE = args.logit_scale
-
     
+    if args.alpha:
+        cfg.TRAINER.MY_MODEL.ALPHA = args.alpha
+        
     
 def extend_cfg(cfg):
     """
@@ -148,6 +150,8 @@ def extend_cfg(cfg):
     cfg.TRAINER.MY_MODEL.max_temp = 2.0
     cfg.TRAINER.MY_MODEL.min_temp = 0.01
     cfg.TRAINER.MY_MODEL.SCALE = 0
+    cfg.TRAINER.MY_MODEL.ALPHA = 1
+
 
 
 def setup_cfg(args):
@@ -273,6 +277,8 @@ if __name__ == "__main__":
     parser.add_argument('--max_temp', default='2', type=float)
     parser.add_argument('--min_temp', default='0.1', type=float)
     parser.add_argument('--logit_scale', default='0', type=float)
+    parser.add_argument('--alpha', default='1', type=float)
+
 
     args = parser.parse_args()
     main(args)

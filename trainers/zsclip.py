@@ -81,7 +81,8 @@ class ZeroshotCLIP(TrainerX):
         self.dropout = cfg.TRAINER.MY_MODEL.DROPOUT
         self.wd = cfg.OPTIM.WEIGHT_DECAY
         self.mode = cfg.MODE
-        self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}_{cfg.MODE}'
+        self.alpha = cfg.TRAINER.MY_MODEL.ALPHA
+        self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}_{cfg.MODE}_alpha{self.alpha}'
 
         class LowDimer(nn.Module):
             def __init__(self):
@@ -201,7 +202,8 @@ class ZeroshotCLIP(TrainerX):
         M = torch.bmm(M.permute((1,0,2)), text) # Nx1000x512
         M = M.permute((1,2,0)) # Nx512x1000
         M = M / M.norm(dim=1, keepdim=True)
-        sims = torch.einsum('ij,ijk->ik', image, M) + img_w
+        alpha = self.alpha
+        sims = alpha * torch.einsum('ij,ijk->ik', image, M) + img_w
 
         return sims
 
@@ -246,7 +248,7 @@ class ZeroshotCLIP(TrainerX):
 
         # Remember the starting time (for computing the elapsed time)
         self.time_start = time.time()
-        wandb.init(project="KGPrompt-221123",
+        wandb.init(project="KGPrompt-221124",
                    name = self.name,
                    entity='ingdoo')
 
