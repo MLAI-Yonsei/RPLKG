@@ -83,6 +83,10 @@ class ZeroshotCLIP(TrainerX):
         self.mode = cfg.MODE
         self.alpha = cfg.TRAINER.MY_MODEL.ALPHA
         self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}_{cfg.MODE}_alpha{self.alpha}'
+
+        wandb.init(project="KGPrompt-221125",
+            name = self.name,
+            entity='ingdoo')
         
         class LowDimer(nn.Module):
             def __init__(self):
@@ -114,7 +118,6 @@ class ZeroshotCLIP(TrainerX):
         else :
             low_dimer.half()
         '''   
-
         low_dimer.to(self.device)
         clip_model.to(self.device)
 
@@ -251,9 +254,7 @@ class ZeroshotCLIP(TrainerX):
 
         # Remember the starting time (for computing the elapsed time)
         self.time_start = time.time()
-        wandb.init(project="KGPrompt-221124",
-                   name = self.name,
-                   entity='ingdoo')
+
 
     def run_epoch(self):
         self.set_model_mode("train")

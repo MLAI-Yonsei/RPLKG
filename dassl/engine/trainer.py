@@ -469,11 +469,11 @@ class SimpleTrainer(TrainerBase):
         if split is None:
             split = self.cfg.TEST.SPLIT
         # added
-        if split == "val" and self.valid_dataloader is not None:
-            data_loader = self.valid_dataloader #val_loader
+        if split == "val" and self.val_loader is not None:
+            data_loader = self.val_loader #val_loader
         else:
             split = "test"  # in case val_loader is None
-            data_loader = self.valid_dataloader   #val_loader
+            data_loader = self.val_loader   #val_loader
 
         print(f"Evaluate on the *{split}* set")
 
@@ -665,10 +665,10 @@ class TrainerX(SimpleTrainer):
         losses = MetricMeter()
         batch_time = AverageMeter()
         data_time = AverageMeter()
-        self.num_batches = len(self.train_dataloader) #원래 self.train_loader_x
+        self.num_batches = len(self.train_loader_x) #원래 self.train_loader_x
 
         end = time.time()
-        for self.batch_idx, batch in enumerate(self.train_dataloader):
+        for self.batch_idx, batch in enumerate(self.train_loader_x):
             data_time.update(time.time() - end)
             loss_summary = self.forward_backward(batch)
             batch_time.update(time.time() - end)

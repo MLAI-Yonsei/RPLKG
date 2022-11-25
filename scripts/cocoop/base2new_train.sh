@@ -26,5 +26,6 @@ python train.py \
 --dataset-config-file configs/datasets/${DATASET}.yaml \
 --config-file configs/trainers/CoOp/${CFG}.yaml \
 --output-dir ${DIR} \
+--mode "gumbel" \
 DATASET.NUM_SHOTS ${SHOTS} \
 DATASET.SUBSAMPLE_CLASSES base

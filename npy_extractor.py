@@ -49,10 +49,11 @@ def set_data_loader(cfg, dm, device, clip_model):
     dataset_name = cfg.DATASET.NAME.lower()
     num_shot = cfg.DATASET.NUM_SHOTS
     seed = cfg.SEED
+    subsample_class = cfg.DATASET.SUBSAMPLE_CLASSES
     emb_root = f'/mlainas/KGPrompt_data/{dataset_name}'
 
-    train_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_train.npy'
-    valid_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_valid.npy'
+    train_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_{subsample_class}_train.npy'
+    valid_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_{subsample_class}_valid.npy'
 
     print(train_dir)
     print(valid_dir)
