@@ -1,16 +1,17 @@
 #!/bin/bash
 
 # custom config
-DATA=/data/yewon/DATA
-TRAINER=CoCoOp
+DATA=/DATA1/yewon/coop
+TRAINER=ZeroshotCLIP
 # TRAINER=CoOp
 
 DATASET=$1
 SEED=$2
 
-CFG=vit_b16_c4_ep10_batch1_ctxv1
+#CFG=vit_b16_c4_ep10_batch1_ctxv1
+
 # CFG=vit_b16_ctxv1  # uncomment this when TRAINER=CoOp
-# CFG=vit_b16_ep50_ctxv1  # uncomment this when TRAINER=CoOp and DATASET=imagenet
+CFG=vit_b16_ep50_ctxv1  # uncomment this when TRAINER=CoOp and DATASET=imagenet
 SHOTS=16
 
 
@@ -23,7 +24,7 @@ python train.py \
 --seed ${SEED} \
 --trainer ${TRAINER} \
 --dataset-config-file configs/datasets/${DATASET}.yaml \
---config-file configs/trainers/${TRAINER}/${CFG}.yaml \
+--config-file configs/trainers/CoOp/${CFG}.yaml \
 --output-dir ${DIR} \
 DATASET.NUM_SHOTS ${SHOTS} \
 DATASET.SUBSAMPLE_CLASSES base

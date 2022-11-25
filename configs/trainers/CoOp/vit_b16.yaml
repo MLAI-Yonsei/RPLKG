@@ -17,7 +17,7 @@ OPTIM:
   LR: 0.01
   #LR: 0.1
   #MAX_EPOCH: 200
-  MAX_EPOCH: 100
+  MAX_EPOCH: 150
   LR_SCHEDULER: "cosine"
   WARMUP_EPOCH: 1
   WARMUP_TYPE: "constant"
