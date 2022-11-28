@@ -4,10 +4,11 @@ Modified from https://github.com/KaiyangZhou/deep-person-reid
 import warnings
 import torch
 import torch.nn as nn
+from .sam import SAM
 
 from .radam import RAdam
 
-AVAI_OPTIMS = ["adam", "amsgrad", "sgd", "rmsprop", "radam", "adamw"]
+AVAI_OPTIMS = ["adam", "amsgrad", "sgd", "rmsprop", "radam", "adamw", "sam"]
 
 
 def build_optimizer(model, optim_cfg, param_groups=None):
@@ -136,6 +137,15 @@ def build_optimizer(model, optim_cfg, param_groups=None):
             weight_decay=weight_decay,
             betas=(adam_beta1, adam_beta2),
         )
+
+    elif optim == "sam":
+        optimizer = SAM(
+            param_groups,
+            torch.optim.SGD,
+            lr = lr, 
+            momentum=momentum   
+        )
+
     else:
         raise NotImplementedError(f"Optimizer {optim} not implemented yet!")
 

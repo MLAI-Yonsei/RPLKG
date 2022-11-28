@@ -27,6 +27,10 @@ from dassl.optim import build_optimizer, build_lr_scheduler
 from .coop import load_clip_to_cpu
 from .imagenet_templates import IMAGENET_TEMPLATES, IMAGENET_TEMPLATES_SELECT
 
+
+
+
+
 CUSTOM_TEMPLATES = {
     "OxfordPets": "a photo of a {}, a type of pet.",
     "OxfordFlowers": "a photo of a {}, a type of flower.",
@@ -45,6 +49,27 @@ CUSTOM_TEMPLATES = {
     "ImageNetR": "a photo of a {}.",
 }
 
+Tensor = torch.Tensor
+
+def gumbel_softmax(logits: Tensor, tau: float = 1, hard: bool = False, eps: float = 1e-10, dim: int = -1) -> Tensor:
+
+    gumbels = (
+        -torch.empty_like(logits, memory_format=torch.legacy_contiguous_format).exponential_().log()
+    )  # ~Gumbel(0,1)
+    gumbels = (logits + gumbels) / tau  # ~Gumbel(logits,tau)
+    y_soft = gumbels.softmax(dim)
+
+    if hard:
+        # Straight through.
+        index = y_soft.max(dim, keepdim=True)[1]
+        value = y_soft.max(dim, keepdim=True)[0]
+        y_hard = (y_soft > value*0.5).float()
+        #y_hard = torch.zeros_like(logits, memory_format=torch.legacy_contiguous_format).scatter_(dim, index, 1.0)
+        ret = y_hard - y_soft.detach() + y_soft
+    else:
+        # Reparametrization trick.
+        ret = y_soft
+    return ret
 
 #for clip weight 
 
@@ -84,7 +109,7 @@ class ZeroshotCLIP(TrainerX):
         self.alpha = cfg.TRAINER.MY_MODEL.ALPHA
         self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}_{cfg.MODE}_alpha{self.alpha}'
 
-        wandb.init(project="KGPrompt-221125",
+        wandb.init(project="KGPrompt-221128",
             name = self.name,
             entity='ingdoo')
         
@@ -94,13 +119,22 @@ class ZeroshotCLIP(TrainerX):
                 self.dropout = cfg.TRAINER.MY_MODEL.DROPOUT
 
                 #self.img_lowdim_trf = nn.Linear(512,512)
-                self.img_lowdim_trf = nn.Sequential( nn.Dropout(self.dropout) , nn.Linear(512,512) )
+                self.img_lowdim_trf = nn.Sequential(
+                        nn.Dropout(self.dropout), 
+                        nn.Linear(512,512) , 
+                        )
 
                 #self.txt_lowdim_trf = nn.Linear(512,512)
-                self.txt_lowdim_trf = nn.Sequential( nn.Dropout(self.dropout) , nn.Linear(512,512) )
+                self.txt_lowdim_trf = nn.Sequential(
+                        nn.Dropout(self.dropout), 
+                        nn.Linear(512,512) , 
+                        )
 
                 #self.prompt_dim = nn.Linear(512,512)
-                self.prompt_dim = nn.Sequential( nn.Dropout(self.dropout) , nn.Linear(512,512) )
+                self.prompt_dim = nn.Sequential(
+                        nn.Dropout(self.dropout), 
+                        nn.Linear(512,512) , 
+                        )
 
 
             def forward(self,x):
@@ -196,12 +230,8 @@ class ZeroshotCLIP(TrainerX):
         M = image_features @ text_features.view(-1,512).T #830000x1000
         M = M.view(-1,1000, max_len) #Nx1000x838
         M += mask.unsqueeze(0)
-        
         if mode == 'gumbel':
-            M1 = F.gumbel_softmax(M, tau=self.temp, hard=True)
-            M2 = M - M1
-            M2 = F.gumbel_softmax(M2, tau=self.temp, hard=True)
-            M = M1 + M2
+            M = gumbel_softmax(M, tau=self.temp, hard=True)
         else:
             M = F.softmax(M, dim=-1)  # Nx1000x838    
 
@@ -209,7 +239,9 @@ class ZeroshotCLIP(TrainerX):
         M = M.permute((1,2,0)) # Nx512x1000
         M = M / M.norm(dim=1, keepdim=True)
         alpha = self.alpha
-        sims = alpha * torch.einsum('ij,ijk->ik', image, M) + img_w
+        sims = alpha * torch.einsum('ij,ijk->ik', image, M) + img_w #Nx1000
+
+        ##dual softmax
 
         return sims
 
@@ -378,7 +410,13 @@ class ZeroshotCLIP(TrainerX):
         else:
             output = self.model_inference(image)
             loss = F.cross_entropy(output, label.squeeze(dim=-1))
-            self.model_backward_and_update(loss) #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
+            loss.backward(retain_graph=True )
+            #self.model_backward_and_update(loss) #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
+            self.optim.first_step(zero_grad=True)
+            F.cross_entropy(output, label.squeeze(dim=-1)).backward()
+            self.optim.second_step(zero_grad=True)
+
+            
         loss_summary = {
             "loss": loss.item(),
             "acc": compute_accuracy(output, label)[0].item(),
