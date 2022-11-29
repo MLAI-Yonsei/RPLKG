@@ -22,11 +22,15 @@ class CustomImageDataset(Dataset):
 
 def dataset_to_npy(dm, stage, clip_model, device):
     dataset = dm.dataset
+    print(stage)
     if stage == 'train':
         data_x = dataset.train_x
         tfm = dm.tfm_train
-    else:
+    elif stage == 'val':
         data_x = dataset.val
+        tfm = dm.tfm_test
+    else:
+        data_x = dataset.test
         tfm = dm.tfm_test
 
     with torch.no_grad():
@@ -51,12 +55,16 @@ def set_data_loader(cfg, dm, device, clip_model):
     seed = cfg.SEED
     subsample_class = cfg.DATASET.SUBSAMPLE_CLASSES
     emb_root = f'/mlainas/KGPrompt_data/{dataset_name}'
+    if not os.path.exists(emb_root):
+        os.mkdir(emb_root)
 
     train_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_{subsample_class}_train.npy'
     valid_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_{subsample_class}_valid.npy'
+    test_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_{subsample_class}_test.npy'
 
     print(train_dir)
     print(valid_dir)
+    print(test_dir)
 
     if os.path.exists(train_dir):
         data_train = np.load(train_dir)
@@ -87,7 +95,7 @@ def set_data_loader(cfg, dm, device, clip_model):
         # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
         pass
         dataset = dm.dataset
-        stage = 'valid'    
+        stage = 'val'    
         data_val = dataset_to_npy(dm=dm,
                                     stage=stage, 
                                     clip_model=clip_model,
@@ -99,7 +107,30 @@ def set_data_loader(cfg, dm, device, clip_model):
 
     valid_data = CustomImageDataset(image_feat_val, label_valid)
   
+    if os.path.exists(test_dir):
+        data_test = np.load(test_dir)
+        image_feat_test = data_test[:, :-1]
+        label_test = data_test[:,-1:]
+
+    else:
+        # 해당 데이터셋의 shot, seed에 피쳐가 없다면
+        # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
+        dataset = dm.dataset
+        stage = 'test'    
+        data_test = dataset_to_npy(dm=dm,
+                                    stage=stage, 
+                                    clip_model=clip_model,
+                                    device=device)
+        np.save(test_dir, data_test)
+
+    image_feat_test = data_test[:, :-1]
+    label_test = data_test[:,-1:]
+    
+    test_data = CustomImageDataset(image_feat_test, label_test)
+    import pdb;pdb.set_trace()
+
     train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=64, shuffle=True)
     valid_dataloader = torch.utils.data.DataLoader(valid_data, batch_size=100, shuffle=True)
-
-    return train_dataloader, valid_dataloader
+    test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=100, shuffle=True)
+    
+    return train_dataloader, valid_dataloader, test_dataloader 
