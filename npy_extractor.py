@@ -106,26 +106,31 @@ def set_data_loader(cfg, dm, device, clip_model):
     label_valid = data_val[:,-1:]
 
     valid_data = CustomImageDataset(image_feat_val, label_valid)
-  
-    if os.path.exists(test_dir):
-        data_test = np.load(test_dir)
+    
+    if dataset_name == 'imagenet':
+        # if datasetname == 'imagenet', testloader == valloader
+        image_feat_test = image_feat_val
+        label_tes = label_valid
+    else:
+        if os.path.exists(test_dir):
+            data_test = np.load(test_dir)
+            image_feat_test = data_test[:, :-1]
+            label_test = data_test[:,-1:]
+
+        else:
+            # 해당 데이터셋의 shot, seed에 피쳐가 없다면
+            # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
+            dataset = dm.dataset
+            stage = 'test'    
+            data_test = dataset_to_npy(dm=dm,
+                                        stage=stage, 
+                                        clip_model=clip_model,
+                                        device=device)
+            np.save(test_dir, data_test)
+
         image_feat_test = data_test[:, :-1]
         label_test = data_test[:,-1:]
-
-    else:
-        # 해당 데이터셋의 shot, seed에 피쳐가 없다면
-        # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
-        dataset = dm.dataset
-        stage = 'test'    
-        data_test = dataset_to_npy(dm=dm,
-                                    stage=stage, 
-                                    clip_model=clip_model,
-                                    device=device)
-        np.save(test_dir, data_test)
-
-    image_feat_test = data_test[:, :-1]
-    label_test = data_test[:,-1:]
-    
+        
     test_data = CustomImageDataset(image_feat_test, label_test)
     import pdb;pdb.set_trace()
 
