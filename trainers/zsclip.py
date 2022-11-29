@@ -61,9 +61,11 @@ def gumbel_softmax(logits: Tensor, tau: float = 1, hard: bool = False, eps: floa
 
     if hard:
         # Straight through.
-        index = y_soft.max(dim, keepdim=True)[1]
+        index = y_soft.topk(2, dim)[1]
         value = y_soft.max(dim, keepdim=True)[0]
-        y_hard = (y_soft > value*0.5).float()
+        y_hard = (y_soft > 0).float()
+        
+        #y_hard = (y_soft > value*0.8).float()
         #y_hard = torch.zeros_like(logits, memory_format=torch.legacy_contiguous_format).scatter_(dim, index, 1.0)
         ret = y_hard - y_soft.detach() + y_soft
     else:
@@ -99,7 +101,7 @@ class ZeroshotCLIP(TrainerX):
         clip_model = load_clip_to_cpu(cfg)        
         self.clip_model = clip_model.float().to("cuda")
        
-        self.train_dataloader, self.valid_dataloader = set_data_loader(cfg, self.dm, self.device, clip_model)      
+        self.train_dataloader, self.valid_dataloader, self.test_dataloader = set_data_loader(cfg, self.dm, self.device, clip_model)      
         self.emb_root = '/mlainas/KGPrompt_data/imagenet'
        
         self.logit_scale = cfg.TRAINER.MY_MODEL.SCALE
@@ -143,25 +145,16 @@ class ZeroshotCLIP(TrainerX):
 
         low_dimer = LowDimer()
 
-
-        '''
-        if cfg.TRAINER.COOP.PREC == "fp32" or cfg.TRAINER.COOP.PREC == "amp":
-            # CLIP's default precision is fp16
-            clip_model.float()
-            low_dimer.float()
-        else :
-            low_dimer.half()
-        '''   
         low_dimer.to(self.device)
         clip_model.to(self.device)
 
         self.img_lowdim_trf = low_dimer.img_lowdim_trf
         self.txt_lowdim_trf = low_dimer.txt_lowdim_trf
         self.prompt_lowdim = low_dimer.prompt_dim 
-        self.conceptnet_sentences = torch.load(f"{self.emb_root}/conceptnet_features.pkl")
+        self.conceptnet_sentences = torch.load(f"{self.emb_root}/conceptnet_features_level_1.pkl")
         
         #for clip weight 
-        self.conceptnet_prompt = torch.load(f"{self.emb_root}/conceptnet_features.pkl")
+        self.conceptnet_prompt = torch.load(f"{self.emb_root}/conceptnet_features_level_1.pkl")
         
         self.optim = build_optimizer(low_dimer, cfg.OPTIM )
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
@@ -231,7 +224,10 @@ class ZeroshotCLIP(TrainerX):
         M = M.view(-1,1000, max_len) #Nx1000x838
         M += mask.unsqueeze(0)
         if mode == 'gumbel':
-            M = gumbel_softmax(M, tau=self.temp, hard=True)
+            M1 = F.gumbel_softmax(M, tau=self.temp, hard=True)
+            M2 = M - M1.detach()
+            M2 = F.gumbel_softmax(M2, tau=self.temp, hard=True)
+            M = M1 + M2
         else:
             M = F.softmax(M, dim=-1)  # Nx1000x838    
 
@@ -241,23 +237,25 @@ class ZeroshotCLIP(TrainerX):
         alpha = self.alpha
         sims = alpha * torch.einsum('ij,ijk->ik', image, M) + img_w #Nx1000
 
+
         ##dual softmax
 
         return sims
 
 
-    def model_inference(self, image_features):
+    def model_inference(self, image_features, split):
         if self.logit_scale == 0:
             logit_scale = self.clip_model.logit_scale.exp()
         else:
             logit_scale = self.logit_scale
-
-
+        
+        if split == None:
+            image_features = image_features + 0.2*torch.randn_like(image_features) 
+        
         image_features_norm = image_features / image_features.norm(dim=-1, keepdim=True)
+            
 
-        if self.mode == 'gumbel' or self.mode == 'attention' or  self.mode == 'weight_sum' :
-            # nn.linear에 각 prompt들을 다 forward시켜서, lower dimension embedding을 구해야함. 
-            # 근데 이거 offline으로 해두면, 학습이 되는게 아니라서 무조건 여기서 해야함.        
+        if self.mode == 'gumbel' or self.mode == 'attention' or  self.mode == 'weight_sum' :      
             mask = self.mask_sequence
             max = self.max_num
             m = self.mode   
@@ -362,15 +360,15 @@ class ZeroshotCLIP(TrainerX):
         if split == "val" and self.valid_dataloader is not None:#val_loader
             data_loader = self.valid_dataloader #val_loader
         else:
-            split = "test"  # in case val_loader is None
-            data_loader = self.valid_dataloader   #val_loader
+            split == "test"  # in case val_loader is None
+            data_loader = self.test_dataloader   #val_loader
 
         print(f"Evaluate on the *{split}* set")
-
+        
         for batch_idx, batch in enumerate(tqdm(data_loader)):
             input, label = self.parse_batch_test(batch)
             label = label.type(torch.int64)
-            output = self.model_inference(input)
+            output = self.model_inference(input, split = "val")
             self.evaluator.process(output, torch.squeeze(label))
             #added
             loss = F.cross_entropy(output, torch.squeeze(label))
@@ -399,22 +397,28 @@ class ZeroshotCLIP(TrainerX):
         image, label = self.parse_batch_train(batch)
         label = label.type(torch.int64)
         prec = self.cfg.TRAINER.COOP.PREC
+        optim_name = self.cfg.OPTIM.NAME
         if prec == "amp":
             with autocast():
-                output = self.model_inference(image)
+                output = self.model_inference(image, split = None)
                 loss = F.cross_entropy(output, label)
             self.optim.zero_grad()
             self.scaler.scale(loss).backward()
             self.scaler.step(self.optim)
             self.scaler.update()
         else:
-            output = self.model_inference(image)
-            loss = F.cross_entropy(output, label.squeeze(dim=-1))
-            loss.backward(retain_graph=True )
-            #self.model_backward_and_update(loss) #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
-            self.optim.first_step(zero_grad=True)
-            F.cross_entropy(output, label.squeeze(dim=-1)).backward()
-            self.optim.second_step(zero_grad=True)
+            if optim_name == 'sam':
+                output = self.model_inference(image, split = None)
+                loss = F.cross_entropy(output, label.squeeze(dim=-1))
+                loss.backward(retain_graph=True )
+                #self.model_backward_and_update(loss) #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
+                self.optim.first_step(zero_grad=True)
+                F.cross_entropy(output, label.squeeze(dim=-1)).backward()
+                self.optim.second_step(zero_grad=True)
+            else:
+                output = self.model_inference(image, split = None)
+                loss = F.cross_entropy(output, label.squeeze(dim=-1))
+                self.model_backward_and_update(loss) #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
 
             
         loss_summary = {
