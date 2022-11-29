@@ -5,7 +5,7 @@ import torch
 import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
-from npy_extractor import set_data_loader
+from feature_extractor import set_data_loader, get_conceptnet_feature
 from torch.cuda.amp import GradScaler, autocast
 import torch.optim as optim
 from dassl.metrics import compute_accuracy
@@ -102,14 +102,21 @@ class ZeroshotCLIP(TrainerX):
         self.clip_model = clip_model.float().to("cuda")
        
         self.train_dataloader, self.valid_dataloader, self.test_dataloader = set_data_loader(cfg, self.dm, self.device, clip_model)      
-        self.emb_root = '/mlainas/KGPrompt_data/imagenet'
        
+        # sentence embedding
+        self.subsample_class = cfg.DATASET.SUBSAMPLE_CLASSES
+        self.search_level = cfg.DATASET.SEARCH_LEVEL
+        self.emb_root = cfg.DATASET.EMB_ROOT
+        self.dataset_name = cfg.DATASET.NAME.lower()
+
         self.logit_scale = cfg.TRAINER.MY_MODEL.SCALE
         self.dropout = cfg.TRAINER.MY_MODEL.DROPOUT
         self.wd = cfg.OPTIM.WEIGHT_DECAY
         self.mode = cfg.MODE
         self.alpha = cfg.TRAINER.MY_MODEL.ALPHA
         self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}_{cfg.MODE}_alpha{self.alpha}'
+
+
 
         wandb.init(project="KGPrompt-221128",
             name = self.name)
@@ -150,10 +157,22 @@ class ZeroshotCLIP(TrainerX):
         self.img_lowdim_trf = low_dimer.img_lowdim_trf
         self.txt_lowdim_trf = low_dimer.txt_lowdim_trf
         self.prompt_lowdim = low_dimer.prompt_dim 
-        self.conceptnet_sentences = torch.load(f"{self.emb_root}/conceptnet_features_level_1.pkl")
+        
+        # automated conceptnet_feature extracting
+        conceptnet_sentences_path = f"{self.emb_root}/{self.dataset_name}/conceptnet_features_{self.subsample_class}_level_{self.search_level}.pkl"
+        if not os.path.exists(conceptnet_sentences_path):
+            self.conceptnet_sentences = get_conceptnet_feature(emb_root=self.emb_root,
+                                                             dataset=self.dataset_name,
+                                                             subsample_class=self.subsample_class,
+                                                             level=self.search_level,
+                                                             classnames=self.classnames,
+                                                             clip_model=clip_model,
+                                                             device=self.device)
+        else:
+            self.conceptnet_sentences = torch.load(conceptnet_sentences_path)
         
         #for clip weight 
-        self.conceptnet_prompt = torch.load(f"{self.emb_root}/conceptnet_features_level_1.pkl")
+        self.conceptnet_prompt = self.conceptnet_sentences
         
         self.optim = build_optimizer(low_dimer, cfg.OPTIM )
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
@@ -164,8 +183,7 @@ class ZeroshotCLIP(TrainerX):
         self.register_model("low_dimer", low_dimer, self.optim, self.sched)
         
         # added
-        self.df = df
-        self.mode = cfg.MODE
+        
         if self.mode == 'ZS':
             prompts = [temp.format(c.replace("_", " ")) for c in classnames]
             print(f"Prompts: {prompts}")
@@ -220,7 +238,7 @@ class ZeroshotCLIP(TrainerX):
         img_w = image @ clip_weights
 
         M = image_features @ text_features.view(-1,512).T #830000x1000
-        M = M.view(-1,1000, max_len) #Nx1000x838
+        M = M.view(-1,len(self.classnames), max_len) #Nx1000x838
         M += mask.unsqueeze(0)
         if mode == 'gumbel':
             M1 = F.gumbel_softmax(M, tau=self.temp, hard=True)
