@@ -41,7 +41,7 @@ CUSTOM_TEMPLATES = {
 
 @TRAINER_REGISTRY.register()
 class ZeroshotCLIP(TrainerX):
-    def build_model(self, df):
+    def build_model(self):
         cfg = self.cfg
         classnames = self.dm.dataset.classnames
         self.classnames = classnames
@@ -88,7 +88,6 @@ class ZeroshotCLIP(TrainerX):
         self.register_model("low_dimer", low_dimer, self.optim, self.sched)
         
         # added
-        self.df = df
         self.mode = cfg.MODE
 
         if self.mode == 'ZS':

@@ -218,11 +218,9 @@ class CoCoOp(TrainerX):
     def check_cfg(self, cfg):
         assert cfg.TRAINER.COCOOP.PREC in ["fp16", "fp32", "amp"]
 
-    def build_model(self, df):
+    def build_model(self):
         cfg = self.cfg
         classnames = self.dm.dataset.classnames
-
-        self.df = df
         #temp = CUSTOM_TEMPLATES[cfg.DATASET.NAME]       
         
         #prompts = [temp.format(c.replace("_", " ")) for c in classnames]

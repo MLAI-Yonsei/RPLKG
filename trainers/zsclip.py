@@ -93,7 +93,7 @@ def clip_classifier(prompt):
 
 @TRAINER_REGISTRY.register()
 class ZeroshotCLIP(TrainerX):
-    def build_model(self, df):
+    def build_model(self):
         cfg = self.cfg
         classnames = self.dm.dataset.classnames
         self.classnames = classnames

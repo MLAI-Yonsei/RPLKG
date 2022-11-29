@@ -110,7 +110,7 @@ def set_data_loader(cfg, dm, device, clip_model):
     if dataset_name == 'imagenet':
         # if datasetname == 'imagenet', testloader == valloader
         image_feat_test = image_feat_val
-        label_tes = label_valid
+        label_test = label_valid
     else:
         if os.path.exists(test_dir):
             data_test = np.load(test_dir)
