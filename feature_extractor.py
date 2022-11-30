@@ -96,7 +96,6 @@ def set_data_loader(cfg, dm, device, clip_model):
     else:
         # 해당 데이터셋의 shot, seed에 피쳐가 없다면
         # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
-        pass
         dataset = dm.dataset
         stage = 'val'    
         data_val = dataset_to_npy(dm=dm,

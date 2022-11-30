@@ -119,7 +119,8 @@ class ZeroshotCLIP(TrainerX):
 
 
         wandb.init(project="KGPrompt-221128",
-            name = self.name)
+                   name=self.name,
+                   entity='ingdoo')
         
         class LowDimer(nn.Module):
             def __init__(self):
