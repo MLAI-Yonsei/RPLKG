@@ -116,6 +116,9 @@ def reset_cfg(cfg, args):
 
     if args.search_level:
         cfg.DATASET.SEARCH_LEVEL = args.search_level
+
+    if args.max_epoch:
+        cfg.OPTIM.MAX_EPOCH = args.max_epoch
     
 def extend_cfg(cfg):
     """
@@ -154,6 +157,7 @@ def extend_cfg(cfg):
     cfg.TRAINER.MY_MODEL.min_temp = 0.01
     cfg.TRAINER.MY_MODEL.SCALE = 0
     cfg.TRAINER.MY_MODEL.ALPHA = 1
+    
     
 
 
@@ -283,5 +287,6 @@ if __name__ == "__main__":
     parser.add_argument('--alpha', default='1', type=float)
     parser.add_argument('--emb_root', default='/mlainas/KGPrompt_data', type=str)
     parser.add_argument('--search_level', default=1, type=int)
+    parser.add_argument('--max_epoch', type=int)
     args = parser.parse_args()
     main(args)

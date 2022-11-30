@@ -1,11 +1,14 @@
+import pdb
 import torch
 import time
 from PIL import Image
 import numpy as np
+import pandas as pd
 import os
 from tqdm import tqdm
 from torch.utils.data import Dataset
 
+from clip import clip
 
 class CustomImageDataset(Dataset):
     def __init__(self, image_feat , label):
@@ -155,16 +158,16 @@ def get_conceptnet_feature(emb_root, dataset, subsample_class, level, classnames
     df = pd.read_csv(df_path)
     df = df[df['level'] <= level]
 
-    feature = None
     emb_list = []
     for c in classnames:
-        print(c)
         class_df = df[df['classname'] == c]
         sents = class_df['sent']
-        
         sent_list = []
         for sent in sents:
             sent_list.append(sent)
+        if len(sent_list) == 0:
+            print(c)
+            continue
         tok_list = torch.stack([clip.tokenize(sent) for sent in sent_list])
         tok_list = tok_list.to(device)
         with torch.no_grad():
