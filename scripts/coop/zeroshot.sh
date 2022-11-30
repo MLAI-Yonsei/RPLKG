@@ -10,7 +10,7 @@ do
         do
             DATA=/DATA1/yewon/coop
             TRAINER=ZeroshotCLIP
-            DATASET=imagenet
+            DATASET=caltech101
             CFG=vit_b16 
             SHOTS=16
             time=$(date +%F)_$(date +%H-%M)
@@ -19,7 +19,7 @@ do
             DIR=$path
             echo $path
 
-            python train.py --alpha ${alpha} --root ${DATA} --max_temp 10 --min_temp 0.001 --seed 1 --trainer ${TRAINER} --dataset-config-file configs/datasets/${DATASET}.yaml --config-file configs/trainers/CoOp/${CFG}.yaml --output-dir ${DIR} --mode "gumbel" --dropout ${dropout} --wd ${wd} --report_name ZSCLIP_dataset_${DATASET} DATASET.NUM_SHOTS ${SHOTS}
+            python train.py --dataset Caltech101 --alpha ${alpha} --root ${DATA} --max_temp 10 --min_temp 0.001 --seed 1 --trainer ${TRAINER} --dataset-config-file configs/datasets/${DATASET}.yaml --config-file configs/trainers/CoOp/${CFG}.yaml --output-dir ${DIR} --mode "gumbel" --dropout ${dropout} --wd ${wd} --report_name ZSCLIP_dataset_${DATASET} DATASET.NUM_SHOTS ${SHOTS}
         
         done
     done

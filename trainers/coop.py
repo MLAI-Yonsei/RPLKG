@@ -10,7 +10,7 @@ from dassl.engine import TRAINER_REGISTRY, TrainerX
 from dassl.metrics import compute_accuracy
 from dassl.utils import load_pretrained_weights, load_checkpoint
 from dassl.optim import build_optimizer, build_lr_scheduler
-
+import wandb
 from clip import clip
 from clip.simple_tokenizer import SimpleTokenizer as _Tokenizer
 

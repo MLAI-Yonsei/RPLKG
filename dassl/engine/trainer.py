@@ -473,7 +473,7 @@ class SimpleTrainer(TrainerBase):
             data_loader = self.val_loader #val_loader
         else:
             split = "test"  # in case val_loader is None
-            data_loader = self.val_loader   #val_loader
+            data_loader = self.test_loader   #val_loader
 
         print(f"Evaluate on the *{split}* set")
 
@@ -494,10 +494,10 @@ class SimpleTrainer(TrainerBase):
         return self.model(input)
 
     def parse_batch_test(self, batch):
-        input = batch[0]
-        label = batch[1]
-        #input = batch["img"]
-        #label = batch["label"]
+        #input = batch[0]
+        #label = batch[1]
+        input = batch["img"]
+        label = batch["label"]
 
         input = input.to(self.device)
         label = label.to(self.device)
@@ -703,12 +703,12 @@ class TrainerX(SimpleTrainer):
             end = time.time()
 
     def parse_batch_train(self, batch):
-        input = batch[0]
-        label = batch[1]
-        # domain = batch["domain"]
+        input = batch["img"]
+        label = batch["label"]
+        domain = batch["domain"]
 
         input = input.to(self.device)
         label = label.to(self.device)
-        # domain = domain.to(self.device)
+        domain = domain.to(self.device)
 
         return input, label

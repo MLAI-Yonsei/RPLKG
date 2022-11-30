@@ -464,7 +464,17 @@ class ZeroshotCLIP(TrainerX):
         input = input.to(self.device)
         label = label.to(self.device)
         return input, label
+   
+    def parse_batch_test(self, batch):
+        input = batch[0]
+        label = batch[1]
+        #input = batch["img"]
+        #label = batch["label"]
 
+        input = input.to(self.device)
+        label = label.to(self.device)
+
+        return input, label
 
 @TRAINER_REGISTRY.register()
 class ZeroshotCLIP2(ZeroshotCLIP):

@@ -13,7 +13,7 @@ INPUT:
   TRANSFORMS: ["random_resized_crop", "random_flip", "normalize"]
 
 OPTIM:
-  NAME: "sam"
+  NAME: "sgd"
   LR: 0.01
   #LR: 0.1
   #MAX_EPOCH: 200
