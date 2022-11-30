@@ -114,13 +114,8 @@ class ZeroshotCLIP(TrainerX):
         self.wd = cfg.OPTIM.WEIGHT_DECAY
         self.mode = cfg.MODE
         self.alpha = cfg.TRAINER.MY_MODEL.ALPHA
+        self.entity = cfg.ENTITY
         self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}_{cfg.MODE}_alpha{self.alpha}'
-
-
-
-        wandb.init(project="KGPrompt-221128",
-                   name=self.name,
-                   entity='ingdoo')
         
         class LowDimer(nn.Module):
             def __init__(self):

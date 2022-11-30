@@ -156,7 +156,7 @@ def get_conceptnet_feature(emb_root, dataset, subsample_class, level, classnames
     df_path = f'{emb_root}/{dataset}/sents.csv'
     df = pd.read_csv(df_path)
     df = df[df['level'] <= level]
-
+    pdb.set_trace()
     emb_list = []
     for c in classnames:
         class_df = df[df['classname'] == c]
