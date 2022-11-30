@@ -106,31 +106,75 @@ def set_data_loader(cfg, dm, device, clip_model):
     label_valid = data_val[:,-1:]
 
     valid_data = CustomImageDataset(image_feat_val, label_valid)
-  
-    if os.path.exists(test_dir):
-        data_test = np.load(test_dir)
+    
+    if dataset_name == 'imagenet':
+        # if datasetname == 'imagenet', testloader == valloader
+        image_feat_test = image_feat_val
+        label_test = label_valid
+    else:
+        if os.path.exists(test_dir):
+            data_test = np.load(test_dir)
+            image_feat_test = data_test[:, :-1]
+            label_test = data_test[:,-1:]
+
+        else:
+            # 해당 데이터셋의 shot, seed에 피쳐가 없다면
+            # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
+            dataset = dm.dataset
+            stage = 'test'    
+            data_test = dataset_to_npy(dm=dm,
+                                        stage=stage, 
+                                        clip_model=clip_model,
+                                        device=device)
+            np.save(test_dir, data_test)
+
         image_feat_test = data_test[:, :-1]
         label_test = data_test[:,-1:]
-
-    else:
-        # 해당 데이터셋의 shot, seed에 피쳐가 없다면
-        # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
-        dataset = dm.dataset
-        stage = 'test'    
-        data_test = dataset_to_npy(dm=dm,
-                                    stage=stage, 
-                                    clip_model=clip_model,
-                                    device=device)
-        np.save(test_dir, data_test)
-
-    image_feat_test = data_test[:, :-1]
-    label_test = data_test[:,-1:]
-    
+        
     test_data = CustomImageDataset(image_feat_test, label_test)
-    import pdb;pdb.set_trace()
 
     train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=64, shuffle=True)
     valid_dataloader = torch.utils.data.DataLoader(valid_data, batch_size=100, shuffle=True)
     test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=100, shuffle=True)
     
     return train_dataloader, valid_dataloader, test_dataloader 
+
+def get_conceptnet_feature(emb_root, dataset, subsample_class, level, classnames, clip_model, device):
+    """
+    emb_root: root path of embedding
+    dataset: name of dataset (ImageNet, EuroSAT, ...)
+    subsample_class: subsample class policy - in base, new, all
+    level: search level for conceptNet. in [0, 1, 2, 3, 4]
+    classnames: classnames for dataset
+    clip_model: clip model for feature extracting
+    device: device 
+    """
+
+    # search level split
+    df_path = f'{emb_root}/{dataset}/sents.csv'
+    df = pd.read_csv(df_path)
+    df = df[df['level'] <= level]
+
+    feature = None
+    emb_list = []
+    for c in classnames:
+        print(c)
+        class_df = df[df['classname'] == c]
+        sents = class_df['sent']
+        
+        sent_list = []
+        for sent in sents:
+            sent_list.append(sent)
+        tok_list = torch.stack([clip.tokenize(sent) for sent in sent_list])
+        tok_list = tok_list.to(device)
+        with torch.no_grad():
+            if len(tok_list.shape) > 2:
+                tok_list = tok_list.squeeze(1)
+            class_feature = clip_model.encode_text(tok_list)
+        emb_list.append(class_feature)
+    
+    # TODO: complete save path
+    save_path = f'{emb_root}/{dataset}/conceptnet_features_{subsample_class}_level_{level}.pkl'
+    torch.save(emb_list, save_path)
+
+    return emb_list

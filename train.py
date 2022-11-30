@@ -89,9 +89,6 @@ def reset_cfg(cfg, args):
 
 
     # added
-    if args.dataset:
-        cfg.DATASET.NAME = args.dataset
-
     if args.dropout:
         cfg.TRAINER.MY_MODEL.DROPOUT = args.dropout
     
@@ -112,6 +109,13 @@ def reset_cfg(cfg, args):
 
     if args.alpha:
         cfg.TRAINER.MY_MODEL.ALPHA = args.alpha    
+
+    # added - coonceptnet features
+    if args.emb_root:
+        cfg.DATASET.EMB_ROOT = args.emb_root
+
+    if args.search_level:
+        cfg.DATASET.SEARCH_LEVEL = args.search_level
     
 def extend_cfg(cfg):
     """
@@ -277,5 +281,7 @@ if __name__ == "__main__":
     parser.add_argument('--min_temp', default='0.1', type=float)
     parser.add_argument('--logit_scale', default='0', type=float)
     parser.add_argument('--alpha', default='1', type=float)
+    parser.add_argument('--emb_root', default='/mlainas/KGPrompt_data', type=str)
+    parser.add_argument('--search_level', default=1, type=int)
     args = parser.parse_args()
     main(args)

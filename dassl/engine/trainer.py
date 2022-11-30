@@ -329,7 +329,6 @@ class SimpleTrainer(TrainerBase):
         super().__init__()
         self.check_cfg(cfg)
         # added
-        self.df = pd.read_csv('sents.csv', encoding='utf-8')
         if torch.cuda.is_available() and cfg.USE_CUDA:
             self.device = torch.device("cuda")
         else:
@@ -342,7 +341,7 @@ class SimpleTrainer(TrainerBase):
 
         self.cfg = cfg
         self.build_data_loader()
-        self.build_model(self.df)
+        self.build_model()
         self.evaluator = build_evaluator(cfg, lab2cname=self.lab2cname)
         self.best_result = -np.inf
 
@@ -375,7 +374,7 @@ class SimpleTrainer(TrainerBase):
         self.lab2cname = dm.lab2cname  # dict {label: classname}        
         self.dm = dm
         
-    def build_model(self, df):
+    def build_model(self):
         """Build and register model.
 
         The default builds a classification model along with its

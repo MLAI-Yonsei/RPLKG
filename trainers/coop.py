@@ -220,7 +220,7 @@ class CoOp(TrainerX):
     def check_cfg(self, cfg):
         assert cfg.TRAINER.COOP.PREC in ["fp16", "fp32", "amp"]
 
-    def build_model(self, df):
+    def build_model(self):
         cfg = self.cfg
         classnames = self.dm.dataset.classnames
 
