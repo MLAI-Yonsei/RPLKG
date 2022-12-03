@@ -108,18 +108,20 @@ class ZeroshotCLIP(TrainerX):
         self.search_level = cfg.DATASET.SEARCH_LEVEL
         self.emb_root = cfg.DATASET.EMB_ROOT
         self.dataset_name = cfg.DATASET.NAME.lower()
-
+        bk=cfg.MODEL.BACKBONE.NAME
         self.logit_scale = cfg.TRAINER.MY_MODEL.SCALE
         self.dropout = cfg.TRAINER.MY_MODEL.DROPOUT
         self.wd = cfg.OPTIM.WEIGHT_DECAY
         self.mode = cfg.MODE
         self.alpha = cfg.TRAINER.MY_MODEL.ALPHA
-        self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}_{cfg.MODE}_alpha{self.alpha}'
+        num_shot = cfg.DATASET.NUM_SHOTS
+        self.name = f'{self.dataset_name}_dropout={self.dropout}_wd={self.wd}_shot{num_shot}_{cfg.MODE}_alpha{self.alpha}_level{self.search_level}_seed{cfg.SEED}_{bk}'
 
 
 
-        wandb.init(project="KGPrompt-221128",
-            name = self.name)
+        wandb.init(project="KGPrompt-221203",
+            name = self.name,
+            entity="ingdoo") 
         
         class LowDimer(nn.Module):
             def __init__(self):
@@ -157,6 +159,7 @@ class ZeroshotCLIP(TrainerX):
         self.img_lowdim_trf = low_dimer.img_lowdim_trf
         self.txt_lowdim_trf = low_dimer.txt_lowdim_trf
         self.prompt_lowdim = low_dimer.prompt_dim 
+        temp = CUSTOM_TEMPLATES[cfg.DATASET.NAME]
         
         # automated conceptnet_feature extracting
         conceptnet_sentences_path = f"{self.emb_root}/{self.dataset_name}/conceptnet_features_{self.subsample_class}_level_{self.search_level}.pkl"
@@ -172,13 +175,11 @@ class ZeroshotCLIP(TrainerX):
             self.conceptnet_sentences = torch.load(conceptnet_sentences_path)
         
         #for clip weight 
-        self.conceptnet_prompt = self.conceptnet_sentences
-        
+        self.conceptnet_prompt = self.conceptnet_sentences 
         self.optim = build_optimizer(low_dimer, cfg.OPTIM )
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
         self.scaler = GradScaler() if cfg.TRAINER.COOP.PREC == "amp" else None
  
-        temp = CUSTOM_TEMPLATES[cfg.DATASET.NAME]
 
         self.register_model("low_dimer", low_dimer, self.optim, self.sched)
         
@@ -253,8 +254,6 @@ class ZeroshotCLIP(TrainerX):
         M = M / M.norm(dim=1, keepdim=True)
         alpha = self.alpha
         sims = alpha * torch.einsum('ij,ijk->ik', image, M) + img_w #Nx1000
-
-
         ##dual softmax
 
         return sims
@@ -370,7 +369,7 @@ class ZeroshotCLIP(TrainerX):
         acces = AverageMeter()
         self.set_model_mode("eval")
         self.evaluator.reset()
-
+        self.temp = 0.1
         if split is None:
             split = self.cfg.TEST.SPLIT
         # added

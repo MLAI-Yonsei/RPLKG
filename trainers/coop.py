@@ -13,6 +13,13 @@ from dassl.optim import build_optimizer, build_lr_scheduler
 import wandb
 from clip import clip
 from clip.simple_tokenizer import SimpleTokenizer as _Tokenizer
+from tqdm import tqdm
+
+from dassl.utils import (
+    MetricMeter, AverageMeter, mkdir_if_missing)
+import time 
+import math
+import datetime
 
 _tokenizer = _Tokenizer()
 
@@ -46,6 +53,8 @@ class TextEncoder(nn.Module):
 
     def forward(self, prompts, tokenized_prompts):
         x = prompts + self.positional_embedding.type(self.dtype)
+        import pdb; pdb.set_trace()
+
         x = x.permute(1, 0, 2)  # NLD -> LND
         x = self.transformer(x)
         x = x.permute(1, 0, 2)  # LND -> NLD
@@ -199,7 +208,6 @@ class CustomCLIP(nn.Module):
         prompts = self.prompt_learner()
         tokenized_prompts = self.tokenized_prompts
         text_features = self.text_encoder(prompts, tokenized_prompts)
-
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
 
@@ -215,7 +223,7 @@ class CoOp(TrainerX):
 
     Learning to Prompt for Vision-Language Models
     https://arxiv.org/abs/2109.01134
-    """
+    """       
 
     def check_cfg(self, cfg):
         assert cfg.TRAINER.COOP.PREC in ["fp16", "fp32", "amp"]
@@ -257,7 +265,128 @@ class CoOp(TrainerX):
         if device_count > 1:
             print(f"Multiple GPUs detected (n_gpus={device_count}), use all of them!")
             self.model = nn.DataParallel(self.model)
+   
+    def before_train(self):
+        directory = self.cfg.OUTPUT_DIR
+        if self.cfg.RESUME:
+            directory = self.cfg.RESUME
+        self.start_epoch = self.resume_model_if_exist(directory)
 
+        # Initialize summary writer
+        writer_dir = osp.join(self.output_dir, "tensorboard")
+        mkdir_if_missing(writer_dir)
+        self.init_writer(writer_dir)
+
+        # Remember the starting time (for computing the elapsed time)
+        self.time_start = time.time()
+
+
+    def run_epoch(self):
+        self.set_model_mode("train")
+        losses = MetricMeter()
+        batch_time = AverageMeter()
+        data_time = AverageMeter()
+        #edited
+        self.num_batches = len(self.train_loader_x) #원래 self.train_loader_x
+
+        end = time.time()
+        for self.batch_idx, batch in enumerate(self.train_loader_x): #edited self.train_loader_x
+            data_time.update(time.time() - end)
+            
+            t = self.epoch
+            annealing_epoch =  self.cfg.TRAINER.MY_MODEL.ANNEAL_EPOCH 
+            max_temp = self.cfg.TRAINER.MY_MODEL.max_temp 
+            min_temp = self.cfg.TRAINER.MY_MODEL.min_temp 
+
+            a = max_temp
+            b = math.log(min_temp/max_temp)/annealing_epoch
+            self.temp = a* math.exp(b*t)
+
+            loss_summary = self.forward_backward(batch)
+            batch_time.update(time.time() - end)
+            losses.update(loss_summary)
+
+            meet_freq = (self.batch_idx + 1) % self.cfg.TRAIN.PRINT_FREQ == 0
+            only_few_batches = self.num_batches < self.cfg.TRAIN.PRINT_FREQ
+            if meet_freq or only_few_batches:
+                nb_remain = 0
+                nb_remain += self.num_batches - self.batch_idx - 1
+                nb_remain += (
+                    self.max_epoch - self.epoch - 1
+                ) * self.num_batches
+                eta_seconds = batch_time.avg * nb_remain
+                eta = str(datetime.timedelta(seconds=int(eta_seconds)))
+
+                info = []
+                info += [f"epoch [{self.epoch + 1}/{self.max_epoch}]"]
+                info += [f"batch [{self.batch_idx + 1}/{self.num_batches}]"]
+                info += [f"time {batch_time.val:.3f} ({batch_time.avg:.3f})"]
+                info += [f"data {data_time.val:.3f} ({data_time.avg:.3f})"]
+                info += [f"{losses}"]
+                info += [f"lr {self.get_current_lr():.4e}"]
+                info += [f"eta {eta}"]
+                print(" ".join(info))
+
+            n_iter = self.epoch * self.num_batches + self.batch_idx
+            for name, meter in losses.meters.items():
+                self.write_scalar("train/" + name, meter.avg, n_iter)
+            self.write_scalar("train/lr", self.get_current_lr(), n_iter)
+
+
+            end = time.time()
+
+        wandb.log({
+            "train_loss " : losses.meters["loss"].avg,
+            "train_acc" : losses.meters["acc"].avg
+            }, step=self.epoch)
+
+
+    @torch.no_grad()
+    def test(self, split=None):
+        """A generic testing pipeline."""
+        losses = AverageMeter()
+        acces = AverageMeter()
+        self.set_model_mode("eval")
+        self.evaluator.reset()
+
+        if split is None:
+            split = self.cfg.TEST.SPLIT
+        # added
+        if split == "val" and self.val_loader is not None:#val_loader
+            data_loader = self.val_loader #val_loader
+        else:
+            split == "test"  # in case val_loader is None
+            data_loader = self.test_loader   #val_loader
+
+        print(f"Evaluate on the *{split}* set")
+        
+        for batch_idx, batch in enumerate(tqdm(data_loader)):
+            input, label = self.parse_batch_test(batch)
+            label = label.type(torch.int64)
+            output = self.model_inference(input)
+            self.evaluator.process(output, torch.squeeze(label))
+            #added
+            loss = F.cross_entropy(output, torch.squeeze(label))
+
+            losses.update(loss.item(), input.shape[0])
+            acc = compute_accuracy(output, label)[0].item()
+            acces.update(acc, input.shape[0])
+
+        loss = losses.avg
+        acc = acces.avg
+
+        wandb.log({
+            "test_loss" : loss,
+            "test_acc" : acc
+            }, step=self.epoch)
+
+        results = self.evaluator.evaluate()
+
+        for k, v in results.items():
+            tag = f"{split}/{k}"
+            self.write_scalar(tag, v, self.epoch)
+
+        return list(results.values())[0]
     def forward_backward(self, batch):
         image, label = self.parse_batch_train(batch)
         
