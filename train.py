@@ -1,4 +1,7 @@
+import os
 import pdb
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 import argparse
 import torch
 import wandb
@@ -37,7 +40,7 @@ import trainers.zsclip
 # import trainers.vpour
 # import trainers.wrap_wb
 
-
+os.environ["CURL_CA_BUNDLE"]=""
 def print_args(args, cfg):
     print("***************")
     print("** Arguments **")
@@ -202,7 +205,8 @@ def main(args):
     print("** System info **\n{}\n".format(collect_env_info()))
 
     if args.use_wandb:
-        wandb.init(project=args.wb_name)
+        wandb.init(project=args.wb_name,
+                   entity=args.entity)
         wandb.config.update(cfg)
         dataset = args.dataset
         trainer = args.trainer
@@ -212,7 +216,7 @@ def main(args):
         dropout = args.dropout
         wd = args.wd
         alpha = args.alpha
-        wandb.run.name = f'dataset:{dataset}_searchlevel:{search_level}_seed:{seed}_dropout:{dropout}_wd:{wd}_alpha:{alpha}'
+        wandb.run.name = f'dataset:{dataset}_backbone:{cfg.MODEL.BACKBONE.NAME}_searchlevel:{search_level}_seed:{seed}_dropout:{dropout}_wd:{wd}_alpha:{alpha}'
     
     trainer = build_trainer(cfg)
 

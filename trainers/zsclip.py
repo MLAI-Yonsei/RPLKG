@@ -102,7 +102,7 @@ class ZeroshotCLIP(TrainerX):
         self.clip_model = clip_model.float().to("cuda")
        
         self.train_dataloader, self.valid_dataloader, self.test_dataloader = set_data_loader(cfg, self.dm, self.device, clip_model)      
-       
+        self.input_dim = 1024 if cfg.MODEL.BACKBONE.NAME.lower() == 'rn50' else 512
         # sentence embedding
         self.subsample_class = cfg.DATASET.SUBSAMPLE_CLASSES
         self.search_level = cfg.DATASET.SEARCH_LEVEL
@@ -121,23 +121,23 @@ class ZeroshotCLIP(TrainerX):
             def __init__(self):
                 super().__init__()
                 self.dropout = cfg.TRAINER.MY_MODEL.DROPOUT
-
+                self.input_dim = 1024 if cfg.MODEL.BACKBONE.NAME.lower() == 'rn50' else 512
                 #self.img_lowdim_trf = nn.Linear(512,512)
                 self.img_lowdim_trf = nn.Sequential(
                         nn.Dropout(self.dropout), 
-                        nn.Linear(512,512) , 
+                        nn.Linear(self.input_dim, self.input_dim) , 
                         )
 
                 #self.txt_lowdim_trf = nn.Linear(512,512)
                 self.txt_lowdim_trf = nn.Sequential(
                         nn.Dropout(self.dropout), 
-                        nn.Linear(512,512) , 
+                        nn.Linear(self.input_dim, self.input_dim) , 
                         )
 
                 #self.prompt_dim = nn.Linear(512,512)
                 self.prompt_dim = nn.Sequential(
                         nn.Dropout(self.dropout), 
-                        nn.Linear(512,512) , 
+                        nn.Linear(self.input_dim,self.input_dim) , 
                         )
 
 
@@ -155,10 +155,11 @@ class ZeroshotCLIP(TrainerX):
         self.prompt_lowdim = low_dimer.prompt_dim 
         
         # automated conceptnet_feature extracting
-        conceptnet_sentences_path = f"{self.emb_root}/{self.dataset_name}/conceptnet_features_{self.subsample_class}_level_{self.search_level}.pkl"
+        conceptnet_sentences_path = f"{self.emb_root}/{self.dataset_name}/conceptnet_features_{cfg.MODEL.BACKBONE.NAME.lower().replace('/', '')}_{self.subsample_class}_level_{self.search_level}.pkl"
         if not os.path.exists(conceptnet_sentences_path):
             self.conceptnet_sentences = get_conceptnet_feature(emb_root=self.emb_root,
                                                              dataset=self.dataset_name,
+                                                             backbone=cfg.MODEL.BACKBONE.NAME,
                                                              subsample_class=self.subsample_class,
                                                              level=self.search_level,
                                                              classnames=self.classnames,
@@ -233,7 +234,7 @@ class ZeroshotCLIP(TrainerX):
         clip_weights = clip_classifier(self.conceptnet_prompt)
         img_w = image @ clip_weights
 
-        M = image_features @ text_features.view(-1,512).T #830000x1000
+        M = image_features @ text_features.view(-1,self.input_dim).T #830000x1000
         M = M.view(-1,len(self.classnames), max_len) #Nx1000x838
         M += mask.unsqueeze(0)
         if mode == 'gumbel':
@@ -249,6 +250,8 @@ class ZeroshotCLIP(TrainerX):
         M = M / M.norm(dim=1, keepdim=True)
         alpha = self.alpha
         sims = alpha * torch.einsum('ij,ijk->ik', image, M) + img_w #Nx1000
+        # image [64, 1024]
+        # M     [64 512 1000]
 
 
         ##dual softmax
