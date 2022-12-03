@@ -23,7 +23,7 @@ class CustomImageDataset(Dataset):
         return self.img_feat[idx], self.label[idx]
 
 
-def dataset_to_npy(dm, stage, clip_model, device):
+def dataset_to_npy(dm, backbone, stage, clip_model, device):
     dataset = dm.dataset
     print(stage)
     if stage == 'train':
@@ -38,7 +38,8 @@ def dataset_to_npy(dm, stage, clip_model, device):
 
     with torch.no_grad():
         start = time.time()
-        npy_list = torch.zeros(len(data_x), 513)
+        col_len = 1025 if backbone == 'rn50' else 513
+        npy_list = torch.zeros(len(data_x), col_len)
         for i, data in enumerate(tqdm(data_x)):
             img_path = data.impath
             label = [float(data.label)]
@@ -53,6 +54,7 @@ def dataset_to_npy(dm, stage, clip_model, device):
 
 def set_data_loader(cfg, dm, device, clip_model):
     # 만약 npy 파일이 없다면
+    backbone = cfg.MODEL.BACKBONE.NAME.lower().replace('/', '')
     dataset_name = cfg.DATASET.NAME.lower()
     num_shot = cfg.DATASET.NUM_SHOTS
     seed = cfg.SEED
@@ -61,9 +63,9 @@ def set_data_loader(cfg, dm, device, clip_model):
     if not os.path.exists(emb_root):
         os.mkdir(emb_root)
 
-    train_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_{subsample_class}_train.npy'
-    valid_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_{subsample_class}_valid.npy'
-    test_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_{subsample_class}_test.npy'
+    train_dir = f'{emb_root}/{backbone}_shot_{num_shot}_seed_{seed}_{subsample_class}_train.npy'
+    valid_dir = f'{emb_root}/{backbone}_shot_{num_shot}_seed_{seed}_{subsample_class}_valid.npy'
+    test_dir = f'{emb_root}/{backbone}_shot_{num_shot}_seed_{seed}_{subsample_class}_test.npy'
 
     print(train_dir)
     print(valid_dir)
@@ -80,6 +82,7 @@ def set_data_loader(cfg, dm, device, clip_model):
         dataset = dm.dataset
         stage = 'train'    
         data_train = dataset_to_npy(dm=dm,
+                                    backbone=backbone,
                                     stage=stage, 
                                     clip_model=clip_model,
                                     device=device)
@@ -89,17 +92,20 @@ def set_data_loader(cfg, dm, device, clip_model):
     label_train = data_train[:,-1:]
     
     train_data = CustomImageDataset(image_feat_train, label_train)
-
+    # TODO: implement dataloder for imagenet vairants testsets  
+    # if dataset_name in ['imageneta', 'imagenetr', 'imagenetsketch', 'imagenet_v2']:
+    #     test_dataloader = torch.utils.data.DataLoader(train_data, batch_size=100, shuffle=True)
+    #     return test_dataloader, test_dataloader, test_dataloader
     if os.path.exists(valid_dir):
         data_val = np.load(valid_dir)
 
     else:
         # 해당 데이터셋의 shot, seed에 피쳐가 없다면
         # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
-        pass
         dataset = dm.dataset
         stage = 'val'    
         data_val = dataset_to_npy(dm=dm,
+                                    backbone=backbone,
                                     stage=stage, 
                                     clip_model=clip_model,
                                     device=device)
@@ -126,6 +132,7 @@ def set_data_loader(cfg, dm, device, clip_model):
             dataset = dm.dataset
             stage = 'test'    
             data_test = dataset_to_npy(dm=dm,
+                                        backbone=backbone,
                                         stage=stage, 
                                         clip_model=clip_model,
                                         device=device)
@@ -142,10 +149,11 @@ def set_data_loader(cfg, dm, device, clip_model):
     
     return train_dataloader, valid_dataloader, test_dataloader 
 
-def get_conceptnet_feature(emb_root, dataset, subsample_class, level, classnames, clip_model, device):
+def get_conceptnet_feature(emb_root, dataset, backbone, subsample_class, level, classnames, clip_model, device):
     """
     emb_root: root path of embedding
     dataset: name of dataset (ImageNet, EuroSAT, ...)
+    backbone: name of backbone (vit_b16, vit_b32, rn50, rn101)
     subsample_class: subsample class policy - in base, new, all
     level: search level for conceptNet. in [0, 1, 2, 3, 4]
     classnames: classnames for dataset
@@ -157,7 +165,7 @@ def get_conceptnet_feature(emb_root, dataset, subsample_class, level, classnames
     df_path = f'{emb_root}/{dataset}/sents.csv'
     df = pd.read_csv(df_path)
     df = df[df['level'] <= level]
-
+    # pdb.set_trace()
     emb_list = []
     for c in classnames:
         class_df = df[df['classname'] == c]
@@ -173,11 +181,13 @@ def get_conceptnet_feature(emb_root, dataset, subsample_class, level, classnames
         with torch.no_grad():
             if len(tok_list.shape) > 2:
                 tok_list = tok_list.squeeze(1)
-            class_feature = clip_model.encode_text(tok_list)
+            class_feature = clip_model.encode_text(tok_list) 
+            # pdb.set_trace()
+            # class_feature = class_feature @ (clip_model.text_projection.T
         emb_list.append(class_feature)
     
     # TODO: complete save path
-    save_path = f'{emb_root}/{dataset}/conceptnet_features_{subsample_class}_level_{level}.pkl'
+    save_path = f'{emb_root}/{dataset}/conceptnet_features_{backbone}_{subsample_class}_level_{level}.pkl'
     torch.save(emb_list, save_path)
 
     return emb_list

@@ -1,4 +1,7 @@
+import os
 import pdb
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 import argparse
 import torch
 import wandb
@@ -37,7 +40,7 @@ import trainers.zsclip
 # import trainers.vpour
 # import trainers.wrap_wb
 
-
+os.environ["CURL_CA_BUNDLE"]=""
 def print_args(args, cfg):
     print("***************")
     print("** Arguments **")
@@ -87,6 +90,9 @@ def reset_cfg(cfg, args):
     if args.head:
         cfg.MODEL.HEAD.NAME = args.head
 
+    # added-wandb
+    if args.entity:
+        cfg.ENTITY = args.entity
 
     # added
     if args.dropout:
@@ -199,9 +205,18 @@ def main(args):
     print("** System info **\n{}\n".format(collect_env_info()))
 
     if args.use_wandb:
-        wandb.init(project=args.wb_name)
+        wandb.init(project=args.wb_name,
+                   entity=args.entity)
         wandb.config.update(cfg)
-        wandb.run.name = args.output_dir
+        dataset = args.dataset
+        trainer = args.trainer
+        model = 'VIT_B16'
+        search_level = args.search_level
+        seed = args.seed
+        dropout = args.dropout
+        wd = args.wd
+        alpha = args.alpha
+        wandb.run.name = f'dataset:{dataset}_backbone:{cfg.MODEL.BACKBONE.NAME}_searchlevel:{search_level}_seed:{seed}_dropout:{dropout}_wd:{wd}_alpha:{alpha}'
     
     trainer = build_trainer(cfg)
 
@@ -288,5 +303,6 @@ if __name__ == "__main__":
     parser.add_argument('--emb_root', default='/mlainas/KGPrompt_data', type=str)
     parser.add_argument('--search_level', default=1, type=int)
     parser.add_argument('--max_epoch', type=int)
+    parser.add_argument('--entity', type=str, default='ingdoo')
     args = parser.parse_args()
     main(args)

@@ -11,11 +11,14 @@ NCTX=$4  # number of context tokens
 SHOTS=$5  # number of shots (1, 2, 4, 8, 16)
 CSC=$6  # class-specific context (False or True)
 
+time=$(date +%F)_$(date +%H-%M)
+
+
 for SEED in 1
 
 
 do
-    DIR=output/${DATASET}/${TRAINER}/${CFG}_${SHOTS}shots/nctx${NCTX}_csc${CSC}_ctp${CTP}/seed${SEED}
+    DIR=output/${DATASET}/${time}/${TRAINER}/${CFG}_${SHOTS}shots/nctx${NCTX}_csc${CSC}_ctp${CTP}/seed${SEED}
 
     python train.py \
     --wd 3e-3 \
