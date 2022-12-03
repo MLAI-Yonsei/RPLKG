@@ -215,7 +215,7 @@ class TrainerBase:
             epoch = checkpoint["epoch"]
             val_result = checkpoint["val_result"]
             print(
-                f"Load {model_path} to {name} (epoch={epoch}, val_result={val_result:.1f})"
+                f"Load {model_path} to {name} (epoch={epoch})"#, val_result={val_result:.1f})"
             )
             self._models[name].load_state_dict(state_dict)
 
