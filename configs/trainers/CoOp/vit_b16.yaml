@@ -31,4 +31,4 @@ MODEL:
     NAME: "ViT-B/16"
 
 TEST:
-  PER_CLASS_RESULT: True
+  PER_CLASS_RESULT: False

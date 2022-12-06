@@ -138,7 +138,6 @@ class TrainerBase:
         self, epoch, directory, is_best=False, val_result=None, model_name=""
     ):
         names = self.get_model_names()
-
         for name in names:
             model_dict = self._models[name].state_dict()
 
@@ -203,7 +202,7 @@ class TrainerBase:
 
         if epoch is not None:
             model_file = "model.pth.tar-" + str(epoch)
-
+            self.load_epoch = epoch
         for name in names:
             model_path = osp.join(directory, name, model_file)
 

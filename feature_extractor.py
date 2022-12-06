@@ -52,6 +52,29 @@ def dataset_to_npy(dm, backbone, stage, clip_model, device):
         npy_list = npy_list.cpu().detach().numpy()
     return npy_list
 
+def get_dataset(dir, dm, backbone, stage, clip_model, device):
+    if os.path.exists(dir):
+        data = np.load(dir)
+        image_feat = data[:, :-1]
+        label = data[:,-1:]
+
+    else:
+        # 해당 데이터셋의 shot, seed에 피쳐가 없다면
+        # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
+        dataset = dm.dataset    
+        data = dataset_to_npy(dm=dm,
+                              backbone=backbone,
+                              stage=stage, 
+                              clip_model=clip_model,
+                              device=device)
+        np.save(dir, data)
+
+    image_feat = data[:, :-1]
+    label = data[:,-1:]
+    
+    dataset = CustomImageDataset(image_feat, label)
+    return dataset 
+
 def set_data_loader(cfg, dm, device, clip_model):
     # 만약 npy 파일이 없다면
     backbone = cfg.MODEL.BACKBONE.NAME.lower().replace('/', '')
@@ -67,81 +90,30 @@ def set_data_loader(cfg, dm, device, clip_model):
     valid_dir = f'{emb_root}/{backbone}_shot_{num_shot}_seed_{seed}_{subsample_class}_valid.npy'
     test_dir = f'{emb_root}/{backbone}_shot_{num_shot}_seed_{seed}_{subsample_class}_test.npy'
 
+    # TODO: implement dataloder for imagenet vairants testsets  
+    if dataset_name in ['imageneta', 'imagenetr', 'imagenetsketch', 'imagenet_v2']:
+        # pdb.set_trace()
+        test_data  = get_dataset(test_dir, dm, backbone, 'test', clip_model, device)
+        test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=100, shuffle=True)
+        return test_dataloader, test_dataloader, test_dataloader 
+    # test_dataloader = torch.utils.data.DataLoader(train_data, batch_size=100, shuffle=True)
+    # return test_dataloader, test_dataloader, test_dataloader
+
     print(train_dir)
     print(valid_dir)
     print(test_dir)
 
-    if os.path.exists(train_dir):
-        data_train = np.load(train_dir)
-        image_feat_train = data_train[:, :-1]
-        label_train = data_train[:,-1:]
-
+    train_data = get_dataset(train_dir, dm, backbone, 'train', clip_model, device)
+    if dataset_name in ['imageneta', 'imagenetr', 'imagenetsketch', 'imagenetv2']:
+        valid_data = train_data
+        test_data = train_data
     else:
-        # 해당 데이터셋의 shot, seed에 피쳐가 없다면
-        # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
-        dataset = dm.dataset
-        stage = 'train'    
-        data_train = dataset_to_npy(dm=dm,
-                                    backbone=backbone,
-                                    stage=stage, 
-                                    clip_model=clip_model,
-                                    device=device)
-        np.save(train_dir, data_train)
-
-    image_feat_train = data_train[:, :-1]
-    label_train = data_train[:,-1:]
-    
-    train_data = CustomImageDataset(image_feat_train, label_train)
-    # TODO: implement dataloder for imagenet vairants testsets  
-    # if dataset_name in ['imageneta', 'imagenetr', 'imagenetsketch', 'imagenet_v2']:
-    #     test_dataloader = torch.utils.data.DataLoader(train_data, batch_size=100, shuffle=True)
-    #     return test_dataloader, test_dataloader, test_dataloader
-    if os.path.exists(valid_dir):
-        data_val = np.load(valid_dir)
-
-    else:
-        # 해당 데이터셋의 shot, seed에 피쳐가 없다면
-        # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
-        dataset = dm.dataset
-        stage = 'val'    
-        data_val = dataset_to_npy(dm=dm,
-                                    backbone=backbone,
-                                    stage=stage, 
-                                    clip_model=clip_model,
-                                    device=device)
-        np.save(valid_dir, data_val)
-
-    image_feat_val = data_val[:, :-1]
-    label_valid = data_val[:,-1:]
-
-    valid_data = CustomImageDataset(image_feat_val, label_valid)
-    
-    if dataset_name == 'imagenet':
-        # if datasetname == 'imagenet', testloader == valloader
-        image_feat_test = image_feat_val
-        label_test = label_valid
-    else:
-        if os.path.exists(test_dir):
-            data_test = np.load(test_dir)
-            image_feat_test = data_test[:, :-1]
-            label_test = data_test[:,-1:]
-
+        valid_data = get_dataset(valid_dir, dm, backbone, 'val', clip_model, device)
+        if dataset_name == 'imagenet':
+            test_data = valid_data
         else:
-            # 해당 데이터셋의 shot, seed에 피쳐가 없다면
-            # TODO: 어떻게 임베딩 뽑는지 파악 후, 코드 작성
-            dataset = dm.dataset
-            stage = 'test'    
-            data_test = dataset_to_npy(dm=dm,
-                                        backbone=backbone,
-                                        stage=stage, 
-                                        clip_model=clip_model,
-                                        device=device)
-            np.save(test_dir, data_test)
+            test_data  = get_dataset(test_dir, dm, backbone, 'test', clip_model, device)
 
-        image_feat_test = data_test[:, :-1]
-        label_test = data_test[:,-1:]
-        
-    test_data = CustomImageDataset(image_feat_test, label_test)
 
     train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=64, shuffle=True)
     valid_dataloader = torch.utils.data.DataLoader(valid_data, batch_size=100, shuffle=True)
@@ -187,6 +159,7 @@ def get_conceptnet_feature(emb_root, dataset, backbone, subsample_class, level, 
         emb_list.append(class_feature)
     
     # TODO: complete save path
+    # conceptnet_sentences_path = f"{self.emb_root}/{self.dataset_name}/conceptnet_features_{cfg.MODEL.BACKBONE.NAME.lower().replace('/', '')}_{self.subsample_class}_level_{self.search_level}.pkl"
     save_path = f'{emb_root}/{dataset}/conceptnet_features_{backbone}_{subsample_class}_level_{level}.pkl'
     torch.save(emb_list, save_path)
 

@@ -115,6 +115,15 @@ def reset_cfg(cfg, args):
 
     if args.alpha:
         cfg.TRAINER.MY_MODEL.ALPHA = args.alpha    
+    
+    if args.init_lr:
+        cfg.OPTIM.LR = args.init_lr
+
+    if args.load_epoch:
+        cfg.LOAD_EPOCH = args.load_epoch
+
+    if args.save_freq:
+        cfg.TRAIN.CHECKPOINT_FREQ = args.save_freq 
 
     # added - coonceptnet features
     if args.emb_root:
@@ -125,6 +134,9 @@ def reset_cfg(cfg, args):
 
     if args.max_epoch:
         cfg.OPTIM.MAX_EPOCH = args.max_epoch
+
+    if args.eval_only:
+        cfg.EVAL_ONLY = 1
     
 def extend_cfg(cfg):
     """
@@ -186,7 +198,6 @@ def setup_cfg(args):
     cfg.merge_from_list(args.opts)
 
     cfg.freeze()
-
     return cfg
 
 
@@ -303,6 +314,9 @@ if __name__ == "__main__":
     parser.add_argument('--emb_root', default='/mlainas/KGPrompt_data', type=str)
     parser.add_argument('--search_level', default=1, type=int)
     parser.add_argument('--max_epoch', type=int)
+    parser.add_argument('--init_lr', type=float, default=1e-5)
     parser.add_argument('--entity', type=str, default='ingdoo')
+    parser.add_argument('--load_epoch', type=int)
+    parser.add_argument('--save_freq', type=int, default=0)
     args = parser.parse_args()
     main(args)

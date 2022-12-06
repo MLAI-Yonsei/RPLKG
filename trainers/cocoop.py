@@ -196,7 +196,6 @@ class CustomCLIP(nn.Module):
 
         image_features = self.image_encoder(image.type(self.dtype))
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
-        import pdb;pdb.set_trace()
         prompts = self.prompt_learner(image_features)
         
         logits = []

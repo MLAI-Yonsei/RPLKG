@@ -117,6 +117,14 @@ class ZeroshotCLIP(TrainerX):
         self.entity = cfg.ENTITY
         self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}_{cfg.MODE}_alpha{self.alpha}'
         
+        # pdb.set_trace()
+        if 'LOAD_EPOCH' in cfg.keys():
+            self.t = cfg.LOAD_EPOCH
+        else:
+            self.t = 100
+        a = self.cfg.TRAINER.MY_MODEL.max_temp
+        b = math.log(self.cfg.TRAINER.MY_MODEL.min_temp/self.cfg.TRAINER.MY_MODEL.max_temp)/self.cfg.TRAINER.MY_MODEL.ANNEAL_EPOCH 
+        self.temp = a* math.exp(b*self.t)
         class LowDimer(nn.Module):
             def __init__(self):
                 super().__init__()
@@ -145,21 +153,23 @@ class ZeroshotCLIP(TrainerX):
         
                 return x #This is dummy forward.
 
-        low_dimer = LowDimer()
+        self.low_dimer = LowDimer()
 
-        low_dimer.to(self.device)
+        self.low_dimer.to(self.device)
         clip_model.to(self.device)
 
-        self.img_lowdim_trf = low_dimer.img_lowdim_trf
-        self.txt_lowdim_trf = low_dimer.txt_lowdim_trf
-        self.prompt_lowdim = low_dimer.prompt_dim 
+        # self.img_lowdim_trf = low_dimer.img_lowdim_trf
+        # self.txt_lowdim_trf = low_dimer.txt_lowdim_trf
+        # self.prompt_lowdim = low_dimer.prompt_dim 
         
+
         # automated conceptnet_feature extracting
-        conceptnet_sentences_path = f"{self.emb_root}/{self.dataset_name}/conceptnet_features_{cfg.MODEL.BACKBONE.NAME.lower().replace('/', '')}_{self.subsample_class}_level_{self.search_level}.pkl"
+        backbone_name = cfg.MODEL.BACKBONE.NAME.lower().replace('/', '')
+        conceptnet_sentences_path = f"{self.emb_root}/{self.dataset_name}/conceptnet_features_{backbone_name}_{self.subsample_class}_level_{self.search_level}.pkl"
         if not os.path.exists(conceptnet_sentences_path):
             self.conceptnet_sentences = get_conceptnet_feature(emb_root=self.emb_root,
                                                              dataset=self.dataset_name,
-                                                             backbone=cfg.MODEL.BACKBONE.NAME,
+                                                             backbone=backbone_name,
                                                              subsample_class=self.subsample_class,
                                                              level=self.search_level,
                                                              classnames=self.classnames,
@@ -171,14 +181,15 @@ class ZeroshotCLIP(TrainerX):
         #for clip weight 
         self.conceptnet_prompt = self.conceptnet_sentences
         
-        self.optim = build_optimizer(low_dimer, cfg.OPTIM )
+        self.optim = build_optimizer(self.low_dimer, cfg.OPTIM )
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
         self.scaler = GradScaler() if cfg.TRAINER.COOP.PREC == "amp" else None
  
         temp = CUSTOM_TEMPLATES[cfg.DATASET.NAME]
 
-        self.register_model("low_dimer", low_dimer, self.optim, self.sched)
-        
+        self.register_model("low_dimer", self.low_dimer, self.optim, self.sched)
+    
+        # pdb.set_trace()
         # added
         
         if self.mode == 'ZS':
@@ -221,14 +232,13 @@ class ZeroshotCLIP(TrainerX):
         self.text_features = text_features / text_features.norm(dim=-1, keepdim=True)
     
     def attention_parallel(self, image, text, mask, max_len:int, mode:str):
-        
         if mode == 'weight_sum':
             image_features =  image
             text_features = text
         else:
-            image_features =  self.img_lowdim_trf(image)
-            text_features = self.txt_lowdim_trf(text)
-            text = self.prompt_lowdim(text)
+            image_features =  self.low_dimer.img_lowdim_trf(image)
+            text_features = self.low_dimer.txt_lowdim_trf(text)
+            text = self.low_dimer.prompt_dim(text)
 
 
         clip_weights = clip_classifier(self.conceptnet_prompt)
@@ -237,6 +247,15 @@ class ZeroshotCLIP(TrainerX):
         M = image_features @ text_features.view(-1,self.input_dim).T #830000x1000
         M = M.view(-1,len(self.classnames), max_len) #Nx1000x838
         M += mask.unsqueeze(0)
+
+        if 'EVAL_ONLY' in self.cfg.keys():
+            if self.cfg.EVAL_ONLY != 1:
+                self.t = self.epoch
+        else:
+            self.t = self.epoch
+        a = self.cfg.TRAINER.MY_MODEL.max_temp
+        b = math.log(self.cfg.TRAINER.MY_MODEL.min_temp/self.cfg.TRAINER.MY_MODEL.max_temp)/self.cfg.TRAINER.MY_MODEL.ANNEAL_EPOCH 
+        self.temp = a* math.exp(b*self.t)
         if mode == 'gumbel':
             M1 = F.gumbel_softmax(M, tau=self.temp, hard=True)
             M2 = M - M1.detach()
@@ -250,10 +269,6 @@ class ZeroshotCLIP(TrainerX):
         M = M / M.norm(dim=1, keepdim=True)
         alpha = self.alpha
         sims = alpha * torch.einsum('ij,ijk->ik', image, M) + img_w #Nx1000
-        # image [64, 1024]
-        # M     [64 512 1000]
-
-
         ##dual softmax
 
         return sims
@@ -266,7 +281,7 @@ class ZeroshotCLIP(TrainerX):
             logit_scale = self.logit_scale
         
         if split == None:
-            image_features = image_features + 0.2*torch.randn_like(image_features) 
+            image_features = image_features + 0.2 * torch.randn_like(image_features) 
         
         image_features_norm = image_features / image_features.norm(dim=-1, keepdim=True)
             
@@ -278,7 +293,7 @@ class ZeroshotCLIP(TrainerX):
             text_features_norm = self.conceptnet_sentences / self.conceptnet_sentences.norm(dim=-1, keepdim=True) #normalize? or not
 
             sims = self.attention_parallel(image_features_norm, self.conceptnet_sentences, mask, max, m )
-            logits = logit_scale*sims 
+            logits = logit_scale * sims 
             return logits       
         
         else:
@@ -315,12 +330,8 @@ class ZeroshotCLIP(TrainerX):
             data_time.update(time.time() - end)
             
             t = self.epoch
-            annealing_epoch =  self.cfg.TRAINER.MY_MODEL.ANNEAL_EPOCH 
-            max_temp = self.cfg.TRAINER.MY_MODEL.max_temp 
-            min_temp = self.cfg.TRAINER.MY_MODEL.min_temp 
-
-            a = max_temp
-            b = math.log(min_temp/max_temp)/annealing_epoch
+            a = self.cfg.TRAINER.MY_MODEL.max_temp
+            b = math.log(self.cfg.TRAINER.MY_MODEL.min_temp/self.cfg.TRAINER.MY_MODEL.max_temp)/self.cfg.TRAINER.MY_MODEL.ANNEAL_EPOCH 
             self.temp = a* math.exp(b*t)
 
             loss_summary = self.forward_backward(batch)
