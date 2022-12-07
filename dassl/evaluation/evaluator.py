@@ -49,17 +49,25 @@ class Classification(EvaluatorBase):
         if self._per_class_res is not None:
             self._per_class_res = defaultdict(list)
 
-    def process(self, mo, gt):
+    def process(self, mo, gt, error_case=False):
         # mo (torch.Tensor): model output [batch, num_classes]
         # gt (torch.LongTensor): ground truth [batch]
         pred = mo.max(1)[1]
         matches = pred.eq(gt).float()
+        # pdb.set_trace()
+        root = f'/mlainas/KGPrompt_data/imagenet/error_case'
+        idx = gt[0] // 2
+        y_true_npy = gt.data.cpu().numpy()
+        y_pred_npy = pred.data.cpu().numpy()
+        y_true = y_true_npy.tolist()
+        y_pred = y_pred_npy.tolist()
         self._correct += int(matches.sum().item())
         self._total += gt.shape[0]
 
-        self._y_true.extend(gt.data.cpu().numpy().tolist())
-        self._y_pred.extend(pred.data.cpu().numpy().tolist())
-
+        self._y_true.extend(y_true)
+        self._y_pred.extend(y_pred)
+        if error_case:
+            return np.where(y_pred_npy != y_true_npy), y_true_npy, y_pred_npy
         if self._per_class_res is not None:
             for i, label in enumerate(gt):
                 label = label.item()

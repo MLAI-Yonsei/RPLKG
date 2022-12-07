@@ -1,6 +1,7 @@
 import os
 import time
 import torch
+import pickle
 
 import numpy as np
 import torch.nn as nn
@@ -101,7 +102,9 @@ class ZeroshotCLIP(TrainerX):
         clip_model = load_clip_to_cpu(cfg)        
         self.clip_model = clip_model.float().to("cuda")
        
-        self.train_dataloader, self.valid_dataloader, self.test_dataloader = set_data_loader(cfg, self.dm, self.device, clip_model)      
+        self.train_dataloader, self.valid_dataloader, self.test_dataloader, classnames_, self.dataset_name = set_data_loader(cfg, self.dm, self.device, clip_model) 
+        if classnames_:
+            self.classnames = classnames   
         self.input_dim = 1024 if cfg.MODEL.BACKBONE.NAME.lower() == 'rn50' else 512
         # sentence embedding
         self.subsample_class = cfg.DATASET.SUBSAMPLE_CLASSES
@@ -154,8 +157,10 @@ class ZeroshotCLIP(TrainerX):
                 return x #This is dummy forward.
 
         self.low_dimer = LowDimer()
-
+        # pdb.set_trace()
         self.low_dimer.to(self.device)
+        # pdb.set_trace()
+        # pdb.set_trace()
         clip_model.to(self.device)
 
         # self.img_lowdim_trf = low_dimer.img_lowdim_trf
@@ -167,7 +172,8 @@ class ZeroshotCLIP(TrainerX):
         backbone_name = cfg.MODEL.BACKBONE.NAME.lower().replace('/', '')
         conceptnet_sentences_path = f"{self.emb_root}/{self.dataset_name}/conceptnet_features_{backbone_name}_{self.subsample_class}_level_{self.search_level}.pkl"
         if not os.path.exists(conceptnet_sentences_path):
-            self.conceptnet_sentences = get_conceptnet_feature(emb_root=self.emb_root,
+            self.conceptnet_sentences = get_conceptnet_feature(dm=self.dm,
+                                                             emb_root=self.emb_root,
                                                              dataset=self.dataset_name,
                                                              backbone=backbone_name,
                                                              subsample_class=self.subsample_class,
@@ -193,8 +199,8 @@ class ZeroshotCLIP(TrainerX):
         # added
         
         if self.mode == 'ZS':
+            # pdb.set_trace()
             prompts = [temp.format(c.replace("_", " ")) for c in classnames]
-            print(f"Prompts: {prompts}")
             prompts = torch.cat([clip.tokenize(p) for p in prompts])
             prompts = prompts.to(self.device) 
             with torch.no_grad():
@@ -240,19 +246,22 @@ class ZeroshotCLIP(TrainerX):
             text_features = self.low_dimer.txt_lowdim_trf(text)
             text = self.low_dimer.prompt_dim(text)
 
-
         clip_weights = clip_classifier(self.conceptnet_prompt)
         img_w = image @ clip_weights
 
         M = image_features @ text_features.view(-1,self.input_dim).T #830000x1000
         M = M.view(-1,len(self.classnames), max_len) #Nx1000x838
+        # M = M.view(-1, 200, max_len) #Nx1000x838
         M += mask.unsqueeze(0)
 
-        if 'EVAL_ONLY' in self.cfg.keys():
-            if self.cfg.EVAL_ONLY != 1:
-                self.t = self.epoch
-        else:
-            self.t = self.epoch
+        # if 'EVAL_ONLY' in self.cfg.keys():
+        #     if self.cfg.EVAL_ONLY != 1:
+        #         self.t = self.epoch
+        #     else:
+        #         self.t = cfg.LOAD_EPOCH
+        # else:
+        #     self.t = 200
+        self.t = 200
         a = self.cfg.TRAINER.MY_MODEL.max_temp
         b = math.log(self.cfg.TRAINER.MY_MODEL.min_temp/self.cfg.TRAINER.MY_MODEL.max_temp)/self.cfg.TRAINER.MY_MODEL.ANNEAL_EPOCH 
         self.temp = a* math.exp(b*self.t)
@@ -268,6 +277,7 @@ class ZeroshotCLIP(TrainerX):
         M = M.permute((1,2,0)) # Nx512x1000
         M = M / M.norm(dim=1, keepdim=True)
         alpha = self.alpha
+        my_alpha = 0.1
         sims = alpha * torch.einsum('ij,ijk->ik', image, M) + img_w #Nx1000
         ##dual softmax
 
@@ -302,10 +312,34 @@ class ZeroshotCLIP(TrainerX):
         logits = logit_scale * logits  
         return logits
     
+    def save_img_embeddings(self, image_features):
+        pass
+    def save_txt_embeddings(self):
+        cf = self.conceptnet_features
+        pass
     def before_train(self):
+        # pdb.set_trace()
         directory = self.cfg.OUTPUT_DIR
+        '''
+        CFG=vit_b16  # rn50, rn101, vit_b32 or vit_b16
+        SEARCH_LEVEL=1
+        SEED=1
+        DROPOUT=0.4
+        ALPHA=0.2
+        WD=3e-3
+        '''
+        # SHOTS = 16
+        # TRAINER = 'ZeroshotCLIP'
+        # CFG='vit_b16'  # rn50, rn101, vit_b32 or vit_b16
+        # SEARCH_LEVEL=1
+        # SEED=1
+        # DROPOUT=0.4
+        # ALPHA=0.2
+        # WD=3e-3
+        
         if self.cfg.RESUME:
             directory = self.cfg.RESUME
+        # directory = f'output/all/zs/imagenet/shots_{SHOTS}/{TRAINER}/{CFG}/search_level{SEARCH_LEVEL}/seed{SEED}/dropout{DROPOUT}/alpha{ALPHA}/wd{WD}'
         self.start_epoch = self.resume_model_if_exist(directory)
 
         # Initialize summary writer
@@ -315,9 +349,13 @@ class ZeroshotCLIP(TrainerX):
 
         # Remember the starting time (for computing the elapsed time)
         self.time_start = time.time()
-
-
+        # added - imagenet variants test
+        self.load_model(directory)
+        self.test()
+        pdb.set_trace()
+        
     def run_epoch(self):
+        self.test()
         self.set_model_mode("train")
         losses = MetricMeter()
         batch_time = AverageMeter()
@@ -372,7 +410,24 @@ class ZeroshotCLIP(TrainerX):
             "train_acc" : losses.meters["acc"].avg
             }, step=self.epoch)
 
-
+    @torch.no_grad()
+    def tsne(self, split=None):
+        pass
+        # if split == "val" and self.valid_dataloader is not None:#val_loader
+        #     data_loader = self.valid_dataloader #val_loader
+        # else:
+        #     split == "test"  # in case val_loader is None
+        #     data_loader = self.test_dataloader   #val_loader
+        # for batch_idx, batch in enumerate(tqdm(data_loader)):
+        # input, label = self.parse_batch_test(batch)
+        #     label = label.type(torch.int64)
+        #     output = self.model_inference(input, split = "val")
+        #     self.evaluator.process(output, torch.squeeze(label))
+        #     #added
+        #     loss = F.cross_entropy(output, torch.squeeze(label))
+        #     losses.update(loss.item(), input.shape[0])
+        #     acc = compute_accuracy(output, label)[0].item()
+        #     acces.update(acc, input.shape[0])
     @torch.no_grad()
     def test(self, split=None):
         """A generic testing pipeline."""
@@ -390,23 +445,25 @@ class ZeroshotCLIP(TrainerX):
             split == "test"  # in case val_loader is None
             data_loader = self.test_dataloader   #val_loader
 
-        print(f"Evaluate on the *{split}* set")
+        # error_case
         
+        
+        print(f"Evaluate on the *{split}* set")
+        error_case = False
         for batch_idx, batch in enumerate(tqdm(data_loader)):
             input, label = self.parse_batch_test(batch)
             label = label.type(torch.int64)
             output = self.model_inference(input, split = "val")
-            self.evaluator.process(output, torch.squeeze(label))
+            self.evaluator.process(output, torch.squeeze(label), error_case=error_case)
             #added
             loss = F.cross_entropy(output, torch.squeeze(label))
-
             losses.update(loss.item(), input.shape[0])
             acc = compute_accuracy(output, label)[0].item()
             acces.update(acc, input.shape[0])
 
         loss = losses.avg
         acc = acces.avg
-
+        
         wandb.log({
             "test_loss" : loss,
             "test_acc" : acc
@@ -438,14 +495,15 @@ class ZeroshotCLIP(TrainerX):
                 output = self.model_inference(image, split = None)
                 loss = F.cross_entropy(output, label.squeeze(dim=-1))
                 loss.backward(retain_graph=True )
-                #self.model_backward_and_update(loss) #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
+                
+                # self.model_backward_and_update(loss) #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
                 self.optim.first_step(zero_grad=True)
                 F.cross_entropy(output, label.squeeze(dim=-1)).backward()
                 self.optim.second_step(zero_grad=True)
             else:
                 output = self.model_inference(image, split = None)
                 loss = F.cross_entropy(output, label.squeeze(dim=-1))
-                self.model_backward_and_update(loss) #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
+                self.model_backward_and_update(loss, names='low_dimer') #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
 
             
         loss_summary = {
@@ -458,6 +516,7 @@ class ZeroshotCLIP(TrainerX):
         return loss_summary
 
     def after_epoch(self):
+        # pdb.set_trace()
         last_epoch = (self.epoch + 1) == self.max_epoch
         do_test = not self.cfg.TEST.NO_TEST
         meet_checkpoint_freq = (
@@ -476,10 +535,20 @@ class ZeroshotCLIP(TrainerX):
                     val_result=curr_result,
                     model_name="model-best.pth.tar"
                 )
-
-        if meet_checkpoint_freq or last_epoch:
+            if (self.epoch) % 5 == 0:
+                self.save_model(
+                    self.epoch,
+                    self.output_dir,
+                    val_result=curr_result,
+                    model_name=f"model-epoch-{self.epoch}.pth.tar"
+                )
+        if meet_checkpoint_freq:
+            self.save_model(epoch=self.epoch, 
+                            directory=self.output_dir,
+                            model_name=f"model-epoch-{self.epoch}.pth.tar")
+        
+        if last_epoch:
             self.save_model(self.epoch, self.output_dir)
-
         self.test()
 
     def parse_batch_train(self, batch):

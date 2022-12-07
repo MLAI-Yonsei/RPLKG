@@ -140,7 +140,6 @@ class TrainerBase:
         names = self.get_model_names()
         for name in names:
             model_dict = self._models[name].state_dict()
-
             optim_dict = None
             if self._optims[name] is not None:
                 optim_dict = self._optims[name].state_dict()
@@ -196,7 +195,6 @@ class TrainerBase:
             return
 
         names = self.get_model_names()
-
         # By default, the best model is loaded
         model_file = "model-best.pth.tar"
 
@@ -205,7 +203,6 @@ class TrainerBase:
             self.load_epoch = epoch
         for name in names:
             model_path = osp.join(directory, name, model_file)
-
             if not osp.exists(model_path):
                 raise FileNotFoundError(f"No model at {model_path}")
 
@@ -216,6 +213,7 @@ class TrainerBase:
             # print(
             #     f"Load {model_path} to {name} (epoch={epoch}, val_result={val_result:.1f})"
             # )
+            # pdb.set_trace()
             self._models[name].load_state_dict(state_dict)
 
     def set_model_mode(self, mode="train", names=None):
@@ -316,6 +314,7 @@ class TrainerBase:
                 self._optims[name].step()
 
     def model_backward_and_update(self, loss, names=None):
+        # pdb.set_trace()
         self.model_zero_grad(names)
         self.model_backward(loss)
         self.model_update(names)

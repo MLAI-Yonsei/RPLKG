@@ -42,5 +42,4 @@ class ImageNetA(DatasetBase):
                 impath = os.path.join(image_dir, folder, imname)
                 item = Datum(impath=impath, label=label, classname=classname)
                 items.append(item)
-
         return items

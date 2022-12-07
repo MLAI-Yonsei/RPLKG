@@ -221,7 +221,7 @@ def main(args):
         wandb.config.update(cfg)
         dataset = args.dataset
         trainer = args.trainer
-        model = 'VIT_B16'
+        model = cfg.MODEL.BACKBONE.NAME
         search_level = args.search_level
         seed = args.seed
         dropout = args.dropout
@@ -233,6 +233,7 @@ def main(args):
 
     if args.eval_only:
         trainer.load_model(args.model_dir, epoch=args.load_epoch)
+        # pdb.set_trace()
         trainer.test()
         return
 
