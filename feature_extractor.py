@@ -86,7 +86,7 @@ def set_data_loader(cfg, dm, device, clip_model, test=None):
     # if test:
     # dataset_name = 'imagenetsketch'
     # dataset_name = 'imagenetv2'
-    dataset_name = 'imageneta'
+    # dataset_name = 'imageneta'
     # dataset_name = 'imagenetr'
     num_shot = cfg.DATASET.NUM_SHOTS
     seed = cfg.SEED
@@ -104,9 +104,13 @@ def set_data_loader(cfg, dm, device, clip_model, test=None):
         classnames_path = f'{emb_root}/classnames.pkl'
         if not os.path.exists(classnames_path):
             classnames = dm.dataset.classnames
+            # pdb.set_trace()
             class_names_ = classnames
             with open(classnames_path, 'wb') as fp:
                 pickle.dump(class_names_, fp)
+        else:
+            with open(classnames_path, 'rb') as fp:
+                class_names_ = pickle.load(fp)
     
     # TODO: implement dataloder for imagenet vairants testsets  
     if dataset_name in ['imageneta', 'imagenetr', 'imagenetsketch', 'imagenetv2']:
@@ -132,14 +136,6 @@ def set_data_loader(cfg, dm, device, clip_model, test=None):
             test_data = valid_data
             # dm.impath 빼오기
             valid_dm_dataset = dm.dataset.val
-            impath_list_path = f'{emb_root}/imagenet_impath_list.pkl'
-            if not os.path.exists(impath_list_path):
-                impath_list = []
-                for data in valid_dm_dataset:
-                    im_path = data.impath
-                    impath_list.append(im_path)
-                with open(impath_list_path, mode='wb') as f:
-                    pickle.dump(impath_list, f)
         else:
             test_data  = get_dataset(test_dir, dm, backbone, 'test', clip_model, device)
 
@@ -150,7 +146,7 @@ def set_data_loader(cfg, dm, device, clip_model, test=None):
     
     return train_dataloader, valid_dataloader, test_dataloader, class_names_, dataset_name
 
-def get_conceptnet_feature(dm, emb_root, dataset, backbone, subsample_class, level, classnames, clip_model, device):
+def get_conceptnet_feature(dm, emb_root, dataset, backbone, subsample_class, level, classnames, clip_model, device, conceptnet_path):
     """
     emb_root: root path of embedding
     dataset: name of dataset (ImageNet, EuroSAT, ...)
@@ -161,11 +157,15 @@ def get_conceptnet_feature(dm, emb_root, dataset, backbone, subsample_class, lev
     clip_model: clip model for feature extracting
     device: device 
     """
+    if os.path.exists(conceptnet_path):
+        conceptnet_sentences = torch.load(conceptnet_path)
+        return conceptnet_sentences
     emb_root = f'/mlainas/KGPrompt_data/{dataset}'
     if dataset in ['imageneta', 'imagenetr']:
         classnames_path = f'{emb_root}/classnames.pkl'
         with open(classnames_path, 'rb') as fp:
             classnames = pickle.load(fp)
+    # pdb.set_trace()
     # search level split
     df_path = f'{emb_root}/sents.csv'
     df = pd.read_csv(df_path)

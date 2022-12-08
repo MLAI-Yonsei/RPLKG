@@ -101,16 +101,17 @@ class ZeroshotCLIP(TrainerX):
         print(f"Loading CLIP (backbone: {cfg.MODEL.BACKBONE.NAME})")
         clip_model = load_clip_to_cpu(cfg)        
         self.clip_model = clip_model.float().to("cuda")
-       
+        self.dataset_name = cfg.DATASET.NAME.lower()
         self.train_dataloader, self.valid_dataloader, self.test_dataloader, classnames_, self.dataset_name = set_data_loader(cfg, self.dm, self.device, clip_model) 
         if classnames_:
-            self.classnames = classnames   
+            self.classnames = classnames_   
+        # pdb.set_trace()
         self.input_dim = 1024 if cfg.MODEL.BACKBONE.NAME.lower() == 'rn50' else 512
         # sentence embedding
         self.subsample_class = cfg.DATASET.SUBSAMPLE_CLASSES
         self.search_level = cfg.DATASET.SEARCH_LEVEL
         self.emb_root = cfg.DATASET.EMB_ROOT
-        self.dataset_name = cfg.DATASET.NAME.lower()
+        
 
         self.logit_scale = cfg.TRAINER.MY_MODEL.SCALE
         self.dropout = cfg.TRAINER.MY_MODEL.DROPOUT
@@ -171,8 +172,7 @@ class ZeroshotCLIP(TrainerX):
         # automated conceptnet_feature extracting
         backbone_name = cfg.MODEL.BACKBONE.NAME.lower().replace('/', '')
         conceptnet_sentences_path = f"{self.emb_root}/{self.dataset_name}/conceptnet_features_{backbone_name}_{self.subsample_class}_level_{self.search_level}.pkl"
-        if not os.path.exists(conceptnet_sentences_path):
-            self.conceptnet_sentences = get_conceptnet_feature(dm=self.dm,
+        self.conceptnet_sentences = get_conceptnet_feature(dm=self.dm,
                                                              emb_root=self.emb_root,
                                                              dataset=self.dataset_name,
                                                              backbone=backbone_name,
@@ -180,10 +180,13 @@ class ZeroshotCLIP(TrainerX):
                                                              level=self.search_level,
                                                              classnames=self.classnames,
                                                              clip_model=clip_model,
-                                                             device=self.device)
-        else:
-            self.conceptnet_sentences = torch.load(conceptnet_sentences_path)
-        
+                                                             device=self.device,
+                                                             conceptnet_path=conceptnet_sentences_path)
+        dataset_name = cfg.DATASET.NAME.lower()
+        if self.dataset_name in ['imageneta', 'imagenetr']:
+            classnames_path = f'{self.emb_root}/{self.dataset_name}/classnames.pkl'
+            with open(classnames_path, 'rb') as fp:
+                self.classnames = pickle.load(fp) 
         #for clip weight 
         self.conceptnet_prompt = self.conceptnet_sentences
         
@@ -200,7 +203,7 @@ class ZeroshotCLIP(TrainerX):
         
         if self.mode == 'ZS':
             # pdb.set_trace()
-            prompts = [temp.format(c.replace("_", " ")) for c in classnames]
+            prompts = [temp.format(c.replace("_", " ")) for c in self.classnames]
             prompts = torch.cat([clip.tokenize(p) for p in prompts])
             prompts = prompts.to(self.device) 
             with torch.no_grad():
@@ -251,6 +254,7 @@ class ZeroshotCLIP(TrainerX):
 
         M = image_features @ text_features.view(-1,self.input_dim).T #830000x1000
         M = M.view(-1,len(self.classnames), max_len) #Nx1000x838
+        # pdb.set_trace()
         # M = M.view(-1, 200, max_len) #Nx1000x838
         M += mask.unsqueeze(0)
 
@@ -352,7 +356,7 @@ class ZeroshotCLIP(TrainerX):
         # added - imagenet variants test
         self.load_model(directory)
         self.test()
-        pdb.set_trace()
+        # pdb.set_trace()
         
     def run_epoch(self):
         self.test()
