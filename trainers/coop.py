@@ -24,6 +24,7 @@ import datetime
 _tokenizer = _Tokenizer()
 
 
+        
 def load_clip_to_cpu(cfg):
     backbone_name = cfg.MODEL.BACKBONE.NAME
     url = clip._MODELS[backbone_name]
@@ -53,8 +54,6 @@ class TextEncoder(nn.Module):
 
     def forward(self, prompts, tokenized_prompts):
         x = prompts + self.positional_embedding.type(self.dtype)
-        import pdb; pdb.set_trace()
-
         x = x.permute(1, 0, 2)  # NLD -> LND
         x = self.transformer(x)
         x = x.permute(1, 0, 2)  # LND -> NLD
@@ -223,7 +222,7 @@ class CoOp(TrainerX):
 
     Learning to Prompt for Vision-Language Models
     https://arxiv.org/abs/2109.01134
-    """       
+    """         
 
     def check_cfg(self, cfg):
         assert cfg.TRAINER.COOP.PREC in ["fp16", "fp32", "amp"]
@@ -231,6 +230,15 @@ class CoOp(TrainerX):
     def build_model(self):
         cfg = self.cfg
         classnames = self.dm.dataset.classnames
+
+        self.dataset_name = cfg.DATASET.NAME.lower()
+        bk=cfg.MODEL.BACKBONE.NAME
+        num_shot = cfg.DATASET.NUM_SHOTS
+        self.name = f'CoOp_{self.dataset_name}_shot{num_shot}_seed{cfg.SEED}_{bk}'
+
+        wandb.init(project="KGPrompt-coop_8",
+        entity="ingdoo",
+        name = self.name) 
 
 
         print(f"Loading CLIP (backbone: {cfg.MODEL.BACKBONE.NAME})")
@@ -279,66 +287,6 @@ class CoOp(TrainerX):
 
         # Remember the starting time (for computing the elapsed time)
         self.time_start = time.time()
-
-
-    def run_epoch(self):
-        self.set_model_mode("train")
-        losses = MetricMeter()
-        batch_time = AverageMeter()
-        data_time = AverageMeter()
-        #edited
-        self.num_batches = len(self.train_loader_x) #원래 self.train_loader_x
-
-        end = time.time()
-        for self.batch_idx, batch in enumerate(self.train_loader_x): #edited self.train_loader_x
-            data_time.update(time.time() - end)
-            
-            t = self.epoch
-            annealing_epoch =  self.cfg.TRAINER.MY_MODEL.ANNEAL_EPOCH 
-            max_temp = self.cfg.TRAINER.MY_MODEL.max_temp 
-            min_temp = self.cfg.TRAINER.MY_MODEL.min_temp 
-
-            a = max_temp
-            b = math.log(min_temp/max_temp)/annealing_epoch
-            self.temp = a* math.exp(b*t)
-
-            loss_summary = self.forward_backward(batch)
-            batch_time.update(time.time() - end)
-            losses.update(loss_summary)
-
-            meet_freq = (self.batch_idx + 1) % self.cfg.TRAIN.PRINT_FREQ == 0
-            only_few_batches = self.num_batches < self.cfg.TRAIN.PRINT_FREQ
-            if meet_freq or only_few_batches:
-                nb_remain = 0
-                nb_remain += self.num_batches - self.batch_idx - 1
-                nb_remain += (
-                    self.max_epoch - self.epoch - 1
-                ) * self.num_batches
-                eta_seconds = batch_time.avg * nb_remain
-                eta = str(datetime.timedelta(seconds=int(eta_seconds)))
-
-                info = []
-                info += [f"epoch [{self.epoch + 1}/{self.max_epoch}]"]
-                info += [f"batch [{self.batch_idx + 1}/{self.num_batches}]"]
-                info += [f"time {batch_time.val:.3f} ({batch_time.avg:.3f})"]
-                info += [f"data {data_time.val:.3f} ({data_time.avg:.3f})"]
-                info += [f"{losses}"]
-                info += [f"lr {self.get_current_lr():.4e}"]
-                info += [f"eta {eta}"]
-                print(" ".join(info))
-
-            n_iter = self.epoch * self.num_batches + self.batch_idx
-            for name, meter in losses.meters.items():
-                self.write_scalar("train/" + name, meter.avg, n_iter)
-            self.write_scalar("train/lr", self.get_current_lr(), n_iter)
-
-
-            end = time.time()
-
-        wandb.log({
-            "train_loss " : losses.meters["loss"].avg,
-            "train_acc" : losses.meters["acc"].avg
-            }, step=self.epoch)
 
 
     @torch.no_grad()

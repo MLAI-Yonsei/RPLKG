@@ -8,6 +8,7 @@ import torch.nn.functional as F
 from feature_extractor import set_data_loader, get_conceptnet_feature
 from torch.cuda.amp import GradScaler, autocast
 import torch.optim as optim
+from dassl.utils import load_pretrained_weights, load_checkpoint
 from dassl.metrics import compute_accuracy
 from dassl.engine import TRAINER_REGISTRY, TrainerX
 from dassl.optim import build_optimizer, build_lr_scheduler
@@ -114,19 +115,15 @@ class ZeroshotCLIP(TrainerX):
         self.wd = cfg.OPTIM.WEIGHT_DECAY
         self.mode = cfg.MODE
         self.alpha = cfg.TRAINER.MY_MODEL.ALPHA
-<<<<<<< HEAD
         num_shot = cfg.DATASET.NUM_SHOTS
         self.name = f'{self.dataset_name}_dropout={self.dropout}_wd={self.wd}_shot{num_shot}_{cfg.MODE}_alpha{self.alpha}_level{self.search_level}_seed{cfg.SEED}_{bk}'
 
 
 
-        wandb.init(project="KGPrompt-221203",
+        wandb.init(project="KGPrompt-221207_level",
             name = self.name,
             entity="ingdoo") 
-=======
-        self.entity = cfg.ENTITY
-        self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}_{cfg.MODE}_alpha{self.alpha}'
->>>>>>> 1208cc92d16914baae7ba977bfb88cee008ebe3f
+
         
         class LowDimer(nn.Module):
             def __init__(self):
@@ -156,14 +153,14 @@ class ZeroshotCLIP(TrainerX):
         
                 return x #This is dummy forward.
 
-        low_dimer = LowDimer()
+        self.low_dimer = LowDimer()
 
-        low_dimer.to(self.device)
+        self.low_dimer.to(self.device)
         clip_model.to(self.device)
 
-        self.img_lowdim_trf = low_dimer.img_lowdim_trf
-        self.txt_lowdim_trf = low_dimer.txt_lowdim_trf
-        self.prompt_lowdim = low_dimer.prompt_dim 
+        self.img_lowdim_trf = self.low_dimer.img_lowdim_trf
+        self.txt_lowdim_trf = self.low_dimer.txt_lowdim_trf
+        self.prompt_lowdim = self.low_dimer.prompt_dim 
         temp = CUSTOM_TEMPLATES[cfg.DATASET.NAME]
         
         # automated conceptnet_feature extracting
@@ -182,12 +179,12 @@ class ZeroshotCLIP(TrainerX):
         
         #for clip weight 
         self.conceptnet_prompt = self.conceptnet_sentences 
-        self.optim = build_optimizer(low_dimer, cfg.OPTIM )
+        self.optim = build_optimizer(self.low_dimer, cfg.OPTIM )
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
         self.scaler = GradScaler() if cfg.TRAINER.COOP.PREC == "amp" else None
  
 
-        self.register_model("low_dimer", low_dimer, self.optim, self.sched)
+        self.register_model("low_dimer", self.low_dimer, self.optim, self.sched)
         
         # added
         
@@ -260,26 +257,19 @@ class ZeroshotCLIP(TrainerX):
         M = M / M.norm(dim=1, keepdim=True)
         alpha = self.alpha
         sims = alpha * torch.einsum('ij,ijk->ik', image, M) + img_w #Nx1000
-<<<<<<< HEAD
-=======
-        # image [64, 1024]
-        # M     [64 512 1000]
-
-
->>>>>>> 1208cc92d16914baae7ba977bfb88cee008ebe3f
         ##dual softmax
 
         return sims
 
 
-    def model_inference(self, image_features, split):
+    def model_inference(self, image_features): #, split):
         if self.logit_scale == 0:
             logit_scale = self.clip_model.logit_scale.exp()
         else:
             logit_scale = self.logit_scale
         
-        if split == None:
-            image_features = image_features + 0.2*torch.randn_like(image_features) 
+        #if split == None:
+        #    image_features = image_features + 0.2*torch.randn_like(image_features) 
         
         image_features_norm = image_features / image_features.norm(dim=-1, keepdim=True)
             
@@ -397,7 +387,7 @@ class ZeroshotCLIP(TrainerX):
         for batch_idx, batch in enumerate(tqdm(data_loader)):
             input, label = self.parse_batch_test(batch)
             label = label.type(torch.int64)
-            output = self.model_inference(input, split = "val")
+            output = self.model_inference(input) #, split = "val")
             self.evaluator.process(output, torch.squeeze(label))
             #added
             loss = F.cross_entropy(output, torch.squeeze(label))
@@ -429,7 +419,7 @@ class ZeroshotCLIP(TrainerX):
         optim_name = self.cfg.OPTIM.NAME
         if prec == "amp":
             with autocast():
-                output = self.model_inference(image, split = None)
+                output = self.model_inference(image) #, split = None)
                 loss = F.cross_entropy(output, label)
             self.optim.zero_grad()
             self.scaler.scale(loss).backward()
@@ -437,7 +427,7 @@ class ZeroshotCLIP(TrainerX):
             self.scaler.update()
         else:
             if optim_name == 'sam':
-                output = self.model_inference(image, split = None)
+                output = self.model_inference(image) #, split = None)
                 loss = F.cross_entropy(output, label.squeeze(dim=-1))
                 loss.backward(retain_graph=True )
                 #self.model_backward_and_update(loss) #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
@@ -445,7 +435,7 @@ class ZeroshotCLIP(TrainerX):
                 F.cross_entropy(output, label.squeeze(dim=-1)).backward()
                 self.optim.second_step(zero_grad=True)
             else:
-                output = self.model_inference(image, split = None)
+                output = self.model_inference(image) #, split = None)
                 loss = F.cross_entropy(output, label.squeeze(dim=-1))
                 self.model_backward_and_update(loss) #Make sure that CLIP encoder is not trained,, and attention nnLinear is only triained ..
 
@@ -467,17 +457,16 @@ class ZeroshotCLIP(TrainerX):
             if self.cfg.TRAIN.CHECKPOINT_FREQ > 0 else False
         )
 
-        if do_test and self.cfg.TEST.FINAL_MODEL == "best_val":
-            curr_result = self.test(split="val")
-            is_best = curr_result > self.best_result
-            if is_best:
-                self.best_result = curr_result
-                self.save_model(
-                    self.epoch,
-                    self.output_dir,
-                    val_result=curr_result,
-                    model_name="model-best.pth.tar"
-                )
+        curr_result = self.test(split="val")
+        is_best = curr_result > self.best_result
+        if is_best:
+            self.best_result = curr_result
+            self.save_model(
+                self.epoch,
+                self.output_dir,
+                val_result=curr_result,
+                model_name="model-best.pth.tar"
+            )
 
         if meet_checkpoint_freq or last_epoch:
             self.save_model(self.epoch, self.output_dir)
@@ -504,6 +493,40 @@ class ZeroshotCLIP(TrainerX):
         label = label.to(self.device)
 
         return input, label
+    
+    def load_model(self, directory, epoch=None):
+        if not directory:
+            print("Note that load_model() is skipped as no pretrained model is given")
+            return
+
+        names = self.get_model_names()
+        # By default, the best model is loaded
+        model_file = "model-best.pth.tar"
+
+        #if epoch is not None:
+        #    model_file = "model.pth.tar-" + str(epoch)
+
+        for name in names:
+            model_path = osp.join(directory, name, model_file)
+
+            if not osp.exists(model_path):
+                raise FileNotFoundError('Model not found at "{}"'.format(model_path))
+
+            checkpoint = load_checkpoint(model_path)
+            state_dict = checkpoint["state_dict"]
+            epoch = checkpoint["epoch"]
+
+            # Ignore fixed token vectors
+            if "token_prefix" in state_dict:
+                del state_dict["token_prefix"]
+
+            if "token_suffix" in state_dict:
+                del state_dict["token_suffix"]
+
+            print("Loading weights to {} " 'from "{}" (epoch = {})'.format(name, model_path, epoch))
+            # set strict=False
+            self._models[name].load_state_dict(state_dict, strict=False)
+
 
 @TRAINER_REGISTRY.register()
 class ZeroshotCLIP2(ZeroshotCLIP):

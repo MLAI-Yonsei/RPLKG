@@ -1,5 +1,6 @@
 import os
-import pickle
+import pickle#5 as pickle
+
 from collections import OrderedDict
 
 from dassl.data.datasets import DATASET_REGISTRY, Datum, DatasetBase

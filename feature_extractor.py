@@ -34,6 +34,8 @@ def dataset_to_npy(dm, backbone, stage, clip_model, device):
         tfm = dm.tfm_test
     else:
         data_x = dataset.test
+
+        
         tfm = dm.tfm_test
 
     with torch.no_grad():
@@ -63,9 +65,9 @@ def set_data_loader(cfg, dm, device, clip_model):
     if not os.path.exists(emb_root):
         os.mkdir(emb_root)
 
-    train_dir = f'{emb_root}/{backbone}_shot_{num_shot}_seed_{seed}_{subsample_class}_train.npy'
-    valid_dir = f'{emb_root}/{backbone}_shot_{num_shot}_seed_{seed}_{subsample_class}_valid.npy'
-    test_dir = f'{emb_root}/{backbone}_shot_{num_shot}_seed_{seed}_{subsample_class}_test.npy'
+    train_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_{subsample_class}_train.npy'
+    valid_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_{subsample_class}_valid.npy'
+    test_dir = f'{emb_root}/shot_{num_shot}_seed_{seed}_{subsample_class}_test.npy'
 
     print(train_dir)
     print(valid_dir)
@@ -187,7 +189,7 @@ def get_conceptnet_feature(emb_root, dataset, backbone, subsample_class, level, 
         emb_list.append(class_feature)
     
     # TODO: complete save path
-    save_path = f'{emb_root}/{dataset}/conceptnet_features_{backbone}_{subsample_class}_level_{level}.pkl'
+    save_path = f'{emb_root}/{dataset}/conceptnet_features_{subsample_class}_level_{level}.pkl'
     torch.save(emb_list, save_path)
 
     return emb_list

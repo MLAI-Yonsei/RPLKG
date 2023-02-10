@@ -1,0 +1,371 @@
+***************
+** Arguments **
+***************
+alpha: 1.0
+anneal_epoch: 100.0
+backbone: 
+config_file: configs/trainers/CoOp/vit_b16.yaml
+dataset: dtd
+dataset_config_file: configs/datasets/dtd.yaml
+dropout: 0.0
+emb_root: /mlainas/KGPrompt_data
+entity: ingdoo
+eval_only: True
+head: 
+load_epoch: None
+logit_scale: 0.0
+max_epoch: None
+max_temp: 2.0
+min_temp: 0.1
+mode: weight_sum
+model_dir: 
+no_train: False
+opts: ['DATASET.NUM_SHOTS', '16']
+output_dir: output_ours/vit_b16/search_level1/dtd__/shots_16/ZeroshotCLIP/seed1
+report_name: ZSCLIP_dataset_dtd
+resume: 
+root: /DATA1/yewon/coop
+search_level: 1
+seed: 1
+source_domains: None
+target_domains: None
+trainer: ZeroshotCLIP
+transforms: None
+use_wandb: False
+wb_name: test
+wd: 0.0
+************
+** Config **
+************
+DATALOADER:
+  K_TRANSFORMS: 1
+  NUM_WORKERS: 8
+  RETURN_IMG0: False
+  TEST:
+    BATCH_SIZE: 100
+    SAMPLER: SequentialSampler
+  TRAIN_U:
+    BATCH_SIZE: 32
+    N_DOMAIN: 0
+    N_INS: 16
+    SAME_AS_X: True
+    SAMPLER: RandomSampler
+  TRAIN_X:
+    BATCH_SIZE: 32
+    N_DOMAIN: 0
+    N_INS: 16
+    SAMPLER: RandomSampler
+DATASET:
+  ALL_AS_UNLABELED: False
+  CIFAR_C_LEVEL: 1
+  CIFAR_C_TYPE: 
+  EMB_ROOT: /mlainas/KGPrompt_data
+  NAME: DescribableTextures
+  NUM_LABELED: -1
+  NUM_SHOTS: 16
+  ROOT: /DATA1/yewon/coop
+  SEARCH_LEVEL: 1
+  SOURCE_DOMAINS: ()
+  STL10_FOLD: -1
+  SUBSAMPLE_CLASSES: all
+  TARGET_DOMAINS: ()
+  VAL_PERCENT: 0.1
+EMBEDDING_ROOT: /disk/teang1995/emb_root
+ENTITY: ingdoo
+INPUT:
+  COLORJITTER_B: 0.4
+  COLORJITTER_C: 0.4
+  COLORJITTER_H: 0.1
+  COLORJITTER_S: 0.4
+  CROP_PADDING: 4
+  CUTOUT_LEN: 16
+  CUTOUT_N: 1
+  GB_K: 21
+  GB_P: 0.5
+  GN_MEAN: 0.0
+  GN_STD: 0.15
+  INTERPOLATION: bicubic
+  NO_TRANSFORM: False
+  PIXEL_MEAN: [0.48145466, 0.4578275, 0.40821073]
+  PIXEL_STD: [0.26862954, 0.26130258, 0.27577711]
+  RANDAUGMENT_M: 10
+  RANDAUGMENT_N: 2
+  RGS_P: 0.2
+  RRCROP_SCALE: (0.08, 1.0)
+  SIZE: (224, 224)
+  TRANSFORMS: ('random_resized_crop', 'random_flip', 'normalize')
+MODE: weight_sum
+MODEL:
+  BACKBONE:
+    NAME: ViT-B/16
+    PRETRAINED: True
+  HEAD:
+    ACTIVATION: relu
+    BN: True
+    DROPOUT: 0.0
+    HIDDEN_LAYERS: ()
+    NAME: 
+  INIT_WEIGHTS: 
+OPTIM:
+  ADAM_BETA1: 0.9
+  ADAM_BETA2: 0.999
+  BASE_LR_MULT: 0.1
+  GAMMA: 0.1
+  LR: 0.01
+  LR_SCHEDULER: cosine
+  MAX_EPOCH: 100
+  MOMENTUM: 0.9
+  NAME: sgd
+  NEW_LAYERS: ()
+  RMSPROP_ALPHA: 0.99
+  SGD_DAMPNING: 0
+  SGD_NESTEROV: False
+  STAGED_LR: False
+  STEPSIZE: (-1,)
+  WARMUP_CONS_LR: 1e-05
+  WARMUP_EPOCH: 1
+  WARMUP_MIN_LR: 1e-05
+  WARMUP_RECOUNT: True
+  WARMUP_TYPE: constant
+  WEIGHT_DECAY: 0.0005
+OUTPUT_DIR: output_ours/vit_b16/search_level1/dtd__/shots_16/ZeroshotCLIP/seed1
+RESUME: 
+SEED: 1
+TEST:
+  COMPUTE_CMAT: False
+  EVALUATOR: Classification
+  FINAL_MODEL: last_step
+  NO_TEST: False
+  PER_CLASS_RESULT: True
+  SPLIT: test
+TRAIN:
+  CHECKPOINT_FREQ: 0
+  COUNT_ITER: train_x
+  PRINT_FREQ: 5
+TRAINER:
+  CDAC:
+    CLASS_LR_MULTI: 10
+    P_THRESH: 0.95
+    RAMPUP_COEF: 30
+    RAMPUP_ITRS: 1000
+    STRONG_TRANSFORMS: ()
+    TOPK_MATCH: 5
+  COCOOP:
+    CTX_INIT: 
+    N_CTX: 16
+    PREC: fp16
+  COOP:
+    CLASS_TOKEN_POSITION: end
+    CSC: False
+    CTX_INIT: a photo of a
+    N_CTX: 16
+    PREC: fp16
+  CROSSGRAD:
+    ALPHA_D: 0.5
+    ALPHA_F: 0.5
+    EPS_D: 1.0
+    EPS_F: 1.0
+  DAEL:
+    CONF_THRE: 0.95
+    STRONG_TRANSFORMS: ()
+    WEIGHT_U: 0.5
+  DAELDG:
+    CONF_THRE: 0.95
+    STRONG_TRANSFORMS: ()
+    WEIGHT_U: 0.5
+  DDAIG:
+    ALPHA: 0.5
+    CLAMP: False
+    CLAMP_MAX: 1.0
+    CLAMP_MIN: -1.0
+    G_ARCH: 
+    LMDA: 0.3
+    WARMUP: 0
+  DOMAINMIX:
+    ALPHA: 1.0
+    BETA: 1.0
+    TYPE: crossdomain
+  ENTMIN:
+    LMDA: 0.001
+  FIXMATCH:
+    CONF_THRE: 0.95
+    STRONG_TRANSFORMS: ()
+    WEIGHT_U: 1.0
+  M3SDA:
+    LMDA: 0.5
+    N_STEP_F: 4
+  MCD:
+    N_STEP_F: 4
+  MEANTEACHER:
+    EMA_ALPHA: 0.999
+    RAMPUP: 5
+    WEIGHT_U: 1.0
+  MIXMATCH:
+    MIXUP_BETA: 0.75
+    RAMPUP: 20000
+    TEMP: 2.0
+    WEIGHT_U: 100.0
+  MME:
+    LMDA: 0.1
+  MY_MODEL:
+    ALPHA: 1.0
+    ANNEAL_EPOCH: 100.0
+    DROPOUT: 0.0
+    SCALE: 0
+    max_temp: 2.0
+    min_temp: 0.1
+  NAME: ZeroshotCLIP
+  SE:
+    CONF_THRE: 0.95
+    EMA_ALPHA: 0.999
+    RAMPUP: 300
+USE_CUDA: True
+VERBOSE: True
+VERSION: 1
+Collecting env info ...
+** System info **
+PyTorch version: 1.11.0
+Is debug build: False
+CUDA used to build PyTorch: 11.3
+ROCM used to build PyTorch: N/A
+
+OS: Ubuntu 20.04.3 LTS (x86_64)
+GCC version: (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+Clang version: Could not collect
+CMake version: Could not collect
+Libc version: glibc-2.31
+
+Python version: 3.8.12 (default, Oct 12 2021, 13:49:34)  [GCC 7.5.0] (64-bit runtime)
+Python platform: Linux-5.4.0-122-generic-x86_64-with-glibc2.17
+Is CUDA available: True
+CUDA runtime version: 11.4.152
+GPU models and configuration: 
+GPU 0: NVIDIA GeForce RTX 3090
+GPU 1: NVIDIA GeForce RTX 3090
+GPU 2: NVIDIA GeForce RTX 3090
+GPU 3: NVIDIA GeForce RTX 3090
+GPU 4: NVIDIA GeForce RTX 3090
+GPU 5: NVIDIA GeForce RTX 3090
+GPU 6: NVIDIA GeForce RTX 3090
+GPU 7: NVIDIA GeForce RTX 3090
+
+Nvidia driver version: 515.65.01
+cuDNN version: Could not collect
+HIP runtime version: N/A
+MIOpen runtime version: N/A
+
+Versions of relevant libraries:
+[pip3] mypy==0.971
+[pip3] mypy-extensions==0.4.3
+[pip3] numpy==1.21.5
+[pip3] pytorch-lightning==1.7.7
+[pip3] torch==1.11.0
+[pip3] torchaudio==0.11.0
+[pip3] torchmetrics==0.10.0
+[pip3] torchvision==0.12.0
+[conda] blas                      1.0                         mkl  
+[conda] cudatoolkit               11.3.1               h2bc3f7f_2  
+[conda] mkl                       2021.4.0           h06a4308_640  
+[conda] mkl-service               2.4.0            py38h7f8727e_0  
+[conda] mkl_fft                   1.3.1            py38hd3c417c_0  
+[conda] mkl_random                1.2.2            py38h51133e4_0  
+[conda] mypy                      0.971                    pypi_0    pypi
+[conda] mypy-extensions           0.4.3                    pypi_0    pypi
+[conda] numpy                     1.19.2                   pypi_0    pypi
+[conda] numpy-base                1.21.5           py38hf524024_2  
+[conda] pytorch                   1.11.0          py3.8_cuda11.3_cudnn8.2.0_0    pytorch
+[conda] pytorch-lightning         1.7.7                    pypi_0    pypi
+[conda] pytorch-mutex             1.0                        cuda    pytorch
+[conda] torchaudio                0.11.0               py38_cu113    pytorch
+[conda] torchmetrics              0.10.0                   pypi_0    pypi
+[conda] torchvision               0.12.0               py38_cu113    pytorch
+        Pillow (9.0.1)
+
+Loading trainer: ZeroshotCLIP
+Loading dataset: DescribableTextures
+Reading split from /DATA1/yewon/coop/dtd/split_zhou_DescribableTextures.json
+Loading preprocessed few-shot data from /DATA1/yewon/coop/dtd/split_fewshot/shot_16-seed_1.pkl
+Building transform_train
++ random resized crop (size=(224, 224), scale=(0.08, 1.0))
++ random flip
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+Building transform_test
++ resize the smaller edge to 224
++ 224x224 center crop
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+---------  -------------------
+Dataset    DescribableTextures
+# classes  47
+# train_x  752
+# val      188
+# test     1,692
+---------  -------------------
+Loading CLIP (backbone: ViT-B/16)
+/mlainas/KGPrompt_data/describabletextures/shot_16_seed_1_all_train.npy
+/mlainas/KGPrompt_data/describabletextures/shot_16_seed_1_all_valid.npy
+/mlainas/KGPrompt_data/describabletextures/shot_16_seed_1_all_test.npy
+Loading evaluator: Classification
+Note that load_model() is skipped as no pretrained model is given
+Evaluate on the *test* set
+=> result
+* total: 1,692
+* correct: 760
+* accuracy: 44.9%
+* error: 55.1%
+* macro_f1: 40.8%
+=> per-class result
+* class: 0 (banded)	total: 36	correct: 1	acc: 2.8%
+* class: 1 (blotchy)	total: 36	correct: 3	acc: 8.3%
+* class: 2 (braided)	total: 36	correct: 18	acc: 50.0%
+* class: 3 (bubbly)	total: 36	correct: 32	acc: 88.9%
+* class: 4 (bumpy)	total: 36	correct: 0	acc: 0.0%
+* class: 5 (chequered)	total: 36	correct: 36	acc: 100.0%
+* class: 6 (cobwebbed)	total: 36	correct: 32	acc: 88.9%
+* class: 7 (cracked)	total: 36	correct: 26	acc: 72.2%
+* class: 8 (crosshatched)	total: 36	correct: 12	acc: 33.3%
+* class: 9 (crystalline)	total: 36	correct: 36	acc: 100.0%
+* class: 10 (dotted)	total: 36	correct: 3	acc: 8.3%
+* class: 11 (fibrous)	total: 36	correct: 6	acc: 16.7%
+* class: 12 (flecked)	total: 36	correct: 0	acc: 0.0%
+* class: 13 (freckled)	total: 36	correct: 27	acc: 75.0%
+* class: 14 (frilly)	total: 36	correct: 17	acc: 47.2%
+* class: 15 (gauzy)	total: 36	correct: 0	acc: 0.0%
+* class: 16 (grid)	total: 36	correct: 13	acc: 36.1%
+* class: 17 (grooved)	total: 36	correct: 6	acc: 16.7%
+* class: 18 (honeycombed)	total: 36	correct: 20	acc: 55.6%
+* class: 19 (interlaced)	total: 36	correct: 4	acc: 11.1%
+* class: 20 (knitted)	total: 36	correct: 35	acc: 97.2%
+* class: 21 (lacelike)	total: 36	correct: 0	acc: 0.0%
+* class: 22 (lined)	total: 36	correct: 0	acc: 0.0%
+* class: 23 (marbled)	total: 36	correct: 27	acc: 75.0%
+* class: 24 (matted)	total: 36	correct: 13	acc: 36.1%
+* class: 25 (meshed)	total: 36	correct: 14	acc: 38.9%
+* class: 26 (paisley)	total: 36	correct: 36	acc: 100.0%
+* class: 27 (perforated)	total: 36	correct: 18	acc: 50.0%
+* class: 28 (pitted)	total: 36	correct: 1	acc: 2.8%
+* class: 29 (pleated)	total: 36	correct: 27	acc: 75.0%
+* class: 30 (polka-dotted)	total: 36	correct: 30	acc: 83.3%
+* class: 31 (porous)	total: 36	correct: 26	acc: 72.2%
+* class: 32 (potholed)	total: 36	correct: 5	acc: 13.9%
+* class: 33 (scaly)	total: 36	correct: 11	acc: 30.6%
+* class: 34 (smeared)	total: 36	correct: 6	acc: 16.7%
+* class: 35 (spiralled)	total: 36	correct: 12	acc: 33.3%
+* class: 36 (sprinkled)	total: 36	correct: 15	acc: 41.7%
+* class: 37 (stained)	total: 36	correct: 13	acc: 36.1%
+* class: 38 (stratified)	total: 36	correct: 16	acc: 44.4%
+* class: 39 (striped)	total: 36	correct: 30	acc: 83.3%
+* class: 40 (studded)	total: 36	correct: 31	acc: 86.1%
+* class: 41 (swirly)	total: 36	correct: 8	acc: 22.2%
+* class: 42 (veined)	total: 36	correct: 17	acc: 47.2%
+* class: 43 (waffled)	total: 36	correct: 29	acc: 80.6%
+* class: 44 (woven)	total: 36	correct: 18	acc: 50.0%
+* class: 45 (wrinkled)	total: 36	correct: 27	acc: 75.0%
+* class: 46 (zigzagged)	total: 36	correct: 3	acc: 8.3%
+* average: 44.9%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 4

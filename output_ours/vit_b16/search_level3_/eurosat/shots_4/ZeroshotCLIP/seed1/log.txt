@@ -1,0 +1,5245 @@
+***************
+** Arguments **
+***************
+alpha: 0.2
+anneal_epoch: 100.0
+backbone: 
+config_file: configs/trainers/CoOp/vit_b16.yaml
+dataset: eurosat
+dataset_config_file: configs/datasets/eurosat.yaml
+dropout: 0.4
+emb_root: /mlainas/KGPrompt_data
+entity: ingdoo
+eval_only: False
+head: 
+load_epoch: None
+logit_scale: 0.0
+max_epoch: None
+max_temp: 2.0
+min_temp: 0.1
+mode: gumbel
+model_dir: 
+no_train: False
+opts: ['DATASET.NUM_SHOTS', '4']
+output_dir: output_ours/vit_b16/search_level3_/eurosat/shots_4/ZeroshotCLIP/seed1
+report_name: ZSCLIP_dataset_eurosat
+resume: 
+root: /DATA1/yewon/coop
+search_level: 3
+seed: 1
+source_domains: None
+target_domains: None
+trainer: ZeroshotCLIP
+transforms: None
+use_wandb: False
+wb_name: test
+wd: 0.003
+************
+** Config **
+************
+DATALOADER:
+  K_TRANSFORMS: 1
+  NUM_WORKERS: 8
+  RETURN_IMG0: False
+  TEST:
+    BATCH_SIZE: 100
+    SAMPLER: SequentialSampler
+  TRAIN_U:
+    BATCH_SIZE: 32
+    N_DOMAIN: 0
+    N_INS: 16
+    SAME_AS_X: True
+    SAMPLER: RandomSampler
+  TRAIN_X:
+    BATCH_SIZE: 32
+    N_DOMAIN: 0
+    N_INS: 16
+    SAMPLER: RandomSampler
+DATASET:
+  ALL_AS_UNLABELED: False
+  CIFAR_C_LEVEL: 1
+  CIFAR_C_TYPE: 
+  EMB_ROOT: /mlainas/KGPrompt_data
+  NAME: EuroSAT
+  NUM_LABELED: -1
+  NUM_SHOTS: 4
+  ROOT: /DATA1/yewon/coop
+  SEARCH_LEVEL: 3
+  SOURCE_DOMAINS: ()
+  STL10_FOLD: -1
+  SUBSAMPLE_CLASSES: all
+  TARGET_DOMAINS: ()
+  VAL_PERCENT: 0.1
+EMBEDDING_ROOT: /disk/teang1995/emb_root
+ENTITY: ingdoo
+INPUT:
+  COLORJITTER_B: 0.4
+  COLORJITTER_C: 0.4
+  COLORJITTER_H: 0.1
+  COLORJITTER_S: 0.4
+  CROP_PADDING: 4
+  CUTOUT_LEN: 16
+  CUTOUT_N: 1
+  GB_K: 21
+  GB_P: 0.5
+  GN_MEAN: 0.0
+  GN_STD: 0.15
+  INTERPOLATION: bicubic
+  NO_TRANSFORM: False
+  PIXEL_MEAN: [0.48145466, 0.4578275, 0.40821073]
+  PIXEL_STD: [0.26862954, 0.26130258, 0.27577711]
+  RANDAUGMENT_M: 10
+  RANDAUGMENT_N: 2
+  RGS_P: 0.2
+  RRCROP_SCALE: (0.08, 1.0)
+  SIZE: (224, 224)
+  TRANSFORMS: ('random_resized_crop', 'random_flip', 'normalize')
+MODE: gumbel
+MODEL:
+  BACKBONE:
+    NAME: ViT-B/16
+    PRETRAINED: True
+  HEAD:
+    ACTIVATION: relu
+    BN: True
+    DROPOUT: 0.0
+    HIDDEN_LAYERS: ()
+    NAME: 
+  INIT_WEIGHTS: 
+OPTIM:
+  ADAM_BETA1: 0.9
+  ADAM_BETA2: 0.999
+  BASE_LR_MULT: 0.1
+  GAMMA: 0.1
+  LR: 0.01
+  LR_SCHEDULER: cosine
+  MAX_EPOCH: 100
+  MOMENTUM: 0.9
+  NAME: sgd
+  NEW_LAYERS: ()
+  RMSPROP_ALPHA: 0.99
+  SGD_DAMPNING: 0
+  SGD_NESTEROV: False
+  STAGED_LR: False
+  STEPSIZE: (-1,)
+  WARMUP_CONS_LR: 1e-05
+  WARMUP_EPOCH: 1
+  WARMUP_MIN_LR: 1e-05
+  WARMUP_RECOUNT: True
+  WARMUP_TYPE: constant
+  WEIGHT_DECAY: 0.003
+OUTPUT_DIR: output_ours/vit_b16/search_level3_/eurosat/shots_4/ZeroshotCLIP/seed1
+RESUME: 
+SEED: 1
+TEST:
+  COMPUTE_CMAT: False
+  EVALUATOR: Classification
+  FINAL_MODEL: last_step
+  NO_TEST: False
+  PER_CLASS_RESULT: True
+  SPLIT: test
+TRAIN:
+  CHECKPOINT_FREQ: 0
+  COUNT_ITER: train_x
+  PRINT_FREQ: 5
+TRAINER:
+  CDAC:
+    CLASS_LR_MULTI: 10
+    P_THRESH: 0.95
+    RAMPUP_COEF: 30
+    RAMPUP_ITRS: 1000
+    STRONG_TRANSFORMS: ()
+    TOPK_MATCH: 5
+  COCOOP:
+    CTX_INIT: 
+    N_CTX: 16
+    PREC: fp16
+  COOP:
+    CLASS_TOKEN_POSITION: end
+    CSC: False
+    CTX_INIT: a photo of a {}.
+    N_CTX: 16
+    PREC: fp16
+  CROSSGRAD:
+    ALPHA_D: 0.5
+    ALPHA_F: 0.5
+    EPS_D: 1.0
+    EPS_F: 1.0
+  DAEL:
+    CONF_THRE: 0.95
+    STRONG_TRANSFORMS: ()
+    WEIGHT_U: 0.5
+  DAELDG:
+    CONF_THRE: 0.95
+    STRONG_TRANSFORMS: ()
+    WEIGHT_U: 0.5
+  DDAIG:
+    ALPHA: 0.5
+    CLAMP: False
+    CLAMP_MAX: 1.0
+    CLAMP_MIN: -1.0
+    G_ARCH: 
+    LMDA: 0.3
+    WARMUP: 0
+  DOMAINMIX:
+    ALPHA: 1.0
+    BETA: 1.0
+    TYPE: crossdomain
+  ENTMIN:
+    LMDA: 0.001
+  FIXMATCH:
+    CONF_THRE: 0.95
+    STRONG_TRANSFORMS: ()
+    WEIGHT_U: 1.0
+  M3SDA:
+    LMDA: 0.5
+    N_STEP_F: 4
+  MCD:
+    N_STEP_F: 4
+  MEANTEACHER:
+    EMA_ALPHA: 0.999
+    RAMPUP: 5
+    WEIGHT_U: 1.0
+  MIXMATCH:
+    MIXUP_BETA: 0.75
+    RAMPUP: 20000
+    TEMP: 2.0
+    WEIGHT_U: 100.0
+  MME:
+    LMDA: 0.1
+  MY_MODEL:
+    ALPHA: 0.2
+    ANNEAL_EPOCH: 100.0
+    DROPOUT: 0.4
+    SCALE: 0
+    max_temp: 2.0
+    min_temp: 0.1
+  NAME: ZeroshotCLIP
+  SE:
+    CONF_THRE: 0.95
+    EMA_ALPHA: 0.999
+    RAMPUP: 300
+USE_CUDA: True
+VERBOSE: True
+VERSION: 1
+Collecting env info ...
+** System info **
+PyTorch version: 1.11.0
+Is debug build: False
+CUDA used to build PyTorch: 11.3
+ROCM used to build PyTorch: N/A
+
+OS: Ubuntu 20.04.3 LTS (x86_64)
+GCC version: (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+Clang version: Could not collect
+CMake version: Could not collect
+Libc version: glibc-2.31
+
+Python version: 3.8.12 (default, Oct 12 2021, 13:49:34)  [GCC 7.5.0] (64-bit runtime)
+Python platform: Linux-5.4.0-122-generic-x86_64-with-glibc2.17
+Is CUDA available: True
+CUDA runtime version: 11.4.152
+GPU models and configuration: 
+GPU 0: NVIDIA GeForce RTX 3090
+GPU 1: NVIDIA GeForce RTX 3090
+GPU 2: NVIDIA GeForce RTX 3090
+GPU 3: NVIDIA GeForce RTX 3090
+GPU 4: NVIDIA GeForce RTX 3090
+GPU 5: NVIDIA GeForce RTX 3090
+GPU 6: NVIDIA GeForce RTX 3090
+GPU 7: NVIDIA GeForce RTX 3090
+
+Nvidia driver version: 515.65.01
+cuDNN version: Could not collect
+HIP runtime version: N/A
+MIOpen runtime version: N/A
+
+Versions of relevant libraries:
+[pip3] mypy==0.971
+[pip3] mypy-extensions==0.4.3
+[pip3] numpy==1.21.5
+[pip3] pytorch-lightning==1.7.7
+[pip3] torch==1.11.0
+[pip3] torchaudio==0.11.0
+[pip3] torchmetrics==0.10.0
+[pip3] torchvision==0.12.0
+[conda] blas                      1.0                         mkl  
+[conda] cudatoolkit               11.3.1               h2bc3f7f_2  
+[conda] mkl                       2021.4.0           h06a4308_640  
+[conda] mkl-service               2.4.0            py38h7f8727e_0  
+[conda] mkl_fft                   1.3.1            py38hd3c417c_0  
+[conda] mkl_random                1.2.2            py38h51133e4_0  
+[conda] mypy                      0.971                    pypi_0    pypi
+[conda] mypy-extensions           0.4.3                    pypi_0    pypi
+[conda] numpy                     1.19.2                   pypi_0    pypi
+[conda] numpy-base                1.21.5           py38hf524024_2  
+[conda] pytorch                   1.11.0          py3.8_cuda11.3_cudnn8.2.0_0    pytorch
+[conda] pytorch-lightning         1.7.7                    pypi_0    pypi
+[conda] pytorch-mutex             1.0                        cuda    pytorch
+[conda] torchaudio                0.11.0               py38_cu113    pytorch
+[conda] torchmetrics              0.10.0                   pypi_0    pypi
+[conda] torchvision               0.12.0               py38_cu113    pytorch
+        Pillow (9.0.1)
+
+Loading trainer: ZeroshotCLIP
+Loading dataset: EuroSAT
+Reading split from /DATA1/yewon/coop/eurosat/split_zhou_EuroSAT.json
+Loading preprocessed few-shot data from /DATA1/yewon/coop/eurosat/split_fewshot/shot_4-seed_1.pkl
+Building transform_train
++ random resized crop (size=(224, 224), scale=(0.08, 1.0))
++ random flip
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+Building transform_test
++ resize the smaller edge to 224
++ 224x224 center crop
++ to torch tensor of range [0, 1]
++ normalization (mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711])
+---------  -------
+Dataset    EuroSAT
+# classes  10
+# train_x  40
+# val      40
+# test     8,100
+---------  -------
+Loading CLIP (backbone: ViT-B/16)
+/mlainas/KGPrompt_data/eurosat/shot_4_seed_1_all_train.npy
+/mlainas/KGPrompt_data/eurosat/shot_4_seed_1_all_valid.npy
+/mlainas/KGPrompt_data/eurosat/shot_4_seed_1_all_test.npy
+Loading evaluator: Classification
+No checkpoint found, train from scratch
+Initialize tensorboard (log_dir=output_ours/vit_b16/search_level3_/eurosat/shots_4/ZeroshotCLIP/seed1/tensorboard)
+epoch [1/100] batch [1/1] time 0.009 (0.009) data 0.001 (0.001) loss 1.9521 (1.9521) acc 32.5000 (32.5000) lr 1.0000e-02 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 20
+* accuracy: 50.0%
+* error: 50.0%
+* macro_f1: 43.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 0	acc: 0.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 0	acc: 0.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 2	acc: 50.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 8 (River)	total: 4	correct: 2	acc: 50.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 50.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 1
+Checkpoint saved to output_ours/vit_b16/search_level3_/eurosat/shots_4/ZeroshotCLIP/seed1/low_dimer/model-best.pth.tar
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 3,979
+* accuracy: 49.1%
+* error: 50.9%
+* macro_f1: 45.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 382	acc: 42.4%
+* class: 1 (Forest)	total: 900	correct: 345	acc: 38.3%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 20	acc: 2.2%
+* class: 3 (Highway or Road)	total: 750	correct: 672	acc: 89.6%
+* class: 4 (Industrial Buildings)	total: 750	correct: 603	acc: 80.4%
+* class: 5 (Pasture Land)	total: 600	correct: 6	acc: 1.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 260	acc: 34.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 598	acc: 66.4%
+* class: 8 (River)	total: 750	correct: 441	acc: 58.8%
+* class: 9 (Sea or Lake)	total: 900	correct: 652	acc: 72.4%
+* average: 48.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 1.0
+Min Acc class: 5
+epoch [2/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 2.1737 (2.1737) acc 32.5000 (32.5000) lr 9.9975e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 24
+* accuracy: 60.0%
+* error: 40.0%
+* macro_f1: 55.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 0	acc: 0.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 2	acc: 50.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 60.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Checkpoint saved to output_ours/vit_b16/search_level3_/eurosat/shots_4/ZeroshotCLIP/seed1/low_dimer/model-best.pth.tar
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,439
+* accuracy: 54.8%
+* error: 45.2%
+* macro_f1: 50.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 416	acc: 46.2%
+* class: 1 (Forest)	total: 900	correct: 465	acc: 51.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 65	acc: 7.2%
+* class: 3 (Highway or Road)	total: 750	correct: 640	acc: 85.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 623	acc: 83.1%
+* class: 5 (Pasture Land)	total: 600	correct: 8	acc: 1.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 280	acc: 37.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 674	acc: 74.9%
+* class: 8 (River)	total: 750	correct: 466	acc: 62.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 802	acc: 89.1%
+* average: 53.8%
+***************
+**  Min Acc  **
+***************
+Min Acc: 1.3333333333333333
+Min Acc class: 5
+epoch [3/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.9215 (1.9215) acc 30.0000 (30.0000) lr 9.9901e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 24
+* accuracy: 60.0%
+* error: 40.0%
+* macro_f1: 56.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 0	acc: 0.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 2	acc: 50.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 8 (River)	total: 4	correct: 2	acc: 50.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 60.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,662
+* accuracy: 57.6%
+* error: 42.4%
+* macro_f1: 54.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 445	acc: 49.4%
+* class: 1 (Forest)	total: 900	correct: 501	acc: 55.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 227	acc: 25.2%
+* class: 3 (Highway or Road)	total: 750	correct: 576	acc: 76.8%
+* class: 4 (Industrial Buildings)	total: 750	correct: 616	acc: 82.1%
+* class: 5 (Pasture Land)	total: 600	correct: 21	acc: 3.5%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 289	acc: 38.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 748	acc: 83.1%
+* class: 8 (River)	total: 750	correct: 465	acc: 62.0%
+* class: 9 (Sea or Lake)	total: 900	correct: 774	acc: 86.0%
+* average: 56.2%
+***************
+**  Min Acc  **
+***************
+Min Acc: 3.5
+Min Acc class: 5
+epoch [4/100] batch [1/1] time 0.005 (0.005) data 0.001 (0.001) loss 1.9954 (1.9954) acc 27.5000 (27.5000) lr 9.9778e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 20
+* accuracy: 50.0%
+* error: 50.0%
+* macro_f1: 50.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 0	acc: 0.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 2	acc: 50.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 8 (River)	total: 4	correct: 2	acc: 50.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 1	acc: 25.0%
+* average: 50.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,539
+* accuracy: 56.0%
+* error: 44.0%
+* macro_f1: 54.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 467	acc: 51.9%
+* class: 1 (Forest)	total: 900	correct: 433	acc: 48.1%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 331	acc: 36.8%
+* class: 3 (Highway or Road)	total: 750	correct: 517	acc: 68.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 597	acc: 79.6%
+* class: 5 (Pasture Land)	total: 600	correct: 32	acc: 5.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 294	acc: 39.2%
+* class: 7 (Residential Buildings)	total: 900	correct: 793	acc: 88.1%
+* class: 8 (River)	total: 750	correct: 468	acc: 62.4%
+* class: 9 (Sea or Lake)	total: 900	correct: 607	acc: 67.4%
+* average: 54.8%
+***************
+**  Min Acc  **
+***************
+Min Acc: 5.333333333333333
+Min Acc class: 5
+epoch [5/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 2.2506 (2.2506) acc 27.5000 (27.5000) lr 9.9606e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 20
+* accuracy: 50.0%
+* error: 50.0%
+* macro_f1: 45.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 0	acc: 0.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 8 (River)	total: 4	correct: 2	acc: 50.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 50.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,573
+* accuracy: 56.5%
+* error: 43.5%
+* macro_f1: 53.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 532	acc: 59.1%
+* class: 1 (Forest)	total: 900	correct: 464	acc: 51.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 134	acc: 14.9%
+* class: 3 (Highway or Road)	total: 750	correct: 486	acc: 64.8%
+* class: 4 (Industrial Buildings)	total: 750	correct: 583	acc: 77.7%
+* class: 5 (Pasture Land)	total: 600	correct: 37	acc: 6.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 241	acc: 32.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 830	acc: 92.2%
+* class: 8 (River)	total: 750	correct: 467	acc: 62.3%
+* class: 9 (Sea or Lake)	total: 900	correct: 799	acc: 88.8%
+* average: 55.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 6.166666666666667
+Min Acc class: 5
+epoch [6/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 1.6175 (1.6175) acc 45.0000 (45.0000) lr 9.9384e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 19
+* accuracy: 47.5%
+* error: 52.5%
+* macro_f1: 42.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 2	acc: 50.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 0	acc: 0.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 2	acc: 50.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 47.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,423
+* accuracy: 54.6%
+* error: 45.4%
+* macro_f1: 50.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 550	acc: 61.1%
+* class: 1 (Forest)	total: 900	correct: 439	acc: 48.8%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 50	acc: 5.6%
+* class: 3 (Highway or Road)	total: 750	correct: 454	acc: 60.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 572	acc: 76.3%
+* class: 5 (Pasture Land)	total: 600	correct: 52	acc: 8.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 200	acc: 26.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 852	acc: 94.7%
+* class: 8 (River)	total: 750	correct: 477	acc: 63.6%
+* class: 9 (Sea or Lake)	total: 900	correct: 777	acc: 86.3%
+* average: 53.2%
+***************
+**  Min Acc  **
+***************
+Min Acc: 5.555555555555555
+Min Acc class: 2
+epoch [7/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 2.1163 (2.1163) acc 22.5000 (22.5000) lr 9.9114e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 20
+* accuracy: 50.0%
+* error: 50.0%
+* macro_f1: 46.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 2	acc: 50.0%
+* average: 50.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,126
+* accuracy: 50.9%
+* error: 49.1%
+* macro_f1: 47.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 556	acc: 61.8%
+* class: 1 (Forest)	total: 900	correct: 387	acc: 43.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 9	acc: 1.0%
+* class: 3 (Highway or Road)	total: 750	correct: 431	acc: 57.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 563	acc: 75.1%
+* class: 5 (Pasture Land)	total: 600	correct: 63	acc: 10.5%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 190	acc: 25.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 868	acc: 96.4%
+* class: 8 (River)	total: 750	correct: 472	acc: 62.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 587	acc: 65.2%
+* average: 49.9%
+***************
+**  Min Acc  **
+***************
+Min Acc: 1.0
+Min Acc class: 2
+epoch [8/100] batch [1/1] time 0.006 (0.006) data 0.000 (0.000) loss 1.7262 (1.7262) acc 42.5000 (42.5000) lr 9.8796e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 18
+* accuracy: 45.0%
+* error: 55.0%
+* macro_f1: 39.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 0	acc: 0.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 1	acc: 25.0%
+* average: 45.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 3,846
+* accuracy: 47.5%
+* error: 52.5%
+* macro_f1: 44.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 522	acc: 58.0%
+* class: 1 (Forest)	total: 900	correct: 312	acc: 34.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 2	acc: 0.2%
+* class: 3 (Highway or Road)	total: 750	correct: 421	acc: 56.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 551	acc: 73.5%
+* class: 5 (Pasture Land)	total: 600	correct: 85	acc: 14.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 206	acc: 27.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 879	acc: 97.7%
+* class: 8 (River)	total: 750	correct: 480	acc: 64.0%
+* class: 9 (Sea or Lake)	total: 900	correct: 388	acc: 43.1%
+* average: 46.9%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.2222222222222222
+Min Acc class: 2
+epoch [9/100] batch [1/1] time 0.006 (0.006) data 0.001 (0.001) loss 1.7299 (1.7299) acc 37.5000 (37.5000) lr 9.8429e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 17
+* accuracy: 42.5%
+* error: 57.5%
+* macro_f1: 37.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 0	acc: 0.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 2	acc: 50.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 1	acc: 25.0%
+* average: 42.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 3,778
+* accuracy: 46.6%
+* error: 53.4%
+* macro_f1: 43.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 496	acc: 55.1%
+* class: 1 (Forest)	total: 900	correct: 276	acc: 30.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 750	correct: 428	acc: 57.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 552	acc: 73.6%
+* class: 5 (Pasture Land)	total: 600	correct: 122	acc: 20.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 223	acc: 29.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 882	acc: 98.0%
+* class: 8 (River)	total: 750	correct: 505	acc: 67.3%
+* class: 9 (Sea or Lake)	total: 900	correct: 294	acc: 32.7%
+* average: 46.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+epoch [10/100] batch [1/1] time 0.006 (0.006) data 0.001 (0.001) loss 2.3665 (2.3665) acc 27.5000 (27.5000) lr 9.8015e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 18
+* accuracy: 45.0%
+* error: 55.0%
+* macro_f1: 38.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 0	acc: 0.0%
+* average: 45.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,117
+* accuracy: 50.8%
+* error: 49.2%
+* macro_f1: 47.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 535	acc: 59.4%
+* class: 1 (Forest)	total: 900	correct: 311	acc: 34.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 1	acc: 0.1%
+* class: 3 (Highway or Road)	total: 750	correct: 451	acc: 60.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 584	acc: 77.9%
+* class: 5 (Pasture Land)	total: 600	correct: 162	acc: 27.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 207	acc: 27.6%
+* class: 7 (Residential Buildings)	total: 900	correct: 868	acc: 96.4%
+* class: 8 (River)	total: 750	correct: 536	acc: 71.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 462	acc: 51.3%
+* average: 50.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.1111111111111111
+Min Acc class: 2
+epoch [11/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.9219 (1.9219) acc 37.5000 (37.5000) lr 9.7553e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 20
+* accuracy: 50.0%
+* error: 50.0%
+* macro_f1: 45.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 1	acc: 25.0%
+* average: 50.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,428
+* accuracy: 54.7%
+* error: 45.3%
+* macro_f1: 51.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 519	acc: 57.7%
+* class: 1 (Forest)	total: 900	correct: 334	acc: 37.1%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 750	correct: 469	acc: 62.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 606	acc: 80.8%
+* class: 5 (Pasture Land)	total: 600	correct: 222	acc: 37.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 238	acc: 31.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 851	acc: 94.6%
+* class: 8 (River)	total: 750	correct: 574	acc: 76.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 615	acc: 68.3%
+* average: 54.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+epoch [12/100] batch [1/1] time 0.006 (0.006) data 0.000 (0.000) loss 1.6920 (1.6920) acc 45.0000 (45.0000) lr 9.7044e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 23
+* accuracy: 57.5%
+* error: 42.5%
+* macro_f1: 53.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 57.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,621
+* accuracy: 57.0%
+* error: 43.0%
+* macro_f1: 53.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 493	acc: 54.8%
+* class: 1 (Forest)	total: 900	correct: 392	acc: 43.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 3	acc: 0.3%
+* class: 3 (Highway or Road)	total: 750	correct: 497	acc: 66.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 624	acc: 83.2%
+* class: 5 (Pasture Land)	total: 600	correct: 251	acc: 41.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 248	acc: 33.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 842	acc: 93.6%
+* class: 8 (River)	total: 750	correct: 589	acc: 78.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 682	acc: 75.8%
+* average: 57.1%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.3333333333333333
+Min Acc class: 2
+epoch [13/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.9879 (1.9879) acc 35.0000 (35.0000) lr 9.6489e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 23
+* accuracy: 57.5%
+* error: 42.5%
+* macro_f1: 54.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 2	acc: 50.0%
+* average: 57.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,689
+* accuracy: 57.9%
+* error: 42.1%
+* macro_f1: 54.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 464	acc: 51.6%
+* class: 1 (Forest)	total: 900	correct: 416	acc: 46.2%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 8	acc: 0.9%
+* class: 3 (Highway or Road)	total: 750	correct: 527	acc: 70.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 624	acc: 83.2%
+* class: 5 (Pasture Land)	total: 600	correct: 276	acc: 46.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 266	acc: 35.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 839	acc: 93.2%
+* class: 8 (River)	total: 750	correct: 607	acc: 80.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 662	acc: 73.6%
+* average: 58.1%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.8888888888888888
+Min Acc class: 2
+epoch [14/100] batch [1/1] time 0.008 (0.008) data 0.001 (0.001) loss 1.6374 (1.6374) acc 35.0000 (35.0000) lr 9.5888e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 22
+* accuracy: 55.0%
+* error: 45.0%
+* macro_f1: 51.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 2	acc: 50.0%
+* average: 55.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,752
+* accuracy: 58.7%
+* error: 41.3%
+* macro_f1: 55.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 451	acc: 50.1%
+* class: 1 (Forest)	total: 900	correct: 434	acc: 48.2%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 24	acc: 2.7%
+* class: 3 (Highway or Road)	total: 750	correct: 542	acc: 72.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 622	acc: 82.9%
+* class: 5 (Pasture Land)	total: 600	correct: 292	acc: 48.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 278	acc: 37.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 834	acc: 92.7%
+* class: 8 (River)	total: 750	correct: 613	acc: 81.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 662	acc: 73.6%
+* average: 59.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 2.6666666666666665
+Min Acc class: 2
+epoch [15/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.6845 (1.6845) acc 45.0000 (45.0000) lr 9.5241e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 27
+* accuracy: 67.5%
+* error: 32.5%
+* macro_f1: 65.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 3	acc: 75.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 67.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Checkpoint saved to output_ours/vit_b16/search_level3_/eurosat/shots_4/ZeroshotCLIP/seed1/low_dimer/model-best.pth.tar
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,784
+* accuracy: 59.1%
+* error: 40.9%
+* macro_f1: 56.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 423	acc: 47.0%
+* class: 1 (Forest)	total: 900	correct: 470	acc: 52.2%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 49	acc: 5.4%
+* class: 3 (Highway or Road)	total: 750	correct: 548	acc: 73.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 615	acc: 82.0%
+* class: 5 (Pasture Land)	total: 600	correct: 332	acc: 55.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 289	acc: 38.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 834	acc: 92.7%
+* class: 8 (River)	total: 750	correct: 626	acc: 83.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 598	acc: 66.4%
+* average: 59.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 5.444444444444445
+Min Acc class: 2
+epoch [16/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.6951 (1.6951) acc 42.5000 (42.5000) lr 9.4550e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 27
+* accuracy: 67.5%
+* error: 32.5%
+* macro_f1: 64.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 2	acc: 50.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 4	acc: 100.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 67.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,834
+* accuracy: 59.7%
+* error: 40.3%
+* macro_f1: 57.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 432	acc: 48.0%
+* class: 1 (Forest)	total: 900	correct: 499	acc: 55.4%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 102	acc: 11.3%
+* class: 3 (Highway or Road)	total: 750	correct: 565	acc: 75.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 605	acc: 80.7%
+* class: 5 (Pasture Land)	total: 600	correct: 319	acc: 53.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 281	acc: 37.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 837	acc: 93.0%
+* class: 8 (River)	total: 750	correct: 624	acc: 83.2%
+* class: 9 (Sea or Lake)	total: 900	correct: 570	acc: 63.3%
+* average: 60.1%
+***************
+**  Min Acc  **
+***************
+Min Acc: 11.333333333333334
+Min Acc class: 2
+epoch [17/100] batch [1/1] time 0.007 (0.007) data 0.000 (0.000) loss 1.7578 (1.7578) acc 37.5000 (37.5000) lr 9.3815e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 24
+* accuracy: 60.0%
+* error: 40.0%
+* macro_f1: 58.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 2	acc: 50.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 2	acc: 50.0%
+* average: 60.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,866
+* accuracy: 60.1%
+* error: 39.9%
+* macro_f1: 59.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 435	acc: 48.3%
+* class: 1 (Forest)	total: 900	correct: 512	acc: 56.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 193	acc: 21.4%
+* class: 3 (Highway or Road)	total: 750	correct: 573	acc: 76.4%
+* class: 4 (Industrial Buildings)	total: 750	correct: 584	acc: 77.9%
+* class: 5 (Pasture Land)	total: 600	correct: 325	acc: 54.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 282	acc: 37.6%
+* class: 7 (Residential Buildings)	total: 900	correct: 846	acc: 94.0%
+* class: 8 (River)	total: 750	correct: 621	acc: 82.8%
+* class: 9 (Sea or Lake)	total: 900	correct: 495	acc: 55.0%
+* average: 60.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 21.444444444444443
+Min Acc class: 2
+epoch [18/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 1.4662 (1.4662) acc 40.0000 (40.0000) lr 9.3037e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 21
+* accuracy: 52.5%
+* error: 47.5%
+* macro_f1: 49.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 0	acc: 0.0%
+* average: 52.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,790
+* accuracy: 59.1%
+* error: 40.9%
+* macro_f1: 58.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 427	acc: 47.4%
+* class: 1 (Forest)	total: 900	correct: 447	acc: 49.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 329	acc: 36.6%
+* class: 3 (Highway or Road)	total: 750	correct: 579	acc: 77.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 566	acc: 75.5%
+* class: 5 (Pasture Land)	total: 600	correct: 317	acc: 52.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 283	acc: 37.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 848	acc: 94.2%
+* class: 8 (River)	total: 750	correct: 620	acc: 82.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 374	acc: 41.6%
+* average: 59.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 36.55555555555556
+Min Acc class: 2
+epoch [19/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.4999 (1.4999) acc 47.5000 (47.5000) lr 9.2216e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 20
+* accuracy: 50.0%
+* error: 50.0%
+* macro_f1: 47.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 0	acc: 0.0%
+* average: 50.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,585
+* accuracy: 56.6%
+* error: 43.4%
+* macro_f1: 56.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 438	acc: 48.7%
+* class: 1 (Forest)	total: 900	correct: 307	acc: 34.1%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 463	acc: 51.4%
+* class: 3 (Highway or Road)	total: 750	correct: 573	acc: 76.4%
+* class: 4 (Industrial Buildings)	total: 750	correct: 553	acc: 73.7%
+* class: 5 (Pasture Land)	total: 600	correct: 298	acc: 49.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 275	acc: 36.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 858	acc: 95.3%
+* class: 8 (River)	total: 750	correct: 608	acc: 81.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 212	acc: 23.6%
+* average: 57.1%
+***************
+**  Min Acc  **
+***************
+Min Acc: 23.555555555555557
+Min Acc class: 9
+epoch [20/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.4898 (1.4898) acc 40.0000 (40.0000) lr 9.1354e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 20
+* accuracy: 50.0%
+* error: 50.0%
+* macro_f1: 46.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 0	acc: 0.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 0	acc: 0.0%
+* average: 50.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,422
+* accuracy: 54.6%
+* error: 45.4%
+* macro_f1: 54.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 427	acc: 47.4%
+* class: 1 (Forest)	total: 900	correct: 213	acc: 23.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 566	acc: 62.9%
+* class: 3 (Highway or Road)	total: 750	correct: 577	acc: 76.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 530	acc: 70.7%
+* class: 5 (Pasture Land)	total: 600	correct: 274	acc: 45.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 250	acc: 33.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 860	acc: 95.6%
+* class: 8 (River)	total: 750	correct: 605	acc: 80.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 120	acc: 13.3%
+* average: 55.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 13.333333333333334
+Min Acc class: 9
+epoch [21/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.4311 (1.4311) acc 47.5000 (47.5000) lr 9.0451e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 22
+* accuracy: 55.0%
+* error: 45.0%
+* macro_f1: 49.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 0	acc: 0.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 3	acc: 75.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 0	acc: 0.0%
+* average: 55.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,374
+* accuracy: 54.0%
+* error: 46.0%
+* macro_f1: 53.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 437	acc: 48.6%
+* class: 1 (Forest)	total: 900	correct: 163	acc: 18.1%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 639	acc: 71.0%
+* class: 3 (Highway or Road)	total: 750	correct: 582	acc: 77.6%
+* class: 4 (Industrial Buildings)	total: 750	correct: 508	acc: 67.7%
+* class: 5 (Pasture Land)	total: 600	correct: 253	acc: 42.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 230	acc: 30.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 864	acc: 96.0%
+* class: 8 (River)	total: 750	correct: 600	acc: 80.0%
+* class: 9 (Sea or Lake)	total: 900	correct: 98	acc: 10.9%
+* average: 54.3%
+***************
+**  Min Acc  **
+***************
+Min Acc: 10.88888888888889
+Min Acc class: 9
+epoch [22/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.5464 (1.5464) acc 42.5000 (42.5000) lr 8.9508e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 23
+* accuracy: 57.5%
+* error: 42.5%
+* macro_f1: 52.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 0	acc: 0.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 3	acc: 75.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 2	acc: 50.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 0	acc: 0.0%
+* average: 57.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,326
+* accuracy: 53.4%
+* error: 46.6%
+* macro_f1: 52.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 440	acc: 48.9%
+* class: 1 (Forest)	total: 900	correct: 120	acc: 13.3%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 685	acc: 76.1%
+* class: 3 (Highway or Road)	total: 750	correct: 582	acc: 77.6%
+* class: 4 (Industrial Buildings)	total: 750	correct: 487	acc: 64.9%
+* class: 5 (Pasture Land)	total: 600	correct: 244	acc: 40.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 220	acc: 29.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 863	acc: 95.9%
+* class: 8 (River)	total: 750	correct: 595	acc: 79.3%
+* class: 9 (Sea or Lake)	total: 900	correct: 90	acc: 10.0%
+* average: 53.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 10.0
+Min Acc class: 9
+epoch [23/100] batch [1/1] time 0.005 (0.005) data 0.001 (0.001) loss 1.6328 (1.6328) acc 32.5000 (32.5000) lr 8.8526e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 23
+* accuracy: 57.5%
+* error: 42.5%
+* macro_f1: 51.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 0	acc: 0.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 4	acc: 100.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 0	acc: 0.0%
+* average: 57.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,328
+* accuracy: 53.4%
+* error: 46.6%
+* macro_f1: 52.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 455	acc: 50.6%
+* class: 1 (Forest)	total: 900	correct: 120	acc: 13.3%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 678	acc: 75.3%
+* class: 3 (Highway or Road)	total: 750	correct: 586	acc: 78.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 480	acc: 64.0%
+* class: 5 (Pasture Land)	total: 600	correct: 240	acc: 40.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 207	acc: 27.6%
+* class: 7 (Residential Buildings)	total: 900	correct: 867	acc: 96.3%
+* class: 8 (River)	total: 750	correct: 589	acc: 78.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 106	acc: 11.8%
+* average: 53.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 11.777777777777779
+Min Acc class: 9
+epoch [24/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.8388 (1.8388) acc 42.5000 (42.5000) lr 8.7506e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 21
+* accuracy: 52.5%
+* error: 47.5%
+* macro_f1: 47.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 0	acc: 0.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 2	acc: 50.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 0	acc: 0.0%
+* average: 52.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,436
+* accuracy: 54.8%
+* error: 45.2%
+* macro_f1: 53.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 487	acc: 54.1%
+* class: 1 (Forest)	total: 900	correct: 176	acc: 19.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 611	acc: 67.9%
+* class: 3 (Highway or Road)	total: 750	correct: 598	acc: 79.7%
+* class: 4 (Industrial Buildings)	total: 750	correct: 476	acc: 63.5%
+* class: 5 (Pasture Land)	total: 600	correct: 215	acc: 35.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 202	acc: 26.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 868	acc: 96.4%
+* class: 8 (River)	total: 750	correct: 584	acc: 77.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 219	acc: 24.3%
+* average: 54.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 19.555555555555557
+Min Acc class: 1
+epoch [25/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 1.5824 (1.5824) acc 40.0000 (40.0000) lr 8.6448e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 23
+* accuracy: 57.5%
+* error: 42.5%
+* macro_f1: 56.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 2	acc: 50.0%
+* average: 57.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,755
+* accuracy: 58.7%
+* error: 41.3%
+* macro_f1: 57.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 500	acc: 55.6%
+* class: 1 (Forest)	total: 900	correct: 267	acc: 29.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 512	acc: 56.9%
+* class: 3 (Highway or Road)	total: 750	correct: 604	acc: 80.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 488	acc: 65.1%
+* class: 5 (Pasture Land)	total: 600	correct: 202	acc: 33.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 201	acc: 26.8%
+* class: 7 (Residential Buildings)	total: 900	correct: 870	acc: 96.7%
+* class: 8 (River)	total: 750	correct: 586	acc: 78.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 525	acc: 58.3%
+* average: 58.1%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.8
+Min Acc class: 6
+epoch [26/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.6839 (1.6839) acc 45.0000 (45.0000) lr 8.5355e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 25
+* accuracy: 62.5%
+* error: 37.5%
+* macro_f1: 60.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 62.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,007
+* accuracy: 61.8%
+* error: 38.2%
+* macro_f1: 60.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 500	acc: 55.6%
+* class: 1 (Forest)	total: 900	correct: 358	acc: 39.8%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 411	acc: 45.7%
+* class: 3 (Highway or Road)	total: 750	correct: 622	acc: 82.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 490	acc: 65.3%
+* class: 5 (Pasture Land)	total: 600	correct: 212	acc: 35.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 204	acc: 27.2%
+* class: 7 (Residential Buildings)	total: 900	correct: 872	acc: 96.9%
+* class: 8 (River)	total: 750	correct: 591	acc: 78.8%
+* class: 9 (Sea or Lake)	total: 900	correct: 747	acc: 83.0%
+* average: 61.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 27.2
+Min Acc class: 6
+epoch [27/100] batch [1/1] time 0.009 (0.009) data 0.001 (0.001) loss 1.6022 (1.6022) acc 37.5000 (37.5000) lr 8.4227e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 24
+* accuracy: 60.0%
+* error: 40.0%
+* macro_f1: 55.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 60.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,034
+* accuracy: 62.1%
+* error: 37.9%
+* macro_f1: 60.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 500	acc: 55.6%
+* class: 1 (Forest)	total: 900	correct: 374	acc: 41.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 371	acc: 41.2%
+* class: 3 (Highway or Road)	total: 750	correct: 623	acc: 83.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 496	acc: 66.1%
+* class: 5 (Pasture Land)	total: 600	correct: 209	acc: 34.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 198	acc: 26.4%
+* class: 7 (Residential Buildings)	total: 900	correct: 872	acc: 96.9%
+* class: 8 (River)	total: 750	correct: 594	acc: 79.2%
+* class: 9 (Sea or Lake)	total: 900	correct: 797	acc: 88.6%
+* average: 61.3%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.4
+Min Acc class: 6
+epoch [28/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.5137 (1.5137) acc 47.5000 (47.5000) lr 8.3066e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 24
+* accuracy: 60.0%
+* error: 40.0%
+* macro_f1: 57.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 60.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,030
+* accuracy: 62.1%
+* error: 37.9%
+* macro_f1: 60.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 502	acc: 55.8%
+* class: 1 (Forest)	total: 900	correct: 341	acc: 37.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 358	acc: 39.8%
+* class: 3 (Highway or Road)	total: 750	correct: 624	acc: 83.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 504	acc: 67.2%
+* class: 5 (Pasture Land)	total: 600	correct: 219	acc: 36.5%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 215	acc: 28.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 873	acc: 97.0%
+* class: 8 (River)	total: 750	correct: 590	acc: 78.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 804	acc: 89.3%
+* average: 61.4%
+***************
+**  Min Acc  **
+***************
+Min Acc: 28.666666666666668
+Min Acc class: 6
+epoch [29/100] batch [1/1] time 0.006 (0.006) data 0.000 (0.000) loss 1.5229 (1.5229) acc 45.0000 (45.0000) lr 8.1871e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 23
+* accuracy: 57.5%
+* error: 42.5%
+* macro_f1: 52.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 57.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,040
+* accuracy: 62.2%
+* error: 37.8%
+* macro_f1: 60.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 500	acc: 55.6%
+* class: 1 (Forest)	total: 900	correct: 322	acc: 35.8%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 349	acc: 38.8%
+* class: 3 (Highway or Road)	total: 750	correct: 616	acc: 82.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 511	acc: 68.1%
+* class: 5 (Pasture Land)	total: 600	correct: 246	acc: 41.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 219	acc: 29.2%
+* class: 7 (Residential Buildings)	total: 900	correct: 874	acc: 97.1%
+* class: 8 (River)	total: 750	correct: 598	acc: 79.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 805	acc: 89.4%
+* average: 61.7%
+***************
+**  Min Acc  **
+***************
+Min Acc: 29.2
+Min Acc class: 6
+epoch [30/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.4277 (1.4277) acc 57.5000 (57.5000) lr 8.0645e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 24
+* accuracy: 60.0%
+* error: 40.0%
+* macro_f1: 55.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 60.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,045
+* accuracy: 62.3%
+* error: 37.7%
+* macro_f1: 60.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 506	acc: 56.2%
+* class: 1 (Forest)	total: 900	correct: 304	acc: 33.8%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 337	acc: 37.4%
+* class: 3 (Highway or Road)	total: 750	correct: 619	acc: 82.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 521	acc: 69.5%
+* class: 5 (Pasture Land)	total: 600	correct: 250	acc: 41.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 217	acc: 28.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 877	acc: 97.4%
+* class: 8 (River)	total: 750	correct: 600	acc: 80.0%
+* class: 9 (Sea or Lake)	total: 900	correct: 814	acc: 90.4%
+* average: 61.8%
+***************
+**  Min Acc  **
+***************
+Min Acc: 28.933333333333334
+Min Acc class: 6
+epoch [31/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.3909 (1.3909) acc 45.0000 (45.0000) lr 7.9389e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 24
+* accuracy: 60.0%
+* error: 40.0%
+* macro_f1: 54.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 60.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,013
+* accuracy: 61.9%
+* error: 38.1%
+* macro_f1: 59.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 491	acc: 54.6%
+* class: 1 (Forest)	total: 900	correct: 297	acc: 33.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 276	acc: 30.7%
+* class: 3 (Highway or Road)	total: 750	correct: 607	acc: 80.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 535	acc: 71.3%
+* class: 5 (Pasture Land)	total: 600	correct: 263	acc: 43.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 231	acc: 30.8%
+* class: 7 (Residential Buildings)	total: 900	correct: 876	acc: 97.3%
+* class: 8 (River)	total: 750	correct: 604	acc: 80.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 833	acc: 92.6%
+* average: 61.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 30.666666666666668
+Min Acc class: 2
+epoch [32/100] batch [1/1] time 0.010 (0.010) data 0.001 (0.001) loss 1.6310 (1.6310) acc 47.5000 (47.5000) lr 7.8104e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 22
+* accuracy: 55.0%
+* error: 45.0%
+* macro_f1: 48.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 0	acc: 0.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 55.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,988
+* accuracy: 61.6%
+* error: 38.4%
+* macro_f1: 59.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 499	acc: 55.4%
+* class: 1 (Forest)	total: 900	correct: 316	acc: 35.1%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 225	acc: 25.0%
+* class: 3 (Highway or Road)	total: 750	correct: 601	acc: 80.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 559	acc: 74.5%
+* class: 5 (Pasture Land)	total: 600	correct: 261	acc: 43.5%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 225	acc: 30.0%
+* class: 7 (Residential Buildings)	total: 900	correct: 870	acc: 96.7%
+* class: 8 (River)	total: 750	correct: 600	acc: 80.0%
+* class: 9 (Sea or Lake)	total: 900	correct: 832	acc: 92.4%
+* average: 61.3%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+epoch [33/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.4073 (1.4073) acc 50.0000 (50.0000) lr 7.6791e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 24
+* accuracy: 60.0%
+* error: 40.0%
+* macro_f1: 54.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 1	acc: 25.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 60.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,964
+* accuracy: 61.3%
+* error: 38.7%
+* macro_f1: 58.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 509	acc: 56.6%
+* class: 1 (Forest)	total: 900	correct: 323	acc: 35.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 180	acc: 20.0%
+* class: 3 (Highway or Road)	total: 750	correct: 599	acc: 79.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 568	acc: 75.7%
+* class: 5 (Pasture Land)	total: 600	correct: 269	acc: 44.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 204	acc: 27.2%
+* class: 7 (Residential Buildings)	total: 900	correct: 872	acc: 96.9%
+* class: 8 (River)	total: 750	correct: 599	acc: 79.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 841	acc: 93.4%
+* average: 61.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 20.0
+Min Acc class: 2
+epoch [34/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 1.2936 (1.2936) acc 55.0000 (55.0000) lr 7.5452e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 26
+* accuracy: 65.0%
+* error: 35.0%
+* macro_f1: 61.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 2	acc: 50.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 65.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,971
+* accuracy: 61.4%
+* error: 38.6%
+* macro_f1: 58.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 519	acc: 57.7%
+* class: 1 (Forest)	total: 900	correct: 333	acc: 37.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 152	acc: 16.9%
+* class: 3 (Highway or Road)	total: 750	correct: 605	acc: 80.7%
+* class: 4 (Industrial Buildings)	total: 750	correct: 583	acc: 77.7%
+* class: 5 (Pasture Land)	total: 600	correct: 271	acc: 45.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 196	acc: 26.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 868	acc: 96.4%
+* class: 8 (River)	total: 750	correct: 598	acc: 79.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 846	acc: 94.0%
+* average: 61.1%
+***************
+**  Min Acc  **
+***************
+Min Acc: 16.88888888888889
+Min Acc class: 2
+epoch [35/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.2710 (1.2710) acc 50.0000 (50.0000) lr 7.4088e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 24
+* accuracy: 60.0%
+* error: 40.0%
+* macro_f1: 56.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 2	acc: 50.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 60.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 4,961
+* accuracy: 61.2%
+* error: 38.8%
+* macro_f1: 58.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 513	acc: 57.0%
+* class: 1 (Forest)	total: 900	correct: 359	acc: 39.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 121	acc: 13.4%
+* class: 3 (Highway or Road)	total: 750	correct: 597	acc: 79.6%
+* class: 4 (Industrial Buildings)	total: 750	correct: 596	acc: 79.5%
+* class: 5 (Pasture Land)	total: 600	correct: 281	acc: 46.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 195	acc: 26.0%
+* class: 7 (Residential Buildings)	total: 900	correct: 865	acc: 96.1%
+* class: 8 (River)	total: 750	correct: 594	acc: 79.2%
+* class: 9 (Sea or Lake)	total: 900	correct: 840	acc: 93.3%
+* average: 61.1%
+***************
+**  Min Acc  **
+***************
+Min Acc: 13.444444444444445
+Min Acc class: 2
+epoch [36/100] batch [1/1] time 0.005 (0.005) data 0.001 (0.001) loss 1.4897 (1.4897) acc 50.0000 (50.0000) lr 7.2700e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 25
+* accuracy: 62.5%
+* error: 37.5%
+* macro_f1: 57.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 2	acc: 50.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 62.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,016
+* accuracy: 61.9%
+* error: 38.1%
+* macro_f1: 58.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 512	acc: 56.9%
+* class: 1 (Forest)	total: 900	correct: 390	acc: 43.3%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 118	acc: 13.1%
+* class: 3 (Highway or Road)	total: 750	correct: 597	acc: 79.6%
+* class: 4 (Industrial Buildings)	total: 750	correct: 609	acc: 81.2%
+* class: 5 (Pasture Land)	total: 600	correct: 302	acc: 50.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 196	acc: 26.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 860	acc: 95.6%
+* class: 8 (River)	total: 750	correct: 592	acc: 78.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 840	acc: 93.3%
+* average: 61.8%
+***************
+**  Min Acc  **
+***************
+Min Acc: 13.11111111111111
+Min Acc class: 2
+epoch [37/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.5785 (1.5785) acc 47.5000 (47.5000) lr 7.1289e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 25
+* accuracy: 62.5%
+* error: 37.5%
+* macro_f1: 58.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 3	acc: 75.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 62.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,069
+* accuracy: 62.6%
+* error: 37.4%
+* macro_f1: 59.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 514	acc: 57.1%
+* class: 1 (Forest)	total: 900	correct: 423	acc: 47.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 126	acc: 14.0%
+* class: 3 (Highway or Road)	total: 750	correct: 592	acc: 78.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 614	acc: 81.9%
+* class: 5 (Pasture Land)	total: 600	correct: 324	acc: 54.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 198	acc: 26.4%
+* class: 7 (Residential Buildings)	total: 900	correct: 861	acc: 95.7%
+* class: 8 (River)	total: 750	correct: 588	acc: 78.4%
+* class: 9 (Sea or Lake)	total: 900	correct: 829	acc: 92.1%
+* average: 62.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 14.0
+Min Acc class: 2
+epoch [38/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.4228 (1.4228) acc 57.5000 (57.5000) lr 6.9857e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 27
+* accuracy: 67.5%
+* error: 32.5%
+* macro_f1: 62.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 67.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,160
+* accuracy: 63.7%
+* error: 36.3%
+* macro_f1: 61.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 499	acc: 55.4%
+* class: 1 (Forest)	total: 900	correct: 466	acc: 51.8%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 153	acc: 17.0%
+* class: 3 (Highway or Road)	total: 750	correct: 589	acc: 78.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 622	acc: 82.9%
+* class: 5 (Pasture Land)	total: 600	correct: 364	acc: 60.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 197	acc: 26.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 861	acc: 95.7%
+* class: 8 (River)	total: 750	correct: 590	acc: 78.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 819	acc: 91.0%
+* average: 63.8%
+***************
+**  Min Acc  **
+***************
+Min Acc: 17.0
+Min Acc class: 2
+epoch [39/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.3261 (1.3261) acc 57.5000 (57.5000) lr 6.8406e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 65.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Checkpoint saved to output_ours/vit_b16/search_level3_/eurosat/shots_4/ZeroshotCLIP/seed1/low_dimer/model-best.pth.tar
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,194
+* accuracy: 64.1%
+* error: 35.9%
+* macro_f1: 61.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 485	acc: 53.9%
+* class: 1 (Forest)	total: 900	correct: 510	acc: 56.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 168	acc: 18.7%
+* class: 3 (Highway or Road)	total: 750	correct: 579	acc: 77.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 630	acc: 84.0%
+* class: 5 (Pasture Land)	total: 600	correct: 389	acc: 64.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 207	acc: 27.6%
+* class: 7 (Residential Buildings)	total: 900	correct: 854	acc: 94.9%
+* class: 8 (River)	total: 750	correct: 582	acc: 77.6%
+* class: 9 (Sea or Lake)	total: 900	correct: 790	acc: 87.8%
+* average: 64.3%
+***************
+**  Min Acc  **
+***************
+Min Acc: 18.666666666666668
+Min Acc class: 2
+epoch [40/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.1953 (1.1953) acc 52.5000 (52.5000) lr 6.6937e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 64.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,244
+* accuracy: 64.7%
+* error: 35.3%
+* macro_f1: 62.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 474	acc: 52.7%
+* class: 1 (Forest)	total: 900	correct: 547	acc: 60.8%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 183	acc: 20.3%
+* class: 3 (Highway or Road)	total: 750	correct: 572	acc: 76.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 639	acc: 85.2%
+* class: 5 (Pasture Land)	total: 600	correct: 406	acc: 67.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 214	acc: 28.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 857	acc: 95.2%
+* class: 8 (River)	total: 750	correct: 587	acc: 78.3%
+* class: 9 (Sea or Lake)	total: 900	correct: 765	acc: 85.0%
+* average: 65.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 20.333333333333332
+Min Acc class: 2
+epoch [41/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.6364 (1.6364) acc 47.5000 (47.5000) lr 6.5451e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 66.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,266
+* accuracy: 65.0%
+* error: 35.0%
+* macro_f1: 63.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 449	acc: 49.9%
+* class: 1 (Forest)	total: 900	correct: 564	acc: 62.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 218	acc: 24.2%
+* class: 3 (Highway or Road)	total: 750	correct: 560	acc: 74.7%
+* class: 4 (Industrial Buildings)	total: 750	correct: 639	acc: 85.2%
+* class: 5 (Pasture Land)	total: 600	correct: 436	acc: 72.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 224	acc: 29.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 855	acc: 95.0%
+* class: 8 (River)	total: 750	correct: 584	acc: 77.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 737	acc: 81.9%
+* average: 65.4%
+***************
+**  Min Acc  **
+***************
+Min Acc: 24.22222222222222
+Min Acc class: 2
+epoch [42/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.1904 (1.1904) acc 57.5000 (57.5000) lr 6.3950e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 66.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,282
+* accuracy: 65.2%
+* error: 34.8%
+* macro_f1: 63.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 432	acc: 48.0%
+* class: 1 (Forest)	total: 900	correct: 580	acc: 64.4%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 248	acc: 27.6%
+* class: 3 (Highway or Road)	total: 750	correct: 556	acc: 74.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 643	acc: 85.7%
+* class: 5 (Pasture Land)	total: 600	correct: 454	acc: 75.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 216	acc: 28.8%
+* class: 7 (Residential Buildings)	total: 900	correct: 856	acc: 95.1%
+* class: 8 (River)	total: 750	correct: 577	acc: 76.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 720	acc: 80.0%
+* average: 65.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 27.555555555555557
+Min Acc class: 2
+epoch [43/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 1.3343 (1.3343) acc 52.5000 (52.5000) lr 6.2434e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 27
+* accuracy: 67.5%
+* error: 32.5%
+* macro_f1: 62.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 67.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,275
+* accuracy: 65.1%
+* error: 34.9%
+* macro_f1: 63.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 431	acc: 47.9%
+* class: 1 (Forest)	total: 900	correct: 600	acc: 66.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 268	acc: 29.8%
+* class: 3 (Highway or Road)	total: 750	correct: 544	acc: 72.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 646	acc: 86.1%
+* class: 5 (Pasture Land)	total: 600	correct: 465	acc: 77.5%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 210	acc: 28.0%
+* class: 7 (Residential Buildings)	total: 900	correct: 853	acc: 94.8%
+* class: 8 (River)	total: 750	correct: 585	acc: 78.0%
+* class: 9 (Sea or Lake)	total: 900	correct: 673	acc: 74.8%
+* average: 65.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 28.0
+Min Acc class: 6
+epoch [44/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.4596 (1.4596) acc 50.0000 (50.0000) lr 6.0907e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 67.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 4	acc: 100.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Checkpoint saved to output_ours/vit_b16/search_level3_/eurosat/shots_4/ZeroshotCLIP/seed1/low_dimer/model-best.pth.tar
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,314
+* accuracy: 65.6%
+* error: 34.4%
+* macro_f1: 64.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 426	acc: 47.3%
+* class: 1 (Forest)	total: 900	correct: 593	acc: 65.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 314	acc: 34.9%
+* class: 3 (Highway or Road)	total: 750	correct: 552	acc: 73.6%
+* class: 4 (Industrial Buildings)	total: 750	correct: 651	acc: 86.8%
+* class: 5 (Pasture Land)	total: 600	correct: 480	acc: 80.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 217	acc: 28.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 850	acc: 94.4%
+* class: 8 (River)	total: 750	correct: 579	acc: 77.2%
+* class: 9 (Sea or Lake)	total: 900	correct: 652	acc: 72.4%
+* average: 66.2%
+***************
+**  Min Acc  **
+***************
+Min Acc: 28.933333333333334
+Min Acc class: 6
+epoch [45/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.2310 (1.2310) acc 50.0000 (50.0000) lr 5.9369e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 62.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 4	acc: 100.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,308
+* accuracy: 65.5%
+* error: 34.5%
+* macro_f1: 64.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 436	acc: 48.4%
+* class: 1 (Forest)	total: 900	correct: 600	acc: 66.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 324	acc: 36.0%
+* class: 3 (Highway or Road)	total: 750	correct: 548	acc: 73.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 650	acc: 86.7%
+* class: 5 (Pasture Land)	total: 600	correct: 486	acc: 81.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 215	acc: 28.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 848	acc: 94.2%
+* class: 8 (River)	total: 750	correct: 576	acc: 76.8%
+* class: 9 (Sea or Lake)	total: 900	correct: 625	acc: 69.4%
+* average: 66.1%
+***************
+**  Min Acc  **
+***************
+Min Acc: 28.666666666666668
+Min Acc class: 6
+epoch [46/100] batch [1/1] time 0.008 (0.008) data 0.001 (0.001) loss 1.3779 (1.3779) acc 52.5000 (52.5000) lr 5.7822e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 26
+* accuracy: 65.0%
+* error: 35.0%
+* macro_f1: 59.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 3	acc: 75.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 2	acc: 50.0%
+* average: 65.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,368
+* accuracy: 66.3%
+* error: 33.7%
+* macro_f1: 65.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 441	acc: 49.0%
+* class: 1 (Forest)	total: 900	correct: 594	acc: 66.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 371	acc: 41.2%
+* class: 3 (Highway or Road)	total: 750	correct: 549	acc: 73.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 654	acc: 87.2%
+* class: 5 (Pasture Land)	total: 600	correct: 482	acc: 80.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 232	acc: 30.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 845	acc: 93.9%
+* class: 8 (River)	total: 750	correct: 581	acc: 77.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 619	acc: 68.8%
+* average: 66.8%
+***************
+**  Min Acc  **
+***************
+Min Acc: 30.933333333333334
+Min Acc class: 6
+epoch [47/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 1.3448 (1.3448) acc 45.0000 (45.0000) lr 5.6267e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 68.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,399
+* accuracy: 66.7%
+* error: 33.3%
+* macro_f1: 65.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 471	acc: 52.3%
+* class: 1 (Forest)	total: 900	correct: 581	acc: 64.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 387	acc: 43.0%
+* class: 3 (Highway or Road)	total: 750	correct: 558	acc: 74.4%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 476	acc: 79.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 242	acc: 32.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 836	acc: 92.9%
+* class: 8 (River)	total: 750	correct: 577	acc: 76.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 606	acc: 67.3%
+* average: 67.2%
+***************
+**  Min Acc  **
+***************
+Min Acc: 32.266666666666666
+Min Acc class: 6
+epoch [48/100] batch [1/1] time 0.004 (0.004) data 0.001 (0.001) loss 1.3265 (1.3265) acc 50.0000 (50.0000) lr 5.4705e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 68.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,417
+* accuracy: 66.9%
+* error: 33.1%
+* macro_f1: 66.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 486	acc: 54.0%
+* class: 1 (Forest)	total: 900	correct: 575	acc: 63.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 413	acc: 45.9%
+* class: 3 (Highway or Road)	total: 750	correct: 559	acc: 74.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 668	acc: 89.1%
+* class: 5 (Pasture Land)	total: 600	correct: 459	acc: 76.5%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 249	acc: 33.2%
+* class: 7 (Residential Buildings)	total: 900	correct: 829	acc: 92.1%
+* class: 8 (River)	total: 750	correct: 584	acc: 77.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 595	acc: 66.1%
+* average: 67.3%
+***************
+**  Min Acc  **
+***************
+Min Acc: 33.2
+Min Acc class: 6
+epoch [49/100] batch [1/1] time 0.006 (0.006) data 0.001 (0.001) loss 1.2924 (1.2924) acc 52.5000 (52.5000) lr 5.3140e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 32
+* accuracy: 80.0%
+* error: 20.0%
+* macro_f1: 77.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 4	acc: 100.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 80.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Checkpoint saved to output_ours/vit_b16/search_level3_/eurosat/shots_4/ZeroshotCLIP/seed1/low_dimer/model-best.pth.tar
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,437
+* accuracy: 67.1%
+* error: 32.9%
+* macro_f1: 66.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 509	acc: 56.6%
+* class: 1 (Forest)	total: 900	correct: 571	acc: 63.4%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 442	acc: 49.1%
+* class: 3 (Highway or Road)	total: 750	correct: 551	acc: 73.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 668	acc: 89.1%
+* class: 5 (Pasture Land)	total: 600	correct: 447	acc: 74.5%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 247	acc: 32.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 827	acc: 91.9%
+* class: 8 (River)	total: 750	correct: 585	acc: 78.0%
+* class: 9 (Sea or Lake)	total: 900	correct: 590	acc: 65.6%
+* average: 67.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 32.93333333333333
+Min Acc class: 6
+epoch [50/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.1253 (1.1253) acc 67.5000 (67.5000) lr 5.1571e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 67.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 2	acc: 50.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,421
+* accuracy: 66.9%
+* error: 33.1%
+* macro_f1: 66.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 524	acc: 58.2%
+* class: 1 (Forest)	total: 900	correct: 537	acc: 59.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 450	acc: 50.0%
+* class: 3 (Highway or Road)	total: 750	correct: 550	acc: 73.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 669	acc: 89.2%
+* class: 5 (Pasture Land)	total: 600	correct: 442	acc: 73.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 249	acc: 33.2%
+* class: 7 (Residential Buildings)	total: 900	correct: 827	acc: 91.9%
+* class: 8 (River)	total: 750	correct: 582	acc: 77.6%
+* class: 9 (Sea or Lake)	total: 900	correct: 591	acc: 65.7%
+* average: 67.2%
+***************
+**  Min Acc  **
+***************
+Min Acc: 33.2
+Min Acc class: 6
+epoch [51/100] batch [1/1] time 0.005 (0.005) data 0.001 (0.001) loss 1.3711 (1.3711) acc 45.0000 (45.0000) lr 5.0000e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 70.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 2	acc: 50.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,394
+* accuracy: 66.6%
+* error: 33.4%
+* macro_f1: 66.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 528	acc: 58.7%
+* class: 1 (Forest)	total: 900	correct: 500	acc: 55.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 480	acc: 53.3%
+* class: 3 (Highway or Road)	total: 750	correct: 560	acc: 74.7%
+* class: 4 (Industrial Buildings)	total: 750	correct: 667	acc: 88.9%
+* class: 5 (Pasture Land)	total: 600	correct: 439	acc: 73.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 247	acc: 32.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 829	acc: 92.1%
+* class: 8 (River)	total: 750	correct: 581	acc: 77.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 563	acc: 62.6%
+* average: 66.9%
+***************
+**  Min Acc  **
+***************
+Min Acc: 32.93333333333333
+Min Acc class: 6
+epoch [52/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.2748 (1.2748) acc 55.0000 (55.0000) lr 4.8429e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 30
+* accuracy: 75.0%
+* error: 25.0%
+* macro_f1: 74.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 75.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,343
+* accuracy: 66.0%
+* error: 34.0%
+* macro_f1: 65.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 543	acc: 60.3%
+* class: 1 (Forest)	total: 900	correct: 450	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 510	acc: 56.7%
+* class: 3 (Highway or Road)	total: 750	correct: 553	acc: 73.7%
+* class: 4 (Industrial Buildings)	total: 750	correct: 668	acc: 89.1%
+* class: 5 (Pasture Land)	total: 600	correct: 429	acc: 71.5%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 241	acc: 32.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 825	acc: 91.7%
+* class: 8 (River)	total: 750	correct: 584	acc: 77.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 540	acc: 60.0%
+* average: 66.3%
+***************
+**  Min Acc  **
+***************
+Min Acc: 32.13333333333333
+Min Acc class: 6
+epoch [53/100] batch [1/1] time 0.006 (0.006) data 0.001 (0.001) loss 1.3279 (1.3279) acc 42.5000 (42.5000) lr 4.6860e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 27
+* accuracy: 67.5%
+* error: 32.5%
+* macro_f1: 66.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 2	acc: 50.0%
+* average: 67.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,304
+* accuracy: 65.5%
+* error: 34.5%
+* macro_f1: 65.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 551	acc: 61.2%
+* class: 1 (Forest)	total: 900	correct: 406	acc: 45.1%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 517	acc: 57.4%
+* class: 3 (Highway or Road)	total: 750	correct: 549	acc: 73.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 667	acc: 88.9%
+* class: 5 (Pasture Land)	total: 600	correct: 426	acc: 71.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 234	acc: 31.2%
+* class: 7 (Residential Buildings)	total: 900	correct: 825	acc: 91.7%
+* class: 8 (River)	total: 750	correct: 587	acc: 78.3%
+* class: 9 (Sea or Lake)	total: 900	correct: 542	acc: 60.2%
+* average: 65.8%
+***************
+**  Min Acc  **
+***************
+Min Acc: 31.2
+Min Acc class: 6
+epoch [54/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.1736 (1.1736) acc 65.0000 (65.0000) lr 4.5295e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 72.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 2	acc: 50.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 2	acc: 50.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 6
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,251
+* accuracy: 64.8%
+* error: 35.2%
+* macro_f1: 64.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 555	acc: 61.7%
+* class: 1 (Forest)	total: 900	correct: 366	acc: 40.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 521	acc: 57.9%
+* class: 3 (Highway or Road)	total: 750	correct: 556	acc: 74.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 666	acc: 88.8%
+* class: 5 (Pasture Land)	total: 600	correct: 421	acc: 70.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 229	acc: 30.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 825	acc: 91.7%
+* class: 8 (River)	total: 750	correct: 593	acc: 79.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 519	acc: 57.7%
+* average: 65.2%
+***************
+**  Min Acc  **
+***************
+Min Acc: 30.533333333333335
+Min Acc class: 6
+epoch [55/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.1800 (1.1800) acc 52.5000 (52.5000) lr 4.3733e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 31
+* accuracy: 77.5%
+* error: 22.5%
+* macro_f1: 77.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 2	acc: 50.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 77.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 6
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,272
+* accuracy: 65.1%
+* error: 34.9%
+* macro_f1: 64.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 572	acc: 63.6%
+* class: 1 (Forest)	total: 900	correct: 347	acc: 38.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 516	acc: 57.3%
+* class: 3 (Highway or Road)	total: 750	correct: 554	acc: 73.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 663	acc: 88.4%
+* class: 5 (Pasture Land)	total: 600	correct: 419	acc: 69.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 214	acc: 28.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 826	acc: 91.8%
+* class: 8 (River)	total: 750	correct: 601	acc: 80.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 560	acc: 62.2%
+* average: 65.4%
+***************
+**  Min Acc  **
+***************
+Min Acc: 28.533333333333335
+Min Acc class: 6
+epoch [56/100] batch [1/1] time 0.007 (0.007) data 0.000 (0.000) loss 1.1854 (1.1854) acc 60.0000 (60.0000) lr 4.2178e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 72.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 2	acc: 50.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 2	acc: 50.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 6
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,294
+* accuracy: 65.4%
+* error: 34.6%
+* macro_f1: 64.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 584	acc: 64.9%
+* class: 1 (Forest)	total: 900	correct: 334	acc: 37.1%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 524	acc: 58.2%
+* class: 3 (Highway or Road)	total: 750	correct: 558	acc: 74.4%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 406	acc: 67.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 206	acc: 27.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 823	acc: 91.4%
+* class: 8 (River)	total: 750	correct: 596	acc: 79.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 598	acc: 66.4%
+* average: 65.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 27.466666666666665
+Min Acc class: 6
+epoch [57/100] batch [1/1] time 0.004 (0.004) data 0.001 (0.001) loss 1.1160 (1.1160) acc 55.0000 (55.0000) lr 4.0631e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 70.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,301
+* accuracy: 65.4%
+* error: 34.6%
+* macro_f1: 64.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 585	acc: 65.0%
+* class: 1 (Forest)	total: 900	correct: 342	acc: 38.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 517	acc: 57.4%
+* class: 3 (Highway or Road)	total: 750	correct: 548	acc: 73.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 668	acc: 89.1%
+* class: 5 (Pasture Land)	total: 600	correct: 403	acc: 67.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 191	acc: 25.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 823	acc: 91.4%
+* class: 8 (River)	total: 750	correct: 598	acc: 79.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 626	acc: 69.6%
+* average: 65.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.466666666666665
+Min Acc class: 6
+epoch [58/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.2679 (1.2679) acc 57.5000 (57.5000) lr 3.9093e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 68.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,312
+* accuracy: 65.6%
+* error: 34.4%
+* macro_f1: 64.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 586	acc: 65.1%
+* class: 1 (Forest)	total: 900	correct: 335	acc: 37.2%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 527	acc: 58.6%
+* class: 3 (Highway or Road)	total: 750	correct: 558	acc: 74.4%
+* class: 4 (Industrial Buildings)	total: 750	correct: 668	acc: 89.1%
+* class: 5 (Pasture Land)	total: 600	correct: 392	acc: 65.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 189	acc: 25.2%
+* class: 7 (Residential Buildings)	total: 900	correct: 823	acc: 91.4%
+* class: 8 (River)	total: 750	correct: 603	acc: 80.4%
+* class: 9 (Sea or Lake)	total: 900	correct: 631	acc: 70.1%
+* average: 65.7%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.2
+Min Acc class: 6
+epoch [59/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.1012 (1.1012) acc 62.5000 (62.5000) lr 3.7566e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 71.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,299
+* accuracy: 65.4%
+* error: 34.6%
+* macro_f1: 64.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 592	acc: 65.8%
+* class: 1 (Forest)	total: 900	correct: 311	acc: 34.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 528	acc: 58.7%
+* class: 3 (Highway or Road)	total: 750	correct: 555	acc: 74.0%
+* class: 4 (Industrial Buildings)	total: 750	correct: 666	acc: 88.8%
+* class: 5 (Pasture Land)	total: 600	correct: 385	acc: 64.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 187	acc: 24.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 823	acc: 91.4%
+* class: 8 (River)	total: 750	correct: 603	acc: 80.4%
+* class: 9 (Sea or Lake)	total: 900	correct: 649	acc: 72.1%
+* average: 65.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 24.933333333333334
+Min Acc class: 6
+epoch [60/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 0.9875 (0.9875) acc 70.0000 (70.0000) lr 3.6050e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 67.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,296
+* accuracy: 65.4%
+* error: 34.6%
+* macro_f1: 64.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 591	acc: 65.7%
+* class: 1 (Forest)	total: 900	correct: 297	acc: 33.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 534	acc: 59.3%
+* class: 3 (Highway or Road)	total: 750	correct: 551	acc: 73.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 667	acc: 88.9%
+* class: 5 (Pasture Land)	total: 600	correct: 389	acc: 64.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 185	acc: 24.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 824	acc: 91.6%
+* class: 8 (River)	total: 750	correct: 599	acc: 79.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 659	acc: 73.2%
+* average: 65.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 24.666666666666668
+Min Acc class: 6
+epoch [61/100] batch [1/1] time 0.006 (0.006) data 0.000 (0.000) loss 1.0904 (1.0904) acc 62.5000 (62.5000) lr 3.4549e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 66.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,270
+* accuracy: 65.1%
+* error: 34.9%
+* macro_f1: 63.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 591	acc: 65.7%
+* class: 1 (Forest)	total: 900	correct: 291	acc: 32.3%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 532	acc: 59.1%
+* class: 3 (Highway or Road)	total: 750	correct: 547	acc: 72.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 668	acc: 89.1%
+* class: 5 (Pasture Land)	total: 600	correct: 376	acc: 62.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 176	acc: 23.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 822	acc: 91.3%
+* class: 8 (River)	total: 750	correct: 603	acc: 80.4%
+* class: 9 (Sea or Lake)	total: 900	correct: 664	acc: 73.8%
+* average: 65.1%
+***************
+**  Min Acc  **
+***************
+Min Acc: 23.466666666666665
+Min Acc class: 6
+epoch [62/100] batch [1/1] time 0.006 (0.006) data 0.000 (0.000) loss 1.3082 (1.3082) acc 52.5000 (52.5000) lr 3.3063e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 68.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 3	acc: 75.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,279
+* accuracy: 65.2%
+* error: 34.8%
+* macro_f1: 63.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 594	acc: 66.0%
+* class: 1 (Forest)	total: 900	correct: 276	acc: 30.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 531	acc: 59.0%
+* class: 3 (Highway or Road)	total: 750	correct: 549	acc: 73.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 667	acc: 88.9%
+* class: 5 (Pasture Land)	total: 600	correct: 386	acc: 64.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 172	acc: 22.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 823	acc: 91.4%
+* class: 8 (River)	total: 750	correct: 604	acc: 80.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 677	acc: 75.2%
+* average: 65.2%
+***************
+**  Min Acc  **
+***************
+Min Acc: 22.933333333333334
+Min Acc class: 6
+epoch [63/100] batch [1/1] time 0.006 (0.006) data 0.000 (0.000) loss 1.2290 (1.2290) acc 65.0000 (65.0000) lr 3.1594e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 30
+* accuracy: 75.0%
+* error: 25.0%
+* macro_f1: 74.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 2	acc: 50.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 75.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 6
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,259
+* accuracy: 64.9%
+* error: 35.1%
+* macro_f1: 63.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 592	acc: 65.8%
+* class: 1 (Forest)	total: 900	correct: 261	acc: 29.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 545	acc: 60.6%
+* class: 3 (Highway or Road)	total: 750	correct: 546	acc: 72.8%
+* class: 4 (Industrial Buildings)	total: 750	correct: 667	acc: 88.9%
+* class: 5 (Pasture Land)	total: 600	correct: 383	acc: 63.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 169	acc: 22.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 824	acc: 91.6%
+* class: 8 (River)	total: 750	correct: 603	acc: 80.4%
+* class: 9 (Sea or Lake)	total: 900	correct: 669	acc: 74.3%
+* average: 65.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 22.533333333333335
+Min Acc class: 6
+epoch [64/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.1640 (1.1640) acc 60.0000 (60.0000) lr 3.0143e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 30
+* accuracy: 75.0%
+* error: 25.0%
+* macro_f1: 73.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 2	acc: 50.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 75.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 6
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,222
+* accuracy: 64.5%
+* error: 35.5%
+* macro_f1: 63.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 586	acc: 65.1%
+* class: 1 (Forest)	total: 900	correct: 240	acc: 26.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 533	acc: 59.2%
+* class: 3 (Highway or Road)	total: 750	correct: 548	acc: 73.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 667	acc: 88.9%
+* class: 5 (Pasture Land)	total: 600	correct: 378	acc: 63.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 172	acc: 22.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 825	acc: 91.7%
+* class: 8 (River)	total: 750	correct: 602	acc: 80.3%
+* class: 9 (Sea or Lake)	total: 900	correct: 671	acc: 74.6%
+* average: 64.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 22.933333333333334
+Min Acc class: 6
+epoch [65/100] batch [1/1] time 0.005 (0.005) data 0.001 (0.001) loss 1.2561 (1.2561) acc 50.0000 (50.0000) lr 2.8711e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 70.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,268
+* accuracy: 65.0%
+* error: 35.0%
+* macro_f1: 63.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 585	acc: 65.0%
+* class: 1 (Forest)	total: 900	correct: 254	acc: 28.2%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 542	acc: 60.2%
+* class: 3 (Highway or Road)	total: 750	correct: 550	acc: 73.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 669	acc: 89.2%
+* class: 5 (Pasture Land)	total: 600	correct: 390	acc: 65.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 170	acc: 22.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 825	acc: 91.7%
+* class: 8 (River)	total: 750	correct: 602	acc: 80.3%
+* class: 9 (Sea or Lake)	total: 900	correct: 681	acc: 75.7%
+* average: 65.1%
+***************
+**  Min Acc  **
+***************
+Min Acc: 22.666666666666668
+Min Acc class: 6
+epoch [66/100] batch [1/1] time 0.008 (0.008) data 0.001 (0.001) loss 1.0037 (1.0037) acc 70.0000 (70.0000) lr 2.7300e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 30
+* accuracy: 75.0%
+* error: 25.0%
+* macro_f1: 72.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 75.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,214
+* accuracy: 64.4%
+* error: 35.6%
+* macro_f1: 62.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 583	acc: 64.8%
+* class: 1 (Forest)	total: 900	correct: 237	acc: 26.3%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 531	acc: 59.0%
+* class: 3 (Highway or Road)	total: 750	correct: 539	acc: 71.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 668	acc: 89.1%
+* class: 5 (Pasture Land)	total: 600	correct: 388	acc: 64.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 172	acc: 22.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 823	acc: 91.4%
+* class: 8 (River)	total: 750	correct: 604	acc: 80.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 669	acc: 74.3%
+* average: 64.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 22.933333333333334
+Min Acc class: 6
+epoch [67/100] batch [1/1] time 0.006 (0.006) data 0.000 (0.000) loss 1.1422 (1.1422) acc 57.5000 (57.5000) lr 2.5912e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 67.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,235
+* accuracy: 64.6%
+* error: 35.4%
+* macro_f1: 63.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 577	acc: 64.1%
+* class: 1 (Forest)	total: 900	correct: 245	acc: 27.2%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 531	acc: 59.0%
+* class: 3 (Highway or Road)	total: 750	correct: 539	acc: 71.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 666	acc: 88.8%
+* class: 5 (Pasture Land)	total: 600	correct: 391	acc: 65.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 176	acc: 23.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 828	acc: 92.0%
+* class: 8 (River)	total: 750	correct: 604	acc: 80.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 678	acc: 75.3%
+* average: 64.8%
+***************
+**  Min Acc  **
+***************
+Min Acc: 23.466666666666665
+Min Acc class: 6
+epoch [68/100] batch [1/1] time 0.006 (0.006) data 0.000 (0.000) loss 1.1618 (1.1618) acc 57.5000 (57.5000) lr 2.4548e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 70.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,230
+* accuracy: 64.6%
+* error: 35.4%
+* macro_f1: 63.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 578	acc: 64.2%
+* class: 1 (Forest)	total: 900	correct: 243	acc: 27.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 522	acc: 58.0%
+* class: 3 (Highway or Road)	total: 750	correct: 543	acc: 72.4%
+* class: 4 (Industrial Buildings)	total: 750	correct: 667	acc: 88.9%
+* class: 5 (Pasture Land)	total: 600	correct: 390	acc: 65.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 177	acc: 23.6%
+* class: 7 (Residential Buildings)	total: 900	correct: 827	acc: 91.9%
+* class: 8 (River)	total: 750	correct: 605	acc: 80.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 678	acc: 75.3%
+* average: 64.7%
+***************
+**  Min Acc  **
+***************
+Min Acc: 23.6
+Min Acc class: 6
+epoch [69/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 0.9924 (0.9924) acc 67.5000 (67.5000) lr 2.3209e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 27
+* accuracy: 67.5%
+* error: 32.5%
+* macro_f1: 64.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 67.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,236
+* accuracy: 64.6%
+* error: 35.4%
+* macro_f1: 63.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 569	acc: 63.2%
+* class: 1 (Forest)	total: 900	correct: 247	acc: 27.4%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 517	acc: 57.4%
+* class: 3 (Highway or Road)	total: 750	correct: 543	acc: 72.4%
+* class: 4 (Industrial Buildings)	total: 750	correct: 664	acc: 88.5%
+* class: 5 (Pasture Land)	total: 600	correct: 407	acc: 67.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 175	acc: 23.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 830	acc: 92.2%
+* class: 8 (River)	total: 750	correct: 602	acc: 80.3%
+* class: 9 (Sea or Lake)	total: 900	correct: 682	acc: 75.8%
+* average: 64.8%
+***************
+**  Min Acc  **
+***************
+Min Acc: 23.333333333333332
+Min Acc class: 6
+epoch [70/100] batch [1/1] time 0.006 (0.006) data 0.000 (0.000) loss 1.1502 (1.1502) acc 55.0000 (55.0000) lr 2.1896e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 68.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,218
+* accuracy: 64.4%
+* error: 35.6%
+* macro_f1: 62.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 569	acc: 63.2%
+* class: 1 (Forest)	total: 900	correct: 220	acc: 24.4%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 508	acc: 56.4%
+* class: 3 (Highway or Road)	total: 750	correct: 539	acc: 71.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 420	acc: 70.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 177	acc: 23.6%
+* class: 7 (Residential Buildings)	total: 900	correct: 831	acc: 92.3%
+* class: 8 (River)	total: 750	correct: 607	acc: 80.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 682	acc: 75.8%
+* average: 64.7%
+***************
+**  Min Acc  **
+***************
+Min Acc: 23.6
+Min Acc class: 6
+epoch [71/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.1683 (1.1683) acc 52.5000 (52.5000) lr 2.0611e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 70.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,245
+* accuracy: 64.8%
+* error: 35.2%
+* macro_f1: 63.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 568	acc: 63.1%
+* class: 1 (Forest)	total: 900	correct: 260	acc: 28.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 500	acc: 55.6%
+* class: 3 (Highway or Road)	total: 750	correct: 538	acc: 71.7%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 424	acc: 70.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 171	acc: 22.8%
+* class: 7 (Residential Buildings)	total: 900	correct: 832	acc: 92.4%
+* class: 8 (River)	total: 750	correct: 601	acc: 80.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 686	acc: 76.2%
+* average: 65.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 22.8
+Min Acc class: 6
+epoch [72/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.0584 (1.0584) acc 57.5000 (57.5000) lr 1.9355e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 70.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,209
+* accuracy: 64.3%
+* error: 35.7%
+* macro_f1: 62.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 561	acc: 62.3%
+* class: 1 (Forest)	total: 900	correct: 260	acc: 28.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 476	acc: 52.9%
+* class: 3 (Highway or Road)	total: 750	correct: 539	acc: 71.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 662	acc: 88.3%
+* class: 5 (Pasture Land)	total: 600	correct: 420	acc: 70.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 171	acc: 22.8%
+* class: 7 (Residential Buildings)	total: 900	correct: 833	acc: 92.6%
+* class: 8 (River)	total: 750	correct: 602	acc: 80.3%
+* class: 9 (Sea or Lake)	total: 900	correct: 685	acc: 76.1%
+* average: 64.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 22.8
+Min Acc class: 6
+epoch [73/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.1356 (1.1356) acc 60.0000 (60.0000) lr 1.8129e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 30
+* accuracy: 75.0%
+* error: 25.0%
+* macro_f1: 72.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 75.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,227
+* accuracy: 64.5%
+* error: 35.5%
+* macro_f1: 62.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 554	acc: 61.6%
+* class: 1 (Forest)	total: 900	correct: 272	acc: 30.2%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 462	acc: 51.3%
+* class: 3 (Highway or Road)	total: 750	correct: 534	acc: 71.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 664	acc: 88.5%
+* class: 5 (Pasture Land)	total: 600	correct: 437	acc: 72.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 167	acc: 22.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 836	acc: 92.9%
+* class: 8 (River)	total: 750	correct: 602	acc: 80.3%
+* class: 9 (Sea or Lake)	total: 900	correct: 699	acc: 77.7%
+* average: 64.9%
+***************
+**  Min Acc  **
+***************
+Min Acc: 22.266666666666666
+Min Acc class: 6
+epoch [74/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.2492 (1.2492) acc 55.0000 (55.0000) lr 1.6934e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 27
+* accuracy: 67.5%
+* error: 32.5%
+* macro_f1: 63.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 3	acc: 75.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 67.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 6
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,283
+* accuracy: 65.2%
+* error: 34.8%
+* macro_f1: 63.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 556	acc: 61.8%
+* class: 1 (Forest)	total: 900	correct: 293	acc: 32.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 456	acc: 50.7%
+* class: 3 (Highway or Road)	total: 750	correct: 544	acc: 72.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 663	acc: 88.4%
+* class: 5 (Pasture Land)	total: 600	correct: 451	acc: 75.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 177	acc: 23.6%
+* class: 7 (Residential Buildings)	total: 900	correct: 836	acc: 92.9%
+* class: 8 (River)	total: 750	correct: 605	acc: 80.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 702	acc: 78.0%
+* average: 65.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 23.6
+Min Acc class: 6
+epoch [75/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.0556 (1.0556) acc 62.5000 (62.5000) lr 1.5773e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 68.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 1
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,246
+* accuracy: 64.8%
+* error: 35.2%
+* macro_f1: 63.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 549	acc: 61.0%
+* class: 1 (Forest)	total: 900	correct: 293	acc: 32.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 446	acc: 49.6%
+* class: 3 (Highway or Road)	total: 750	correct: 534	acc: 71.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 664	acc: 88.5%
+* class: 5 (Pasture Land)	total: 600	correct: 451	acc: 75.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 175	acc: 23.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 836	acc: 92.9%
+* class: 8 (River)	total: 750	correct: 602	acc: 80.3%
+* class: 9 (Sea or Lake)	total: 900	correct: 696	acc: 77.3%
+* average: 65.2%
+***************
+**  Min Acc  **
+***************
+Min Acc: 23.333333333333332
+Min Acc class: 6
+epoch [76/100] batch [1/1] time 0.006 (0.006) data 0.001 (0.001) loss 0.9145 (0.9145) acc 62.5000 (62.5000) lr 1.4645e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 70.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,286
+* accuracy: 65.3%
+* error: 34.7%
+* macro_f1: 63.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 549	acc: 61.0%
+* class: 1 (Forest)	total: 900	correct: 313	acc: 34.8%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 438	acc: 48.7%
+* class: 3 (Highway or Road)	total: 750	correct: 544	acc: 72.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 666	acc: 88.8%
+* class: 5 (Pasture Land)	total: 600	correct: 454	acc: 75.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 178	acc: 23.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 839	acc: 93.2%
+* class: 8 (River)	total: 750	correct: 601	acc: 80.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 704	acc: 78.2%
+* average: 65.7%
+***************
+**  Min Acc  **
+***************
+Min Acc: 23.733333333333334
+Min Acc class: 6
+epoch [77/100] batch [1/1] time 0.006 (0.006) data 0.000 (0.000) loss 1.1491 (1.1491) acc 62.5000 (62.5000) lr 1.3552e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 30
+* accuracy: 75.0%
+* error: 25.0%
+* macro_f1: 72.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 75.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,288
+* accuracy: 65.3%
+* error: 34.7%
+* macro_f1: 63.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 542	acc: 60.2%
+* class: 1 (Forest)	total: 900	correct: 320	acc: 35.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 426	acc: 47.3%
+* class: 3 (Highway or Road)	total: 750	correct: 548	acc: 73.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 664	acc: 88.5%
+* class: 5 (Pasture Land)	total: 600	correct: 450	acc: 75.0%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 181	acc: 24.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 838	acc: 93.1%
+* class: 8 (River)	total: 750	correct: 601	acc: 80.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 718	acc: 79.8%
+* average: 65.7%
+***************
+**  Min Acc  **
+***************
+Min Acc: 24.133333333333333
+Min Acc class: 6
+epoch [78/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.1845 (1.1845) acc 67.5000 (67.5000) lr 1.2494e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 27
+* accuracy: 67.5%
+* error: 32.5%
+* macro_f1: 61.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 67.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,285
+* accuracy: 65.2%
+* error: 34.8%
+* macro_f1: 63.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 549	acc: 61.0%
+* class: 1 (Forest)	total: 900	correct: 332	acc: 36.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 418	acc: 46.4%
+* class: 3 (Highway or Road)	total: 750	correct: 548	acc: 73.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 448	acc: 74.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 181	acc: 24.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 838	acc: 93.1%
+* class: 8 (River)	total: 750	correct: 600	acc: 80.0%
+* class: 9 (Sea or Lake)	total: 900	correct: 706	acc: 78.4%
+* average: 65.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 24.133333333333333
+Min Acc class: 6
+epoch [79/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.1289 (1.1289) acc 65.0000 (65.0000) lr 1.1474e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 26
+* accuracy: 65.0%
+* error: 35.0%
+* macro_f1: 59.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 1	acc: 25.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 65.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,259
+* accuracy: 64.9%
+* error: 35.1%
+* macro_f1: 63.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 543	acc: 60.3%
+* class: 1 (Forest)	total: 900	correct: 325	acc: 36.1%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 413	acc: 45.9%
+* class: 3 (Highway or Road)	total: 750	correct: 542	acc: 72.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 455	acc: 75.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 178	acc: 23.7%
+* class: 7 (Residential Buildings)	total: 900	correct: 837	acc: 93.0%
+* class: 8 (River)	total: 750	correct: 599	acc: 79.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 702	acc: 78.0%
+* average: 65.4%
+***************
+**  Min Acc  **
+***************
+Min Acc: 23.733333333333334
+Min Acc class: 6
+epoch [80/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 0.9953 (0.9953) acc 65.0000 (65.0000) lr 1.0492e-03 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 69.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,308
+* accuracy: 65.5%
+* error: 34.5%
+* macro_f1: 64.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 538	acc: 59.8%
+* class: 1 (Forest)	total: 900	correct: 342	acc: 38.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 424	acc: 47.1%
+* class: 3 (Highway or Road)	total: 750	correct: 549	acc: 73.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 666	acc: 88.8%
+* class: 5 (Pasture Land)	total: 600	correct: 451	acc: 75.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 188	acc: 25.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 838	acc: 93.1%
+* class: 8 (River)	total: 750	correct: 597	acc: 79.6%
+* class: 9 (Sea or Lake)	total: 900	correct: 715	acc: 79.4%
+* average: 65.9%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.066666666666666
+Min Acc class: 6
+epoch [81/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.0424 (1.0424) acc 65.0000 (65.0000) lr 9.5492e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 30
+* accuracy: 75.0%
+* error: 25.0%
+* macro_f1: 72.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 75.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,302
+* accuracy: 65.5%
+* error: 34.5%
+* macro_f1: 64.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 537	acc: 59.7%
+* class: 1 (Forest)	total: 900	correct: 361	acc: 40.1%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 414	acc: 46.0%
+* class: 3 (Highway or Road)	total: 750	correct: 540	acc: 72.0%
+* class: 4 (Industrial Buildings)	total: 750	correct: 666	acc: 88.8%
+* class: 5 (Pasture Land)	total: 600	correct: 461	acc: 76.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 182	acc: 24.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 837	acc: 93.0%
+* class: 8 (River)	total: 750	correct: 599	acc: 79.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 705	acc: 78.3%
+* average: 65.9%
+***************
+**  Min Acc  **
+***************
+Min Acc: 24.266666666666666
+Min Acc class: 6
+epoch [82/100] batch [1/1] time 0.005 (0.005) data 0.000 (0.000) loss 1.1136 (1.1136) acc 62.5000 (62.5000) lr 8.6460e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 30
+* accuracy: 75.0%
+* error: 25.0%
+* macro_f1: 72.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 75.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,294
+* accuracy: 65.4%
+* error: 34.6%
+* macro_f1: 63.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 538	acc: 59.8%
+* class: 1 (Forest)	total: 900	correct: 355	acc: 39.4%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 411	acc: 45.7%
+* class: 3 (Highway or Road)	total: 750	correct: 545	acc: 72.7%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 452	acc: 75.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 184	acc: 24.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 834	acc: 92.7%
+* class: 8 (River)	total: 750	correct: 605	acc: 80.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 705	acc: 78.3%
+* average: 65.8%
+***************
+**  Min Acc  **
+***************
+Min Acc: 24.533333333333335
+Min Acc class: 6
+epoch [83/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 1.1329 (1.1329) acc 65.0000 (65.0000) lr 7.7836e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 70.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,308
+* accuracy: 65.5%
+* error: 34.5%
+* macro_f1: 64.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 536	acc: 59.6%
+* class: 1 (Forest)	total: 900	correct: 364	acc: 40.4%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 414	acc: 46.0%
+* class: 3 (Highway or Road)	total: 750	correct: 548	acc: 73.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 454	acc: 75.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 183	acc: 24.4%
+* class: 7 (Residential Buildings)	total: 900	correct: 833	acc: 92.6%
+* class: 8 (River)	total: 750	correct: 597	acc: 79.6%
+* class: 9 (Sea or Lake)	total: 900	correct: 714	acc: 79.3%
+* average: 65.9%
+***************
+**  Min Acc  **
+***************
+Min Acc: 24.4
+Min Acc class: 6
+epoch [84/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 1.0472 (1.0472) acc 60.0000 (60.0000) lr 6.9629e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 70.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,324
+* accuracy: 65.7%
+* error: 34.3%
+* macro_f1: 64.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 540	acc: 60.0%
+* class: 1 (Forest)	total: 900	correct: 389	acc: 43.2%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 416	acc: 46.2%
+* class: 3 (Highway or Road)	total: 750	correct: 547	acc: 72.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 445	acc: 74.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 189	acc: 25.2%
+* class: 7 (Residential Buildings)	total: 900	correct: 835	acc: 92.8%
+* class: 8 (River)	total: 750	correct: 598	acc: 79.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 700	acc: 77.8%
+* average: 66.1%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.2
+Min Acc class: 6
+epoch [85/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 1.0007 (1.0007) acc 70.0000 (70.0000) lr 6.1847e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 27
+* accuracy: 67.5%
+* error: 32.5%
+* macro_f1: 62.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 67.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,350
+* accuracy: 66.0%
+* error: 34.0%
+* macro_f1: 64.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 539	acc: 59.9%
+* class: 1 (Forest)	total: 900	correct: 385	acc: 42.8%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 418	acc: 46.4%
+* class: 3 (Highway or Road)	total: 750	correct: 549	acc: 73.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 458	acc: 76.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 182	acc: 24.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 835	acc: 92.8%
+* class: 8 (River)	total: 750	correct: 599	acc: 79.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 720	acc: 80.0%
+* average: 66.4%
+***************
+**  Min Acc  **
+***************
+Min Acc: 24.266666666666666
+Min Acc class: 6
+epoch [86/100] batch [1/1] time 0.008 (0.008) data 0.001 (0.001) loss 1.0174 (1.0174) acc 70.0000 (70.0000) lr 5.4497e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 27
+* accuracy: 67.5%
+* error: 32.5%
+* macro_f1: 63.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 67.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,355
+* accuracy: 66.1%
+* error: 33.9%
+* macro_f1: 64.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 539	acc: 59.9%
+* class: 1 (Forest)	total: 900	correct: 393	acc: 43.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 421	acc: 46.8%
+* class: 3 (Highway or Road)	total: 750	correct: 554	acc: 73.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 455	acc: 75.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 186	acc: 24.8%
+* class: 7 (Residential Buildings)	total: 900	correct: 832	acc: 92.4%
+* class: 8 (River)	total: 750	correct: 601	acc: 80.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 709	acc: 78.8%
+* average: 66.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 24.8
+Min Acc class: 6
+epoch [87/100] batch [1/1] time 0.010 (0.010) data 0.001 (0.001) loss 0.9635 (0.9635) acc 70.0000 (70.0000) lr 4.7586e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 65.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,342
+* accuracy: 66.0%
+* error: 34.0%
+* macro_f1: 64.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 538	acc: 59.8%
+* class: 1 (Forest)	total: 900	correct: 399	acc: 44.3%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 425	acc: 47.2%
+* class: 3 (Highway or Road)	total: 750	correct: 551	acc: 73.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 449	acc: 74.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 191	acc: 25.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 834	acc: 92.7%
+* class: 8 (River)	total: 750	correct: 594	acc: 79.2%
+* class: 9 (Sea or Lake)	total: 900	correct: 696	acc: 77.3%
+* average: 66.3%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.466666666666665
+Min Acc class: 6
+epoch [88/100] batch [1/1] time 0.006 (0.006) data 0.000 (0.000) loss 0.9597 (0.9597) acc 62.5000 (62.5000) lr 4.1123e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 31
+* accuracy: 77.5%
+* error: 22.5%
+* macro_f1: 75.5%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 77.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,358
+* accuracy: 66.1%
+* error: 33.9%
+* macro_f1: 64.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 538	acc: 59.8%
+* class: 1 (Forest)	total: 900	correct: 391	acc: 43.4%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 427	acc: 47.4%
+* class: 3 (Highway or Road)	total: 750	correct: 554	acc: 73.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 664	acc: 88.5%
+* class: 5 (Pasture Land)	total: 600	correct: 449	acc: 74.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 189	acc: 25.2%
+* class: 7 (Residential Buildings)	total: 900	correct: 836	acc: 92.9%
+* class: 8 (River)	total: 750	correct: 597	acc: 79.6%
+* class: 9 (Sea or Lake)	total: 900	correct: 713	acc: 79.2%
+* average: 66.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.2
+Min Acc class: 6
+epoch [89/100] batch [1/1] time 0.007 (0.007) data 0.000 (0.000) loss 1.0896 (1.0896) acc 57.5000 (57.5000) lr 3.5112e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 65.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 6
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,351
+* accuracy: 66.1%
+* error: 33.9%
+* macro_f1: 64.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 537	acc: 59.7%
+* class: 1 (Forest)	total: 900	correct: 395	acc: 43.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 430	acc: 47.8%
+* class: 3 (Highway or Road)	total: 750	correct: 549	acc: 73.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 452	acc: 75.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 190	acc: 25.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 835	acc: 92.8%
+* class: 8 (River)	total: 750	correct: 599	acc: 79.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 699	acc: 77.7%
+* average: 66.4%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.333333333333332
+Min Acc class: 6
+epoch [90/100] batch [1/1] time 0.007 (0.007) data 0.000 (0.000) loss 1.1191 (1.1191) acc 45.0000 (45.0000) lr 2.9560e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 65.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,371
+* accuracy: 66.3%
+* error: 33.7%
+* macro_f1: 65.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 541	acc: 60.1%
+* class: 1 (Forest)	total: 900	correct: 399	acc: 44.3%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 430	acc: 47.8%
+* class: 3 (Highway or Road)	total: 750	correct: 550	acc: 73.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 665	acc: 88.7%
+* class: 5 (Pasture Land)	total: 600	correct: 455	acc: 75.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 194	acc: 25.9%
+* class: 7 (Residential Buildings)	total: 900	correct: 836	acc: 92.9%
+* class: 8 (River)	total: 750	correct: 598	acc: 79.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 703	acc: 78.1%
+* average: 66.7%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.866666666666667
+Min Acc class: 6
+epoch [91/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.0830 (1.0830) acc 55.0000 (55.0000) lr 2.4472e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 70.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,351
+* accuracy: 66.1%
+* error: 33.9%
+* macro_f1: 64.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 541	acc: 60.1%
+* class: 1 (Forest)	total: 900	correct: 390	acc: 43.3%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 425	acc: 47.2%
+* class: 3 (Highway or Road)	total: 750	correct: 547	acc: 72.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 663	acc: 88.4%
+* class: 5 (Pasture Land)	total: 600	correct: 448	acc: 74.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 195	acc: 26.0%
+* class: 7 (Residential Buildings)	total: 900	correct: 838	acc: 93.1%
+* class: 8 (River)	total: 750	correct: 594	acc: 79.2%
+* class: 9 (Sea or Lake)	total: 900	correct: 710	acc: 78.9%
+* average: 66.4%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.0
+Min Acc class: 6
+epoch [92/100] batch [1/1] time 0.007 (0.007) data 0.000 (0.000) loss 0.9176 (0.9176) acc 72.5000 (72.5000) lr 1.9853e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 67.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,353
+* accuracy: 66.1%
+* error: 33.9%
+* macro_f1: 64.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 539	acc: 59.9%
+* class: 1 (Forest)	total: 900	correct: 399	acc: 44.3%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 418	acc: 46.4%
+* class: 3 (Highway or Road)	total: 750	correct: 549	acc: 73.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 662	acc: 88.3%
+* class: 5 (Pasture Land)	total: 600	correct: 448	acc: 74.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 196	acc: 26.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 838	acc: 93.1%
+* class: 8 (River)	total: 750	correct: 593	acc: 79.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 711	acc: 79.0%
+* average: 66.4%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.133333333333333
+Min Acc class: 6
+epoch [93/100] batch [1/1] time 0.006 (0.006) data 0.001 (0.001) loss 1.0829 (1.0829) acc 60.0000 (60.0000) lr 1.5708e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 65.7%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 0	acc: 0.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 6
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,376
+* accuracy: 66.4%
+* error: 33.6%
+* macro_f1: 65.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 540	acc: 60.0%
+* class: 1 (Forest)	total: 900	correct: 386	acc: 42.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 437	acc: 48.6%
+* class: 3 (Highway or Road)	total: 750	correct: 551	acc: 73.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 662	acc: 88.3%
+* class: 5 (Pasture Land)	total: 600	correct: 461	acc: 76.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 199	acc: 26.5%
+* class: 7 (Residential Buildings)	total: 900	correct: 839	acc: 93.2%
+* class: 8 (River)	total: 750	correct: 593	acc: 79.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 708	acc: 78.7%
+* average: 66.7%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.533333333333335
+Min Acc class: 6
+epoch [94/100] batch [1/1] time 0.007 (0.007) data 0.001 (0.001) loss 1.0857 (1.0857) acc 60.0000 (60.0000) lr 1.2042e-04 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 69.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,354
+* accuracy: 66.1%
+* error: 33.9%
+* macro_f1: 64.8%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 536	acc: 59.6%
+* class: 1 (Forest)	total: 900	correct: 387	acc: 43.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 439	acc: 48.8%
+* class: 3 (Highway or Road)	total: 750	correct: 550	acc: 73.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 661	acc: 88.1%
+* class: 5 (Pasture Land)	total: 600	correct: 448	acc: 74.7%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 197	acc: 26.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 837	acc: 93.0%
+* class: 8 (River)	total: 750	correct: 601	acc: 80.1%
+* class: 9 (Sea or Lake)	total: 900	correct: 698	acc: 77.6%
+* average: 66.4%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.266666666666666
+Min Acc class: 6
+epoch [95/100] batch [1/1] time 0.005 (0.005) data 0.001 (0.001) loss 1.1476 (1.1476) acc 57.5000 (57.5000) lr 8.8564e-05 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 29
+* accuracy: 72.5%
+* error: 27.5%
+* macro_f1: 67.9%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 0	acc: 0.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 72.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 0.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,376
+* accuracy: 66.4%
+* error: 33.6%
+* macro_f1: 65.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 534	acc: 59.3%
+* class: 1 (Forest)	total: 900	correct: 402	acc: 44.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 436	acc: 48.4%
+* class: 3 (Highway or Road)	total: 750	correct: 547	acc: 72.9%
+* class: 4 (Industrial Buildings)	total: 750	correct: 663	acc: 88.4%
+* class: 5 (Pasture Land)	total: 600	correct: 458	acc: 76.3%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 196	acc: 26.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 835	acc: 92.8%
+* class: 8 (River)	total: 750	correct: 600	acc: 80.0%
+* class: 9 (Sea or Lake)	total: 900	correct: 705	acc: 78.3%
+* average: 66.7%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.133333333333333
+Min Acc class: 6
+epoch [96/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 0.9200 (0.9200) acc 72.5000 (72.5000) lr 6.1558e-05 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 31
+* accuracy: 77.5%
+* error: 22.5%
+* macro_f1: 75.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 77.5%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,391
+* accuracy: 66.6%
+* error: 33.4%
+* macro_f1: 65.3%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 539	acc: 59.9%
+* class: 1 (Forest)	total: 900	correct: 396	acc: 44.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 447	acc: 49.7%
+* class: 3 (Highway or Road)	total: 750	correct: 546	acc: 72.8%
+* class: 4 (Industrial Buildings)	total: 750	correct: 662	acc: 88.3%
+* class: 5 (Pasture Land)	total: 600	correct: 457	acc: 76.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 198	acc: 26.4%
+* class: 7 (Residential Buildings)	total: 900	correct: 838	acc: 93.1%
+* class: 8 (River)	total: 750	correct: 603	acc: 80.4%
+* class: 9 (Sea or Lake)	total: 900	correct: 705	acc: 78.3%
+* average: 66.9%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.4
+Min Acc class: 6
+epoch [97/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 1.0872 (1.0872) acc 70.0000 (70.0000) lr 3.9426e-05 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 68.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,380
+* accuracy: 66.4%
+* error: 33.6%
+* macro_f1: 65.2%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 541	acc: 60.1%
+* class: 1 (Forest)	total: 900	correct: 398	acc: 44.2%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 433	acc: 48.1%
+* class: 3 (Highway or Road)	total: 750	correct: 551	acc: 73.5%
+* class: 4 (Industrial Buildings)	total: 750	correct: 662	acc: 88.3%
+* class: 5 (Pasture Land)	total: 600	correct: 455	acc: 75.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 197	acc: 26.3%
+* class: 7 (Residential Buildings)	total: 900	correct: 837	acc: 93.0%
+* class: 8 (River)	total: 750	correct: 599	acc: 79.9%
+* class: 9 (Sea or Lake)	total: 900	correct: 707	acc: 78.6%
+* average: 66.8%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.266666666666666
+Min Acc class: 6
+epoch [98/100] batch [1/1] time 0.011 (0.011) data 0.001 (0.001) loss 1.0508 (1.0508) acc 65.0000 (65.0000) lr 2.2190e-05 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 30
+* accuracy: 75.0%
+* error: 25.0%
+* macro_f1: 73.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 3	acc: 75.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 75.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,368
+* accuracy: 66.3%
+* error: 33.7%
+* macro_f1: 65.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 537	acc: 59.7%
+* class: 1 (Forest)	total: 900	correct: 389	acc: 43.2%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 438	acc: 48.7%
+* class: 3 (Highway or Road)	total: 750	correct: 550	acc: 73.3%
+* class: 4 (Industrial Buildings)	total: 750	correct: 662	acc: 88.3%
+* class: 5 (Pasture Land)	total: 600	correct: 459	acc: 76.5%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 196	acc: 26.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 837	acc: 93.0%
+* class: 8 (River)	total: 750	correct: 596	acc: 79.5%
+* class: 9 (Sea or Lake)	total: 900	correct: 704	acc: 78.2%
+* average: 66.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.133333333333333
+Min Acc class: 6
+epoch [99/100] batch [1/1] time 0.005 (0.005) data 0.001 (0.001) loss 0.9896 (0.9896) acc 57.5000 (57.5000) lr 9.8664e-06 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 28
+* accuracy: 70.0%
+* error: 30.0%
+* macro_f1: 68.1%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 3	acc: 75.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 3	acc: 75.0%
+* average: 70.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,365
+* accuracy: 66.2%
+* error: 33.8%
+* macro_f1: 65.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 538	acc: 59.8%
+* class: 1 (Forest)	total: 900	correct: 404	acc: 44.9%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 430	acc: 47.8%
+* class: 3 (Highway or Road)	total: 750	correct: 541	acc: 72.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 661	acc: 88.1%
+* class: 5 (Pasture Land)	total: 600	correct: 463	acc: 77.2%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 196	acc: 26.1%
+* class: 7 (Residential Buildings)	total: 900	correct: 835	acc: 92.8%
+* class: 8 (River)	total: 750	correct: 598	acc: 79.7%
+* class: 9 (Sea or Lake)	total: 900	correct: 699	acc: 77.7%
+* average: 66.6%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.133333333333333
+Min Acc class: 6
+epoch [100/100] batch [1/1] time 0.004 (0.004) data 0.000 (0.000) loss 0.9554 (0.9554) acc 67.5000 (67.5000) lr 2.4672e-06 eta 0:00:00
+Evaluate on the *val* set
+=> result
+* total: 40
+* correct: 30
+* accuracy: 75.0%
+* error: 25.0%
+* macro_f1: 72.4%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 4	correct: 3	acc: 75.0%
+* class: 1 (Forest)	total: 4	correct: 2	acc: 50.0%
+* class: 2 (Herbaceous Vegetation Land)	total: 4	correct: 1	acc: 25.0%
+* class: 3 (Highway or Road)	total: 4	correct: 4	acc: 100.0%
+* class: 4 (Industrial Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 5 (Pasture Land)	total: 4	correct: 4	acc: 100.0%
+* class: 6 (Permanent Crop Land)	total: 4	correct: 1	acc: 25.0%
+* class: 7 (Residential Buildings)	total: 4	correct: 4	acc: 100.0%
+* class: 8 (River)	total: 4	correct: 3	acc: 75.0%
+* class: 9 (Sea or Lake)	total: 4	correct: 4	acc: 100.0%
+* average: 75.0%
+***************
+**  Min Acc  **
+***************
+Min Acc: 25.0
+Min Acc class: 2
+Checkpoint saved to output_ours/vit_b16/search_level3_/eurosat/shots_4/ZeroshotCLIP/seed1/low_dimer/model.pth.tar-100
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,333
+* accuracy: 65.8%
+* error: 34.2%
+* macro_f1: 64.6%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 538	acc: 59.8%
+* class: 1 (Forest)	total: 900	correct: 393	acc: 43.7%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 429	acc: 47.7%
+* class: 3 (Highway or Road)	total: 750	correct: 548	acc: 73.1%
+* class: 4 (Industrial Buildings)	total: 750	correct: 661	acc: 88.1%
+* class: 5 (Pasture Land)	total: 600	correct: 443	acc: 73.8%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 198	acc: 26.4%
+* class: 7 (Residential Buildings)	total: 900	correct: 837	acc: 93.0%
+* class: 8 (River)	total: 750	correct: 597	acc: 79.6%
+* class: 9 (Sea or Lake)	total: 900	correct: 689	acc: 76.6%
+* average: 66.2%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.4
+Min Acc class: 6
+Finish training
+Deploy the last-epoch model
+Evaluate on the *test* set
+=> result
+* total: 8,100
+* correct: 5,372
+* accuracy: 66.3%
+* error: 33.7%
+* macro_f1: 65.0%
+=> per-class result
+* class: 0 (Annual Crop Land)	total: 900	correct: 540	acc: 60.0%
+* class: 1 (Forest)	total: 900	correct: 401	acc: 44.6%
+* class: 2 (Herbaceous Vegetation Land)	total: 900	correct: 423	acc: 47.0%
+* class: 3 (Highway or Road)	total: 750	correct: 549	acc: 73.2%
+* class: 4 (Industrial Buildings)	total: 750	correct: 662	acc: 88.3%
+* class: 5 (Pasture Land)	total: 600	correct: 453	acc: 75.5%
+* class: 6 (Permanent Crop Land)	total: 750	correct: 195	acc: 26.0%
+* class: 7 (Residential Buildings)	total: 900	correct: 837	acc: 93.0%
+* class: 8 (River)	total: 750	correct: 606	acc: 80.8%
+* class: 9 (Sea or Lake)	total: 900	correct: 706	acc: 78.4%
+* average: 66.7%
+***************
+**  Min Acc  **
+***************
+Min Acc: 26.0
+Min Acc class: 6
+Elapsed: 0:03:05
