@@ -3,6 +3,7 @@ import time
 import torch
 import pickle
 
+import pandas as pd
 import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
@@ -119,8 +120,20 @@ class ZeroshotCLIP(TrainerX):
         self.mode = cfg.MODE
         self.alpha = cfg.TRAINER.MY_MODEL.ALPHA
         self.entity = cfg.ENTITY
-        self.name = f'dropout={self.dropout}_wd={self.wd}_logit_scale{self.logit_scale}_{cfg.MODE}_alpha{self.alpha}'
-        
+        test_data = self.dm.dataset.test
+        # tsne
+        self.img_emb_list = []
+        # error_case
+        self.sents_df = pd.read_csv('/mlainas/KGPrompt_data/imagenet/sents.csv')
+        self.sents_df  = self.sents_df[self.sents_df['level'] <= 1]
+        self.gt_list = []
+        self.our_pred_list = []
+        self.zs_pred_list = []
+        self.sent_list = []
+        # pdb.set_trace()
+        # added
+
+
         # pdb.set_trace()
         if 'LOAD_EPOCH' in cfg.keys():
             self.t = cfg.LOAD_EPOCH
@@ -182,6 +195,7 @@ class ZeroshotCLIP(TrainerX):
                                                              clip_model=clip_model,
                                                              device=self.device,
                                                              conceptnet_path=conceptnet_sentences_path)
+        # pdb.set_trace()
         dataset_name = cfg.DATASET.NAME.lower()
         if self.dataset_name in ['imageneta', 'imagenetr']:
             classnames_path = f'{self.emb_root}/{self.dataset_name}/classnames.pkl'
@@ -198,9 +212,8 @@ class ZeroshotCLIP(TrainerX):
 
         self.register_model("low_dimer", self.low_dimer, self.optim, self.sched)
     
-        # pdb.set_trace()
-        # added
-        
+
+
         if self.mode == 'ZS':
             # pdb.set_trace()
             prompts = [temp.format(c.replace("_", " ")) for c in self.classnames]
@@ -239,8 +252,8 @@ class ZeroshotCLIP(TrainerX):
             return     
 
         self.text_features = text_features / text_features.norm(dim=-1, keepdim=True)
-    
-    def attention_parallel(self, image, text, mask, max_len:int, mode:str):
+
+    def attention_parallel(self, image, text, mask, max_len:int, mode:str, labels=None):
         if mode == 'weight_sum':
             image_features =  image
             text_features = text
@@ -274,6 +287,14 @@ class ZeroshotCLIP(TrainerX):
             M2 = M - M1.detach()
             M2 = F.gumbel_softmax(M2, tau=self.temp, hard=True)
             M = M1 + M2
+            # for label, batch_M in zip(labels, M):
+            #     classname = self.dm.dataset.classnames[label]
+            #     sents = self.sents_df[self.sents_df['classname'] == classname]
+            #     class_M = batch_M[label]
+            #     sent_idx = class_M.argmax().item()
+            #     sent = sents.sent.tolist()[sent_idx]
+            #     self.sent_list.append(sent)
+
         else:
             M = F.softmax(M, dim=-1)  # Nx1000x838    
 
@@ -288,7 +309,7 @@ class ZeroshotCLIP(TrainerX):
         return sims
 
 
-    def model_inference(self, image_features, split):
+    def model_inference(self, image_features, split, labels=None):
         if self.logit_scale == 0:
             logit_scale = self.clip_model.logit_scale.exp()
         else:
@@ -298,15 +319,14 @@ class ZeroshotCLIP(TrainerX):
             image_features = image_features + 0.2 * torch.randn_like(image_features) 
         
         image_features_norm = image_features / image_features.norm(dim=-1, keepdim=True)
-            
-
+        self.img_emb_list.append(image_features_norm)
         if self.mode == 'gumbel' or self.mode == 'attention' or  self.mode == 'weight_sum' :      
             mask = self.mask_sequence
             max = self.max_num
             m = self.mode   
             text_features_norm = self.conceptnet_sentences / self.conceptnet_sentences.norm(dim=-1, keepdim=True) #normalize? or not
 
-            sims = self.attention_parallel(image_features_norm, self.conceptnet_sentences, mask, max, m )
+            sims = self.attention_parallel(image_features_norm, self.conceptnet_sentences, mask, max, m, labels)
             logits = logit_scale * sims 
             return logits       
         
@@ -316,11 +336,6 @@ class ZeroshotCLIP(TrainerX):
         logits = logit_scale * logits  
         return logits
     
-    def save_img_embeddings(self, image_features):
-        pass
-    def save_txt_embeddings(self):
-        cf = self.conceptnet_features
-        pass
     def before_train(self):
         # pdb.set_trace()
         directory = self.cfg.OUTPUT_DIR
@@ -356,8 +371,30 @@ class ZeroshotCLIP(TrainerX):
         # added - imagenet variants test
         self.load_model(directory)
         self.test()
-        # pdb.set_trace()
-        
+        # ZS
+        # self.gt_list, self.zs_pred_list
+        # zs_pred_path = '/mlainas/KGPrompt_data/error_case/zs_pred.pkl'
+        # with open(zs_pred_path, 'wb') as fp:
+        #     pickle.dump(self.zs_pred_list, fp)
+        # ours
+
+        # gt_list_path = '/mlainas/KGPrompt_data/error_case/gt_list.pkl'
+        # our_pred_path = '/mlainas/KGPrompt_data/error_case/our_pred.pkl'
+        # sent_path = '/mlainas/KGPrompt_data/error_case/sents.pkl'
+        # with open(gt_list_path, 'wb') as fp:
+        #     pickle.dump(self.gt_list, fp)
+
+        # with open(our_pred_path, 'wb') as fp:
+        #     pickle.dump(self.our_pred_list, fp)
+
+        # with open(sent_path, 'wb') as fp:
+        #     pickle.dump(self.sent_list, fp)
+
+        # t-SNE
+        embedding_tensor = torch.cat(self.img_emb_list)
+        torch.save(embedding_tensor, '/mlainas/KGPrompt_data/eurosat.pt')
+        pdb.set_trace()
+
     def run_epoch(self):
         self.test()
         self.set_model_mode("train")
@@ -414,24 +451,7 @@ class ZeroshotCLIP(TrainerX):
             "train_acc" : losses.meters["acc"].avg
             }, step=self.epoch)
 
-    @torch.no_grad()
-    def tsne(self, split=None):
-        pass
-        # if split == "val" and self.valid_dataloader is not None:#val_loader
-        #     data_loader = self.valid_dataloader #val_loader
-        # else:
-        #     split == "test"  # in case val_loader is None
-        #     data_loader = self.test_dataloader   #val_loader
-        # for batch_idx, batch in enumerate(tqdm(data_loader)):
-        # input, label = self.parse_batch_test(batch)
-        #     label = label.type(torch.int64)
-        #     output = self.model_inference(input, split = "val")
-        #     self.evaluator.process(output, torch.squeeze(label))
-        #     #added
-        #     loss = F.cross_entropy(output, torch.squeeze(label))
-        #     losses.update(loss.item(), input.shape[0])
-        #     acc = compute_accuracy(output, label)[0].item()
-        #     acces.update(acc, input.shape[0])
+
     @torch.no_grad()
     def test(self, split=None):
         """A generic testing pipeline."""
@@ -453,12 +473,20 @@ class ZeroshotCLIP(TrainerX):
         
         
         print(f"Evaluate on the *{split}* set")
-        error_case = False
+        error_case = True
         for batch_idx, batch in enumerate(tqdm(data_loader)):
             input, label = self.parse_batch_test(batch)
             label = label.type(torch.int64)
-            output = self.model_inference(input, split = "val")
-            self.evaluator.process(output, torch.squeeze(label), error_case=error_case)
+            # ZS
+            # gt_list, zs_pred_list
+            # OURS
+            # our_pred_list, sent_list
+            labels_list = label.cpu().detach().numpy().tolist()
+            labels_list = [item[0] for item in labels_list]
+            output = self.model_inference(input, split = "val", labels=labels_list)  
+            _, y_true_npy, y_pred_npy = self.evaluator.process(output, torch.squeeze(label), error_case=error_case)
+            self.our_pred_list += y_pred_npy.tolist()
+            self.gt_list += y_true_npy.tolist()
             #added
             loss = F.cross_entropy(output, torch.squeeze(label))
             losses.update(loss.item(), input.shape[0])
